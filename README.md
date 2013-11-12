@@ -7,7 +7,7 @@ Baseimage-docker is a [Docker](http://www.docker.io) image meant to serve as a g
  * **Twitter**: https://twitter.com/phusion_nl
  * **Blog**: http://blog.phusion.nl/
 
-## Why should I use baseimage-docker?
+### Why should I use baseimage-docker?
 
 Why use baseimage-docker instead of doing everything yourself in Dockerfile?
 
@@ -31,6 +31,14 @@ Why use baseimage-docker instead of doing everything yourself in Dockerfile?
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
 
 Baseimage-docker is very lightweight: it only consumes 4 MB of memory.
+
+## Inspecting baseimage-docker
+
+To look around in the image, run:
+
+    docker run -rm -t -i phusion/baseimage bash -l
+
+You don't have to download anything manually. The above command will automatically pull the baseimage-docker image from the Docker registry.
 
 ## Using baseimage-docker as base image
 
@@ -57,6 +65,26 @@ By default, it allows SSH access for the key in `image/insecure_key`. This makes
     
     # Clean up APT when done.
     RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+### Adding additional daemons
+
+You can add additional daemons to the image by creating runit entries. You only have to write a small shell script which runs your daemon, and runit will keep it up and running for you, restarting it when it crashes, etc.
+
+The shell script must be called `run`, must be executable, and is to be placed in the directory `/etc/services/<NAME>`.
+
+Here's an example showing you how to a memached server runit entry can be made.
+
+    ### In memcached.sh (make sure this file is chmod +x):
+    #!/bin/sh
+    # `chpst` is part of running. `chpst -u memcache` runs the given command
+    # as the user `memcache`. If you omit this, the command will be run as root.
+    exec chpst -u memcache /usr/bin/memcached >>/var/log/memcached.log 2>&1
+
+    ### In Dockerfile:
+    RUN mkdir /etc/services/memcached
+    ADD redis.sh /etc/services/memcached/run
+
+Note that the shell script must run the daemon **without letting it daemonize/fork it**. Usually, daemons provide a command line flag or a config file option for that.
 
 ## Building the image yourself
 
