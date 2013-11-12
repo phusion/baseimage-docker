@@ -92,6 +92,26 @@ Here's an example showing you how to a memached server runit entry can be made.
 
 Note that the shell script must run the daemon **without letting it daemonize/fork it**. Usually, daemons provide a command line flag or a config file option for that.
 
+### Login in to the container
+
+You can use SSH to login to any container that is based on baseimage-docker.
+
+Start a container based on baseimage-docker (or a container based on an image based on baseimage-docker):
+
+    docker run phusion/baseimage
+
+Find out the ID of the container that you just ran:
+
+    docker ps
+
+Once you have the ID, look for its IP address with:
+
+    docker inspect <ID> | grep IPAddress
+
+Now SSH into the container. In this example we're using [the default insecure key](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key), but if you're followed the instructions well then you've already replaced that with your own key. You did replace the key, didn't you?
+
+    ssh -i insecure_key root@<IP address>
+
 ## Building the image yourself
 
 If for whatever reason you want to build the image yourself instead of downloading it from the Docker registry, follow these instructions.
