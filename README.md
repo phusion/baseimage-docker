@@ -1,6 +1,6 @@
 # A minimal Ubuntu base image modified for Docker-friendliness
 
-Baseimage-docker is a special [Docker](http://www.docker.io) image that is configured for correct use within Docker containers. Other than modifications for Docker-friendliness, it is just Ubuntu. You can use it as a base for your own Docker images.
+Baseimage-docker is a special [Docker](http://www.docker.io) image that is configured for correct use within Docker containers. It is Ubuntu, plus modifications for Docker-friendliness. You can use it as a base for your own Docker images.
 
 Baseimage-docker is available for pulling from on [the Docker registry](https://index.docker.io/u/phusion/baseimage/)!
 
