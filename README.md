@@ -7,7 +7,7 @@ Baseimage-docker is a [Docker](http://www.docker.io) image meant to serve as a g
  * **Twitter**: https://twitter.com/phusion_nl
  * **Blog**: http://blog.phusion.nl/
 
-### Why should I use baseimage-docker?
+### Why use baseimage-docker?
 
 Why use baseimage-docker instead of doing everything yourself in Dockerfile?
 
@@ -39,6 +39,12 @@ To look around in the image, run:
     docker run -rm -t -i phusion/baseimage bash -l
 
 You don't have to download anything manually. The above command will automatically pull the baseimage-docker image from the Docker registry.
+
+### Wait, I thought Docker is about running a single process in a container?
+
+Absolutely not true. Docker runs fine with multiple processes in a container. In fact, there is no technical reason why you should limit yourself to one process - it only makes things harder for you and breaks all kinds of essential system functionality, e.g. syslog.
+
+Baseimage-docker *encourages* multiple processes through the use of runit.
 
 ## Using baseimage-docker as base image
 
