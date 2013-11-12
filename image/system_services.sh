@@ -22,9 +22,7 @@ cp /build/runit/sshd /etc/service/sshd/run
 cp /build/config/sshd_config /etc/ssh/sshd_config
 
 ## Install default SSH key for root and app.
-mkdir -p /root/.ssh /home/app/.ssh
-chmod 700 /root/.ssh /home/app/.ssh
+mkdir -p /root/.ssh
+chmod 700 /root/.ssh
 chown root:root /root/.ssh
-chown app:app /home/app/.ssh
 cat /build/insecure_key.pub > /root/.ssh/authorized_keys
-cat /build/insecure_key.pub > /home/app/.ssh/authorized_keys
