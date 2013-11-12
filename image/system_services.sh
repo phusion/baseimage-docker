@@ -7,15 +7,15 @@ set -x
 cp /build/my_init /sbin/
 
 ## Install runit.
-apt-get install -y runit
+$minimal_apt_get_install runit
 
 ## Install a syslog daemon.
-apt-get install -y syslog-ng
+$minimal_apt_get_install syslog-ng-core
 mkdir /etc/service/syslog-ng
 cp /build/runit/syslog-ng /etc/service/syslog-ng/run
 
 ## Install the SSH server.
-apt-get install -y openssh-server
+$minimal_apt_get_install openssh-server
 mkdir /var/run/sshd
 mkdir /etc/service/sshd
 cp /build/runit/sshd /etc/service/sshd/run
@@ -26,3 +26,8 @@ mkdir -p /root/.ssh
 chmod 700 /root/.ssh
 chown root:root /root/.ssh
 cat /build/insecure_key.pub > /root/.ssh/authorized_keys
+
+## Install cron daemon.
+$minimal_apt_get_install cron
+mkdir /etc/service/cron
+cp /build/runit/cron /etc/service/cron/run

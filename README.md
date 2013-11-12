@@ -26,8 +26,11 @@ Why use baseimage-docker instead of doing everything yourself in Dockerfile?
 | Fixes APT incompatibilities with Docker | See https://github.com/dotcloud/docker/issues/1024. |
 | syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. |
 | ssh server | Allows you to easily login to your container to inspect or administer things. <br><br>Password and challenge-response authentication are disabled by default. Only key authentication is allowed.<br>It allows an predefined key by default to make debugging easy. You should replace this ASAP. See instructions. |
+| cron | The cron daemon must be running for cron jobs to work. |
 | [runit](http://smarden.org/runit/) | For service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. |
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
+
+Baseimage-docker is very lightweight: it only consumes 4 MB of memory.
 
 ## Using baseimage-docker as base image
 
@@ -41,6 +44,9 @@ By default, it allows SSH access for the key in `image/insecure_key`. This makes
     # a list of version numbers.
     FROM phusion/baseimage:<VERSION>
     
+    # Set correct environment variables.
+    ENV HOME /root
+
     # Remove authentication rights for insecure_key.
     RUN rm -f /root/.ssh/authorized_keys /home/*/.ssh/authorized_keys
     

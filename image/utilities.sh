@@ -4,7 +4,7 @@ source /build/buildconfig
 set -x
 
 ## Often used tools.
-apt-get install -y curl less nano vim psmisc
+$minimal_apt_get_install curl less nano vim psmisc
 
 ## This tool runs a command as another user and sets $HOME.
 cp /build/setuser /sbin/setuser

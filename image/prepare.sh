@@ -9,7 +9,7 @@ echo deb http://archive.ubuntu.com/ubuntu precise-updates main universe >> /etc/
 apt-get update
 
 ## Install HTTPS support for APT.
-apt-get install -y apt-transport-https
+$minimal_apt_get_install apt-transport-https
 
 ## Fix some issues with APT packages.
 ## See https://github.com/dotcloud/docker/issues/1024
@@ -18,8 +18,8 @@ ln -s /bin/true /sbin/initctl
 
 ## Upgrade all packages.
 echo "initscripts hold" | dpkg --set-selections
-apt-get upgrade -y
+apt-get upgrade -y --no-install-recommends
 
 ## Fix locale.
-apt-get install -y language-pack-en
+$minimal_apt_get_install language-pack-en
 locale-gen en_US
