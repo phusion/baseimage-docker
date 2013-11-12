@@ -1,5 +1,64 @@
-#!/bin/bash
-set -e
-# No exec. We want bash to be the init process so that it can kill
-# zombie processes.
-/usr/sbin/runsvdir-start
+#!/usr/bin/python2
+import os, sys, signal, errno
+
+def reap_child(signum, frame):
+	global pid, status, waiting_for_runit
+	try:
+		result = os.wait3(os.WNOHANG)
+		if result is not None and pid == result[0]:
+			status = result[1]
+	except OSError:
+		pass
+
+def stop_runit(signum, frame):
+	global pid
+	print("*** Shutting down runit (PID %d)..." % pid)
+	try:
+		os.kill(pid, signal.SIGHUP)
+	except OSError:
+		pass
+
+# Start runit.
+signal.signal(signal.SIGCHLD, reap_child)
+print("*** Booting runit...")
+pid = os.spawnl(os.P_NOWAIT, "/usr/sbin/runsvdir-start", "/usr/sbin/runsvdir-start")
+print("*** Runit started as PID %d" % pid)
+signal.signal(signal.SIGTERM, stop_runit)
+
+# Wait for runit, and while waiting, reap any adopted orphans.
+done = False
+while not done:
+	try:
+		this_pid, status = os.waitpid(pid, 0)
+		done = True
+	except OSError as e:
+		if e.errno == errno.EINTR:
+			# Try again
+			pass
+		else:
+			# The SIGCHLD handler probably caught it.
+			done = True
+
+# Runit has exited. Reset signal handlers.
+print("*** Runit exited with code %s. Waiting for all services to shut down..." % status)
+signal.signal(signal.SIGCHLD, signal.SIG_DFL)
+signal.signal(signal.SIGTERM, signal.SIG_DFL)
+signal.siginterrupt(signal.SIGCHLD, False)
+signal.siginterrupt(signal.SIGTERM, False)
+
+# Wait at most 5 seconds for services to shut down.
+import time
+
+def shutdown(signum = None, frame = None):
+	global status
+	if status is not None:
+		sys.exit(status)
+
+signal.signal(signal.SIGALRM, shutdown)
+signal.alarm(5)
+done = False
+while not done:
+	done = os.system("/usr/bin/sv status /etc/service/* | grep -q '^run:'") != 0
+	if not done:
+		time.sleep(0.5)
+shutdown()
