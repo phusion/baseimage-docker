@@ -1,19 +1,26 @@
-# A minimal Docker base image with a correct and usable system
+# A minimal Ubuntu base image modified for Docker-friendliness
 
-Baseimage-docker is a [Docker](http://www.docker.io) image meant to serve as a good base for any other Docker container. It contains a minimal base system with the most important things already installed and set up correctly.
+Baseimage-docker is a special [Docker](http://www.docker.io) image that is configured for correct use within Docker containers. Other than modifications for Docker-friendliness, it is just Ubuntu. You can use it as a base for your own Docker images.
+
+Baseimage-docker is available for pulling from on [the Docker registry](https://index.docker.io/u/phusion/baseimage/)!
 
  * **Github**: https://github.com/phusion/baseimage-docker
- * **Docker registry entry**: https://index.docker.io/u/phusion/baseimage/
  * **Discussion forum**: https://groups.google.com/d/forum/passenger-docker
  * **Twitter**: https://twitter.com/phusion_nl
  * **Blog**: http://blog.phusion.nl/
 
+### What are the problems with the stock Ubuntu base image?
+
+Ubuntu is not designed to be run inside docker. Its init system, Upstart, assumes that it's running on either real hardware or virtualized hardware, but not inside a Docker container. But inside a container you don't want a full system anyway, you want a minimal system. But configuring that minimal system for use within a container has many strange corner cases that are hard to get right if you are not intimately familiar with the Unix system model. This can cause a lot of strange problems.
+
+Baseimage-docker gets everything right. The "Contents" section describes all the things that it modifies.
+
 ### Why use baseimage-docker?
 
-Why use baseimage-docker instead of doing everything yourself in Dockerfile?
+You can configure the stock `ubuntu` image yourself from your Dockerfile, so why bother using baseimage-docker?
 
+ * Configuring the base system for Docker-friendliness is no easy task. As stated before, there are many corner cases. By the time that you've gotten all that right, you've reinvented baseimage-docker. Using baseimage-docker will save you from this effort.
  * It reduces the time needed to write a correct Dockerfile. You won't have to worry about the base system and can focus on your stack and your app.
- * It sets up the base system **correctly**. Many people may not think so, but Unix has many corner cases caused by decades of cruft. Getting them wrong can result in very strange problems. This image does everything correctly.
  * It reduces the time needed to run `docker build`, allowing you to iterate your Dockerfile more quickly.
  * It reduces download time during redeploys. Docker only needs to download the base image once: during the first deploy. On every subsequent deploys, only the changes you make on top of the base image are downloaded.
 
@@ -29,7 +36,7 @@ Why use baseimage-docker instead of doing everything yourself in Dockerfile?
 | syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. |
 | ssh server | Allows you to easily login to your container to inspect or administer things. <br><br>Password and challenge-response authentication are disabled by default. Only key authentication is allowed.<br>It allows an predefined key by default to make debugging easy. You should replace this ASAP. See instructions. |
 | cron | The cron daemon must be running for cron jobs to work. |
-| [runit](http://smarden.org/runit/) | For service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. |
+| [runit](http://smarden.org/runit/) | Replaces Ubuntu's Upstart. Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. |
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
 
 Baseimage-docker is very lightweight: it only consumes 6 MB of memory.
