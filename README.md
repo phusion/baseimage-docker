@@ -3,6 +3,7 @@
 Baseimage-docker is a [Docker](http://www.docker.io) image meant to serve as a good base for any other Docker container. It contains a minimal base system with the most important things already installed and set up correctly.
 
  * **Github**: https://github.com/phusion/baseimage-docker
+ * **Docker registry entry**: https://index.docker.io/u/phusion/baseimage/
  * **Discussion forum**: https://groups.google.com/d/forum/passenger-docker
  * **Twitter**: https://twitter.com/phusion_nl
  * **Blog**: http://blog.phusion.nl/
