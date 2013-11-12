@@ -7,7 +7,7 @@ Included in the image are:
 | Component     | Why is it included? / Remarks | Remarks |
 | ------------- | ------------------- | ------- |
 | Ubuntu 12.04 LTS | The base system. | |
-| syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br>Only listens locally. | Only listens locally. |
+| syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. | Only listens locally. |
 | ssh server | | |
 | [runit](http://smarden.org/runit/) | For service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. | |
 
