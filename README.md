@@ -24,7 +24,7 @@ Why use baseimage-docker instead of doing everything yourself in Dockerfile?
 | Component        | Why is it included? / Remarks |
 | ---------------- | ------------------- |
 | Ubuntu 12.04 LTS | The base system. |
-| A **correct** init process | According to the Unix process model, [the init process](https://en.wikipedia.org/wiki/Init) -- PID 1 -- inherits all [orphaned child processes](https://en.wikipedia.org/wiki/Orphan_process) and must [reap them](https://en.wikipedia.org/wiki/Wait_(system_call). Most Docker containers do not have an init process that does this correctly, and as a result their containers become filled with [zombie processes](https://en.wikipedia.org/wiki/Zombie_process) over time. Baseimage-docker comes with an init process `/sbin/my_init` that performs reaping correctly. |
+| A **correct** init process | According to the Unix process model, [the init process](https://en.wikipedia.org/wiki/Init) -- PID 1 -- inherits all [orphaned child processes](https://en.wikipedia.org/wiki/Orphan_process) and must [reap them](https://en.wikipedia.org/wiki/Wait_(system_call). Most Docker containers do not have an init process that does this correctly, and as a result their containers become filled with [zombie processes](https://en.wikipedia.org/wiki/Zombie_process) over time. <br><br>Furthermore, `docker stop` sends SIGTERM to the init process, which is then supposed to stop all services. Unfortunately most init systems don't do this correctly within Docker since they're built for hardware shutdowns instead. <br><br>Baseimage-docker comes with an init process `/sbin/my_init` that performs both of these tasks correctly. |
 | Fixes APT incompatibilities with Docker | See https://github.com/dotcloud/docker/issues/1024. |
 | syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. |
 | ssh server | Allows you to easily login to your container to inspect or administer things. <br><br>Password and challenge-response authentication are disabled by default. Only key authentication is allowed.<br>It allows an predefined key by default to make debugging easy. You should replace this ASAP. See instructions. |
@@ -32,7 +32,7 @@ Why use baseimage-docker instead of doing everything yourself in Dockerfile?
 | [runit](http://smarden.org/runit/) | For service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. |
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
 
-Baseimage-docker is very lightweight: it only consumes 4 MB of memory.
+Baseimage-docker is very lightweight: it only consumes 6 MB of memory.
 
 ### Wait, I thought Docker is about running a single process in a container?
 
