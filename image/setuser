@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+user="$1"
+shift
+
+if [[ "$user" == "root" ]]; then
+	export HOME=/root
+else
+	export HOME=/home/$user
+fi
+exec chpst -u "$user" "$@"

@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+# No exec. We want bash to be the init process so that it can kill
+# zombie processes.
+/usr/sbin/runsvdir-start
