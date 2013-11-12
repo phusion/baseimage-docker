@@ -32,6 +32,12 @@ Why use baseimage-docker instead of doing everything yourself in Dockerfile?
 
 Baseimage-docker is very lightweight: it only consumes 4 MB of memory.
 
+### Wait, I thought Docker is about running a single process in a container?
+
+Absolutely not true. Docker runs fine with multiple processes in a container. In fact, there is no technical reason why you should limit yourself to one process - it only makes things harder for you and breaks all kinds of essential system functionality, e.g. syslog.
+
+Baseimage-docker *encourages* multiple processes through the use of runit.
+
 ## Inspecting baseimage-docker
 
 To look around in the image, run:
@@ -39,12 +45,6 @@ To look around in the image, run:
     docker run -rm -t -i phusion/baseimage bash -l
 
 You don't have to download anything manually. The above command will automatically pull the baseimage-docker image from the Docker registry.
-
-### Wait, I thought Docker is about running a single process in a container?
-
-Absolutely not true. Docker runs fine with multiple processes in a container. In fact, there is no technical reason why you should limit yourself to one process - it only makes things harder for you and breaks all kinds of essential system functionality, e.g. syslog.
-
-Baseimage-docker *encourages* multiple processes through the use of runit.
 
 ## Using baseimage-docker as base image
 
