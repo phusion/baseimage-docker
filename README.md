@@ -147,7 +147,7 @@ If you want to call the resulting image something else, pass the NAME variable, 
 ## Conclusion
 
  * Using baseimage-docker? [Tweet about us](https://twitter.com/share) or [follow us on Twitter](https://twitter.com/phusion_nl).
- * Having problems? Please post a message at [the discussion forum](https://groups.google.com/d/forum/passenger-docker).
+ * Having problems? Want to participate in development? Please post a message at [the discussion forum](https://groups.google.com/d/forum/passenger-docker).
  * Looking for a more complete base image, one that is ideal for Ruby, Python, Node.js and Meteor web apps? Take a look at [passenger-docker](https://github.com/phusion/passenger-docker).
 
 [<img src="http://www.phusion.nl/assets/logo.png">](http://www.phusion.nl/)
