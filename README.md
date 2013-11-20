@@ -85,7 +85,7 @@ By default, it allows SSH access for the key in `image/insecure_key`. This makes
 
 You can add additional daemons to the image by creating runit entries. You only have to write a small shell script which runs your daemon, and runit will keep it up and running for you, restarting it when it crashes, etc.
 
-The shell script must be called `run`, must be executable, and is to be placed in the directory `/etc/services/<NAME>`.
+The shell script must be called `run`, must be executable, and is to be placed in the directory `/etc/service/<NAME>`.
 
 Here's an example showing you how to a memached server runit entry can be made.
 
@@ -96,8 +96,8 @@ Here's an example showing you how to a memached server runit entry can be made.
     exec chpst -u memcache /usr/bin/memcached >>/var/log/memcached.log 2>&1
 
     ### In Dockerfile:
-    RUN mkdir /etc/services/memcached
-    ADD redis.sh /etc/services/memcached/run
+    RUN mkdir /etc/service/memcached
+    ADD memcached.sh /etc/service/memcached/run
 
 Note that the shell script must run the daemon **without letting it daemonize/fork it**. Usually, daemons provide a command line flag or a config file option for that.
 
