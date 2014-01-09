@@ -101,7 +101,7 @@ Here's an example showing you how to a memached server runit entry can be made.
 
 Note that the shell script must run the daemon **without letting it daemonize/fork it**. Usually, daemons provide a command line flag or a config file option for that.
 
-### Login in to the container
+### Login to the container
 
 You can use SSH to login to any container that is based on baseimage-docker.
 
