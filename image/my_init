@@ -18,6 +18,14 @@ def stop_runit(signum, frame):
 	except OSError:
 		pass
 
+# Run initializer command if specified
+if len(sys.argv) > 1:
+	print("*** Running initializer command(s) first...")
+	rv = os.system(' '.join(sys.argv[1:]))
+	if rv != 0:
+		print("!!! Initializer command(s) failed - aborting")
+		sys.exit(rv)
+
 # Start runit.
 signal.signal(signal.SIGCHLD, reap_child)
 print("*** Booting runit...")
