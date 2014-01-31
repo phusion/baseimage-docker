@@ -1,3 +1,7 @@
+## 0.9.3 (release date: pending)
+
+ * It looks like Docker changed their Ubuntu 12.04 base image, thereby breaking our Dockerfile. This has been fixed.
+
 ## 0.9.2 (release date: 2013-12-11)
 
  * Fixed SFTP support. Thanks Joris van de Donk!
