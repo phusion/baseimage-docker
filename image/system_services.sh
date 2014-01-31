@@ -5,6 +5,7 @@ set -x
 
 ## Install init process.
 cp /build/my_init /sbin/
+mkdir -p /etc/my_init.d
 
 ## Install runit.
 $minimal_apt_get_install runit
@@ -20,6 +21,7 @@ mkdir /var/run/sshd
 mkdir /etc/service/sshd
 cp /build/runit/sshd /etc/service/sshd/run
 cp /build/config/sshd_config /etc/ssh/sshd_config
+cp /build/00_regen_ssh_host_keys.sh /etc/my_init.d/
 
 ## Install default SSH key for root and app.
 mkdir -p /root/.ssh

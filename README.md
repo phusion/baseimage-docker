@@ -69,14 +69,19 @@ By default, it allows SSH access for the key in `image/insecure_key`. This makes
     
     # Set correct environment variables.
     ENV HOME /root
-
+    
     # Remove authentication rights for insecure_key.
     RUN rm -f /root/.ssh/authorized_keys /home/*/.ssh/authorized_keys
     
-    # Use baseimage-docker's init process.
+    # Regenerate SSH host keys. baseimage-docker does not contain any, so you
+    # have to do that yourself. You may also comment out this instruction; the
+    # init system will auto-generate one during boot.
+    RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
+    
+    # Use baseimage-docker's init system.
     CMD ["/sbin/my_init"]
     
-    # ...put other build instructions here...
+    # ...put your own build instructions here...
     
     # Clean up APT when done.
     RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
