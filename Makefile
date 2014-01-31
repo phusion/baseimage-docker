@@ -1,5 +1,5 @@
 NAME = phusion/baseimage
-VERSION = 0.9.2
+VERSION = 0.9.3
 
 .PHONY: all build tag_latest release
 
