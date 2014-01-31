@@ -101,6 +101,25 @@ Here's an example showing you how to a memached server runit entry can be made.
 
 Note that the shell script must run the daemon **without letting it daemonize/fork it**. Usually, daemons provide a command line flag or a config file option for that.
 
+### Running scripts during container startup
+
+The baseimage-docker init system, `/sbin/my_init`, runs the following scripts during startup, in the following order:
+
+ * All executable scripts in `/etc/my_init.d`, if this directory exists. The scripts are run during in lexicographic order.
+ * The script `/etc/rc.local`, if this file exists.
+
+All scripts must exit correctly, e.g. with exit code 0. If any script exits with a non-zero exit code, the booting will fail.
+
+The following example shows how you can add a startup script. This script simply logs the time of boot to the file /tmp/boottime.txt.
+
+    ### In logtime.sh (make sure this file is chmod +x):
+    #!/bin/sh
+    date > /tmp/boottime.txt
+
+    ### In Dockerfile:
+    RUN mkdir -p /etc/my_init.d
+    ADD logtime.sh /etc/my_init.d/logtime.sh
+
 ### Login to the container
 
 You can use SSH to login to any container that is based on baseimage-docker.

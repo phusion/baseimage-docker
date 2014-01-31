@@ -1,5 +1,24 @@
 #!/usr/bin/python2
-import os, sys, signal, errno
+import os, sys, stat, signal, errno
+
+pid = None
+status = None
+
+def listdir(path):
+	try:
+		result = os.stat(path)
+	except OSError:
+		return []
+	if stat.S_ISDIR(result.st_mode):
+		return sorted(os.listdir(path))
+	else:
+		return []
+
+def is_exe(path):
+	try:
+		return os.path.isfile(path) and os.access(path, os.X_OK)
+	except OSError:
+		return False
 
 def reap_child(signum, frame):
 	global pid, status, waiting_for_runit
@@ -10,20 +29,52 @@ def reap_child(signum, frame):
 	except OSError:
 		pass
 
-def stop_runit(signum, frame):
+def stop_child_process(name):
 	global pid
-	print("*** Shutting down runit (PID %d)..." % pid)
+	print("*** Shutting down %s (PID %d)..." % (name, pid))
 	try:
 		os.kill(pid, signal.SIGHUP)
 	except OSError:
 		pass
+
+def run_command_killable(*argv):
+	global pid
+	filename = argv[0]
+	pid = os.spawnvp(os.P_NOWAIT, filename, argv)
+	signal.signal(signal.SIGINT, lambda signum, frame: stop_child_process(filename))
+	signal.signal(signal.SIGTERM, lambda signum, frame: stop_child_process(filename))
+	try:
+		this_pid, status = os.waitpid(pid, 0)
+	except OSError as e:
+		if e.errno == errno.EINTR:
+			sys.exit(2)
+		else:
+			raise
+	finally:
+		signal.signal(signal.SIGINT, signal.SIG_DFL)
+		signal.signal(signal.SIGTERM, signal.SIG_DFL)
+	if status != 0:
+		sys.stderr.write("*** %s failed with exit code %d\n" % (filename, status))
+		sys.exit(1)
+
+# Run /etc/my_init.d/*
+for name in listdir("/etc/my_init.d"):
+	filename = "/etc/my_init.d/" + name
+	if is_exe(filename):
+		print("*** Running %s..." % filename)
+		run_command_killable(filename)
+
+# Run /etc/rc.local.
+if is_exe("/etc/rc.local"):
+	print("*** Running /etc/rc.local...")
+	run_command_killable("/etc/rc.local")
 
 # Start runit.
 signal.signal(signal.SIGCHLD, reap_child)
 print("*** Booting runit...")
 pid = os.spawnl(os.P_NOWAIT, "/usr/sbin/runsvdir-start", "/usr/sbin/runsvdir-start")
 print("*** Runit started as PID %d" % pid)
-signal.signal(signal.SIGTERM, stop_runit)
+signal.signal(signal.SIGTERM, lambda signum, frame: stop_child_process("runit"))
 
 # Wait for runit, and while waiting, reap any adopted orphans.
 done = False
@@ -62,3 +113,4 @@ while not done:
 	if not done:
 		time.sleep(0.5)
 shutdown()
+
