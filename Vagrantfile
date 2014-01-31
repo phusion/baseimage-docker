@@ -9,7 +9,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "phusion-open-ubuntu-12.04-amd64"
   config.vm.box_url = "https://oss-binaries.phusionpassenger.com/vagrant/boxes/ubuntu-12.04.3-amd64-vbox.box"
   config.ssh.forward_agent = true
-  if File.directory?("#{ROOT}/passenger-docker")
+  if File.directory?("#{ROOT}/../passenger-docker")
     config.vm.synced_folder File.expand_path("#{ROOT}/../passenger-docker"),
       "/vagrant/passenger-docker"
   end
