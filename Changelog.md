@@ -1,4 +1,4 @@
-## 0.9.3 (release date: pending)
+## 0.9.3 (release date: 2014-01-31)
 
  * It looks like Docker changed their Ubuntu 12.04 base image, thereby breaking our Dockerfile. This has been fixed.
  * The init system (`/sbin/my_init`) now supports running scripts during startup. You can put startup scripts `/etc/my_init.d`. `/etc/rc.local` is also run during startup.
