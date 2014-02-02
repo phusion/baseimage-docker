@@ -107,6 +107,8 @@
         </div>
         <br>
         <br>
+        <a href="https://twitter.com/share" class="twitter-share-button" data-text="Your Docker container might be broken without you knowing it" data-via="phusion_nl" data-size="large" data-hashtags="docker">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
       </div>
     </div><!-- /container -->
   </div><!-- /headerwrap -->
@@ -270,6 +272,25 @@ CMD ["/sbin/my_init"]
 # Clean up APT when done.
 RUN apt-get clean &amp;&amp; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*</pre>
 
+          <h2>Adding additional daemons</h2>
+          <p>You can add additional daemons (e.g. your own app) to the image by creating runit entries. You only have to write a small shell script which runs your daemon, and runit will keep it up and running for you, restarting it when it crashes, etc.</p>
+
+          <p>The shell script must be called <code>run</code>, must be executable, and is to be placed in the directory <code>/etc/service/&lt;NAME&gt;</code>.</p>
+
+          <p>Here's an example showing you how to a memached server runit entry can be made.</p>
+
+          <pre>### In memcached.sh (make sure this file is chmod +x):
+#!/bin/sh
+# `chpst` is part of running. `chpst -u memcache` runs the given command
+# as the user `memcache`. If you omit this, the command will be run as root.
+exec chpst -u memcache /usr/bin/memcached >>/var/log/memcached.log 2&gt;&amp;1
+
+### In Dockerfile:
+RUN mkdir /etc/service/memcached
+ADD memcached.sh /etc/service/memcached/run</pre>
+
+          <p>Note that the shell script must run the daemon <em>without letting it daemonize/fork it</em>. Usually, daemons provide a command line flag or a config file option for that.</p>
+
           <h2>More documentation</h2>
           <p>This website only covers the basics. Please refer to <a href="https://github.com/phusion/baseimage-docker#readme">the Github repository</a> for more documentation. Topics include:</p>
           <ul>
@@ -278,11 +299,14 @@ RUN apt-get clean &amp;&amp; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*</pre>
             <li>Instructions on logging into the container</li>
           </ul>
 
-          <h2>Relevant links</h2>
-          <ul>
-          <li>Using baseimage-docker? <a href="https://twitter.com/share">Tweet about us</a> or <a href="https://twitter.com/phusion_nl">follow us on Twitter</a>.</li>
-          <li>Having problems? Want to participate in development? Please post a message at <a href="https://groups.google.com/d/forum/passenger-docker">the discussion forum</a>.</li>
-          </ul>
+          <p>Having problems? Want to participate in development? Please post a message at <a href="https://groups.google.com/d/forum/passenger-docker">the discussion forum</a>.</p>
+
+          <div class="centered">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-text="Your Docker container might be broken without you knowing it" data-via="phusion_nl" data-size="large" data-hashtags="docker">Tweet</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+            <a href="https://twitter.com/phusion_nl" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @phusion_nl</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+          </div>
         </div>
       </div>
 
@@ -309,7 +333,13 @@ RUN apt-get clean &amp;&amp; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*</pre>
         <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
         
         <div class="col-lg-6 col-lg-offset-3 centered">
-          <a href="https://www.phusionpassenger.com"><img src="icon.png" width="350" height="350" alt="Phusion"></a>
+          <div class="centered" style="margin-bottom: 2em">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-text="Your Docker container might be broken without you knowing it" data-via="phusion_nl" data-size="large" data-hashtags="docker">Tweet</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+            <a href="https://twitter.com/phusion_nl" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @phusion_nl</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+          </div>
+          <p><a href="https://www.phusionpassenger.com"><img src="icon.png" width="350" height="350" alt="Phusion"></a></p>
         </div>
       </div>
     </div>
