@@ -1,185 +1,260 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="assets/ico/favicon.png">
+
+    <title>Baseimage-docker: A minimal Ubuntu base image modified for Docker-friendliness</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="assets/css/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/modernizr.custom.js"></script>
+    
+
+    
+    <link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=EB+Garamond' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:600' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="assets/js/html5shiv.js"></script>
+      <script src="assets/js/respond.min.js"></script>
     <![endif]-->
-    <title>Baseimage-docker by phusion</title>
+
+    <style type="text/css">
+        #headerwrap {
+            min-height: 800px;
+        }
+
+        a.btn {
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 600;
+        }
+
+        #eyecatcher_nav a {
+            width: 19em;
+        }
+
+        #f {
+            text-align: left;
+            background: #3f3f3f;
+        }
+
+        #f h1, #f h2, #f h3 {
+            color: white;
+            text-align: center;
+        }
+
+        #f h1 {
+            font-weight: bold;
+        }
+
+        #f h2 {
+            font-weight: 700;
+            margin: 1em 0 1em 0;
+        }
+
+        h2.quote {
+            font-family: 'EB Garamond', serif;
+        }
+
+        blockquote, dt, dd, ul, li {
+            color: white;
+            font-size: 20px;
+        }
+
+        dd {
+            margin-left: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        pre {
+            overflow: auto;
+            word-wrap: normal;
+            white-space: pre;
+        }
+    </style>
   </head>
 
-  <body>
-    <div id="container">
-      <div class="inner">
+  <body data-spy="scroll" data-offset="0" data-target="#theMenu">
 
-        <header>
-          <h1>Baseimage-docker</h1>
-          <h2>A minimal Ubuntu base image modified for Docker-friendliness</h2>
-        </header>
+    <!-- ========== HEADER SECTION ========== -->
+    <section id="home" name="home"></section>
+    <div id="headerwrap">
+        <div class="container">
+            <br>
+            <div class="row">
+                <h1>
+                    <span style="display: block; margin-bottom: 0.5em">YOUR DOCKER IMAGE<br>MIGHT BE BROKEN</span>
+                    <span style="font-size: 80%">without you knowing it</span>
+                </h1>
+                <br>
+                <h3>Learn the right way to build your Dockerfile.</h3>
+                <br><br>
+                <div id="eyecatcher_nav">
+                    <div class="hidden-xs hidden-sm">
+                        <a href="#intro" class="btn btn-primary btn-lg" style="margin-right: 0.75em">What are you talking about?</a>
+                        <a href="#solution" class="btn btn-info btn-lg">Get the solution: baseimage-docker</a>
+                    </div>
+                    <div class="visible-xs visible-sm">
+                        <a href="#intro" class="btn btn-primary btn-lg">What are you talking about?</a><br><br>
+                        <a href="#solution" class="btn btn-info btn-lg">Get the solution: baseimage-docker</a>
+                    </div>
+                </div>
+                <br>
+                <br>
+            </div>
+        </div><!-- /container -->
+    </div><!-- /headerwrap -->
+    
+    
+    
+    <!-- ========== ABOUT SECTION ========== -->
+    <section id="about" name="about"></section>
+    <div id="f">
+        <div class="container">
+            <div class="row">
+                <h1 id="intro">So you're building a Docker image. What might be wrong with it?</h1>
+                <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
+                
+                <!-- INTRO INFORMATIO-->
+                <div class="col-lg-6 col-lg-offset-3">
+                    <p>You learned about <a href="http://www.docker.io">Docker</a>. It's awesome and you're excited. You go and create a Dockerfile:</p>
+                    <pre>FROM ubuntu:12.04
 
-        <section id="downloads" class="clearfix">
-          <a href="https://github.com/phusion/baseimage-docker/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/phusion/baseimage-docker/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
-          <a href="https://github.com/phusion/baseimage-docker" id="view-on-github" class="button"><span>View on GitHub</span></a>
-        </section>
+RUN apt-get install all_my_dependencies
+ADD my_app_files /my_app
 
-        <hr>
+CMD ["/my_app/start.sh"]</pre>
+                    <p>Cool, it seems to work. Pretty easy, right?</p>
+                    <p>Not so fast.</p>
+                    <p>You just built a container which contains a minimal operating system, and which only runs your app. But the operating system inside the container is not configured correctly. <em>A proper Unix system</em> should run all kinds of important system services. You're not running them, you're only running your app.</p>
 
-        <section id="main_content">
-          <h1>
-<a name="a-minimal-ubuntu-base-image-modified-for-docker-friendliness" class="anchor" href="#a-minimal-ubuntu-base-image-modified-for-docker-friendliness"><span class="octicon octicon-link"></span></a>A minimal Ubuntu base image modified for Docker-friendliness</h1>
+                    <h2 class="quote">"What do you mean? I'm just using Ubuntu in Docker. Doesn't the OS inside the container take care of everything automatically?"</h2>
+                    <p>Not quite. You have Ubuntu <em>installed</em> in Docker. The files are there. But that doesn't mean Ubuntu's running as it should.</p>
+                    <p>When your Docker container starts, <em>only</em> the CMD command is run. The only processes that will be running inside the container is the CMD command, and all processes that it spawns. That's why all kinds of important system services are not run automatically &ndash; you have to run them yourself.</p>
+                    <p>Furthermore, Ubuntu is not designed to be run inside Docker. Its init system, Upstart, assumes that it's running on either real hardware or virtualized hardware, but not inside a Docker container, which is a locked down environment with e.g. no direct access to many kernel resources. Normally, that's okay: inside a container you don't want to run Upstart anyway. You don't want a full system, you want a minimal system. But configuring that minimal system for use within a container has many strange corner cases that are hard to get right if you are not intimately familiar with the Unix system model. This can cause a lot of strange problems.</p>
+                    
+                    <h2 class="quote">"What important system services am I missing?"</h2>
+                    <dl>
+                        <dt>A <em>correct</em> init process</dt>
+                        <dd>
+                            <p>Here's how the Unix process model works. When a system is started, the first process in the system is called <a href="https://en.wikipedia.org/wiki/Init">the init process</a>, with PID 1. The system halts when this processs halts. If you call <code>CMD ["/my_app/start.sh"]</code> in your Dockerfile, then start.sh is your init process.</p>
 
-<p>Baseimage-docker is a special <a href="http://www.docker.io">Docker</a> image that is configured for correct use within Docker containers. It is Ubuntu, plus modifications for Docker-friendliness. You can use it as a base for your own Docker images.</p>
+                            <p>But the init process has an extra responsibility. It inherits all <a href="https://en.wikipedia.org/wiki/Orphan_process">orphaned child processes</a>. It is expected that the init process <a href="https://en.wikipedia.org/wiki/Wait_(system_call)">reaps them</a>.</p>
 
-<p>Baseimage-docker is available for pulling from <a href="https://index.docker.io/u/phusion/baseimage/">the Docker registry</a>!</p>
+                            <p>Most likely, your init process is not doing that at all. As a result your container will become filled with <a href="https://en.wikipedia.org/wiki/Zombie_process">zombie processes</a> over time.</p>
 
-<h3>
-<a name="what-are-the-problems-with-the-stock-ubuntu-base-image" class="anchor" href="#what-are-the-problems-with-the-stock-ubuntu-base-image"><span class="octicon octicon-link"></span></a>What are the problems with the stock Ubuntu base image?</h3>
+                            <p>Furthermore, <code>docker stop</code> sends SIGTERM to the init process, which is then supposed to stop all services. If your init process is your app, then it'll probably only shut down itself, not all the other processes in the container. The kernel will then forcefully kill those other processes, not giving them a chance to gracefully shut down, potentially resulting in file corruption, stale temporary files, etc. You really want to shut down all your processes gracefully.</p>
+                        </dd>
+                        <dt>syslog</dt>
+                        <dd>
+                            <p>Syslog is the standard Unix logging service. A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. You don't want warnings and errors to be silently swallowed, do you?</p>
+                            <p>The syslog daemon is not run automatically. You have to start it yourself.</p>
+                        </dd>
+                        <dt>cron</dt>
+                        <dd>
+                            <p>Many apps use cron services. But cron jobs never get run until the cron daemon is running. Your container.</p>
+                            <p>The cron daemon is not run automatically. You have to start it yourself.</p>
+                        </dd>
+                        <dt>SSH daemon</dt>
+                        <dd>
+                            <p>Your container is a full OS. It can run all kinds of things. Occasionally, you will have to administer it, e.g. checking its CPU usage and memory usage, inspecting what your app is doing, etc.</p>
+                            <p>It's hard to do that properly from outside the container. You really should have a way to login to the container. That's why you should run an SSH daemon, so that you can SSH into the container.</p>
+                            <p>The SSH daemon is not run automatically. You have to start it yourself.</p>
+                        </dd>
+                    </dl>
 
-<p>Ubuntu is not designed to be run inside docker. Its init system, Upstart, assumes that it's running on either real hardware or virtualized hardware, but not inside a Docker container. But inside a container you don't want a full system anyway, you want a minimal system. But configuring that minimal system for use within a container has many strange corner cases that are hard to get right if you are not intimately familiar with the Unix system model. This can cause a lot of strange problems.</p>
+                    <h2 class="quote">"Does all this apply too if I'm using CentOS inside the container, or another Linux distribution?"</h2>
+                    <p>Yes. The problem exist in those cases too.</p>
 
-<p>Baseimage-docker gets everything right. The "Contents" section describes all the things that it modifies.</p>
+                    <h2 class="quote">"But I thought Docker is about running a single process in a container?"</h2>
+                    <p>Absolutely not true. Docker runs fine with multiple processes in a container. In fact, there is no technical reason why you should limit yourself to one process &ndash; it only makes things harder for you and breaks all kinds of essential system functionality, e.g. syslog.</p>
+                    <p>We <em>encourage</em> you to use multiple processes.</p>
+                    <p>Managing multiple processes can be painful, but it doesn't have to. We have a solution for that, so read on.</p>
+                </div>
+            </div>
 
-<p><a name="why_use"></a></p>
+            <div class="row">
+                <h1 id="solution">Getting everything right: baseimage-docker</h1>
+                <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
 
-<h3>
-<a name="why-use-baseimage-docker" class="anchor" href="#why-use-baseimage-docker"><span class="octicon octicon-link"></span></a>Why use baseimage-docker?</h3>
+                <div class="col-lg-6 col-lg-offset-3">
+                    <p>Solving <a href="#intro">all the aforementioned problems</a> is a huge pain. I'm sure you have better things to do than to worry about them. That's where <a href="https://github.com/phusion/baseimage-docker">baseimage-docker</a> jumps in.</p>
 
-<p>You can configure the stock <code>ubuntu</code> image yourself from your Dockerfile, so why bother using baseimage-docker?</p>
+                    <p>Baseimage-docker is a special Docker image that is configured for correct use within Docker containers. It is Ubuntu, plus modifications for Docker-friendliness. Every single of the aforementioned problem is taken care of for you.</p>
 
-<ul>
-<li>Configuring the base system for Docker-friendliness is no easy task. As stated before, there are many corner cases. By the time that you've gotten all that right, you've reinvented baseimage-docker. Using baseimage-docker will save you from this effort.</li>
-<li>It reduces the time needed to write a correct Dockerfile. You won't have to worry about the base system and can focus on your stack and your app.</li>
-<li>It reduces the time needed to run <code>docker build</code>, allowing you to iterate your Dockerfile more quickly.</li>
-<li>It reduces download time during redeploys. Docker only needs to download the base image once: during the first deploy. On every subsequent deploys, only the changes you make on top of the base image are downloaded.</li>
-</ul><hr><p><strong>Related resources</strong>:
-  <a href="https://github.com/phusion/baseimage-docker">Github</a> |
-  <a href="https://index.docker.io/u/phusion/baseimage/">Docker registry</a> |
-  <a href="https://groups.google.com/d/forum/passenger-docker">Discussion forum</a> |
-  <a href="https://twitter.com/phusion_nl">Twitter</a> |
-  <a href="http://blog.phusion.nl/">Blog</a></p>
+                    <p>You can use it as a base for your own Docker images. That means it's available for pulling from <a href="https://index.docker.io/u/phusion/baseimage/">the Docker registry</a>!</p>
 
-<p><strong>Table of contents</strong></p>
+                    <p class="centered"><a href="https://github.com/phusion/baseimage-docker" class="btn btn-info">Github</a>
+                    <a href="https://index.docker.io/u/phusion/baseimage/" class="btn btn-primary">Docker registry</a>
+                    <a href="https://groups.google.com/d/forum/passenger-docker" class="btn btn-info">Discussion forum</a>
+                    <a href="https://twitter.com/phusion_nl" class="btn btn-info">Twitter</a>
+                    <a href="http://blog.phusion.nl/" class="btn btn-info">Blog</a></p>
 
-<ul>
-<li>
-<a href="#whats_inside">What's inside the image?</a>
+                    <h2>Why use baseimage-docker?</h2>
+                    <p>You can configure the stock <code>ubuntu</code> image yourself from your Dockerfile, so why bother using baseimage-docker?</p>
+                    <ul>
+                    <li><strong>Stop reinventing the wheel.</strong><br>Configuring the base system for Docker-friendliness is no easy task. As stated before, there are many corner cases. By the time that you've gotten all that right, you've reinvented baseimage-docker. Using baseimage-docker will save you from this effort.</li>
+                    <li><strong>Reduce development time.</strong><br>It reduces the time needed to write a correct Dockerfile. You won't have to worry about the base system and can focus on your stack and your app.</li>
+                    <li><strong>Reduce building time.</strong><br>It reduces the time needed to run <code>docker build</code>, allowing you to iterate your Dockerfile more quickly.</li>
+                    <li><strong>Reduce deployment time.</strong><br>It reduces download time during redeploys. Docker only needs to download the base image once: during the first deploy. On every subsequent deploys, only the changes you make on top of the base image are downloaded.</li>
 
-<ul>
-<li><a href="#whats_inside_overview">Overview</a></li>
-<li><a href="#docker_single_process">Wait, I thought Docker is about running a single process in a container?</a></li>
-</ul>
-</li>
-<li><a href="#inspecting">Inspecting baseimage-docker</a></li>
-<li>
-<a href="#using">Using baseimage-docker as base image</a>
+                    <h2>What's included?</h2>
+                    <dl>
+                        <dt>A <em>correct</em> init process</dt>
+                        <dd>
+                            Baseimage-docker comes with an init process <code>/sbin/my_init</code> that reaps orphaned child processes correctly, and responds to SIGTERM correctly. This way your container won't become filled with zombie processes, and <code>docker stop</code> will work correctly.
+                        </dd>
+                        <dt>Fixes APT incompatibilities with Docker</dt>
+                        <dd>See <a href="https://github.com/dotcloud/docker/issues/1024">Docker issue #1024</a>.</dd>
+                        <dt>syslog-ng</dt>
+                        <dd>It runs a syslog daemon so that important system messages don't get lost.</dd>
+                        <dt>cron daemon</dt>
+                        <dd>It runs a cron daemon so that cronjobs work.</dd>
+                        <dt>SSH server</dt>
+                        <dd><p>Allows you to easily login to your container to inspect or administer things.</p>
+                            <p>Password and challenge-response authentication are disabled by default. Only key authentication is allowed.</p>
+                            <p><em><strong>Security note</strong>: by default, it allows access to a predefined key, in order to make debugging easy. You should replace this ASAP. See the instructions in the documentation.</em>
+                        </dd>
+                        <dt><a href="http://smarden.org/runit/">runit</a></dt>
+                        <dd><p>Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart.</p>
+                            <p>Baseimage-docker <em>encourages</em> you to run multiple processes through the use of runit.</p>
+                            <p>You might be familiar with supervisord. Runit (written in C) is much lighter weight than supervisord (written in Python).</p>
+                        </dd>
+                        <dt>setuser</dt>
+                        <dd>A custom tool for running a command as another user. Easier to use than <code>su</code>, has a smaller attack vector than <code>sudo</code>, and unlike <code>chpst</code> this tool sets <code>$HOME</code> correctly. Available as <code>/sbin/setuser</code>.</dd>
+                    </dl>
 
-<ul>
-<li><a href="#getting_started">Getting started</a></li>
-<li><a href="#adding_additional_daemons">Adding additional daemons</a></li>
-<li><a href="#running_startup_scripts">Running scripts during container startup</a></li>
-<li><a href="#login">Login to the container</a></li>
-</ul>
-</li>
-<li><a href="#building">Building the image yourself</a></li>
-<li><a href="#conclusion">Conclusion</a></li>
-</ul><hr><p><a name="whats_inside"></a></p>
+                    <p>Despite all these components, baseimage-docker is extremely lightweight: it only consumes 6 MB of memory.</p>
+                </div>
+            </div>
 
-<h2>
-<a name="whats-inside-the-image" class="anchor" href="#whats-inside-the-image"><span class="octicon octicon-link"></span></a>What's inside the image?</h2>
+            <div class="row">
+                <h1 id="solution">GETTING STARTED NOW</h1>
+                <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
 
-<p><a name="whats_inside_overview"></a></p>
+                <div class="col-lg-6 col-lg-offset-3">
+                    <p>The image is called <code>phusion/baseimage</code>, and is available on the Docker registry.</p>
 
-<h3>
-<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h3>
+                    <p>By default, it allows SSH access for <a href="https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key.pub">a predefined key</a>. This makes it easy for you to login to the container, but <strong>you should replace this key as soon as possible</strong>.</p>
 
-<p><em>Looking for a more complete base image, one that is ideal for Ruby, Python, Node.js and Meteor web apps? Take a look at <a href="https://github.com/phusion/passenger-docker">passenger-docker</a>.</em></p>
-
-<table>
-<thead><tr>
-<th>Component</th>
-<th>Why is it included? / Remarks</th>
-</tr></thead>
-<tbody>
-<tr>
-<td>Ubuntu 12.04 LTS</td>
-<td>The base system.</td>
-</tr>
-<tr>
-<td>A <strong>correct</strong> init process</td>
-<td>According to the Unix process model, <a href="https://en.wikipedia.org/wiki/Init">the init process</a> -- PID 1 -- inherits all <a href="https://en.wikipedia.org/wiki/Orphan_process">orphaned child processes</a> and must [reap them](<a href="https://en.wikipedia.org/wiki/Wait_(system_call)">https://en.wikipedia.org/wiki/Wait_(system_call)</a>. Most Docker containers do not have an init process that does this correctly, and as a result their containers become filled with <a href="https://en.wikipedia.org/wiki/Zombie_process">zombie processes</a> over time. <br><br>Furthermore, <code>docker stop</code> sends SIGTERM to the init process, which is then supposed to stop all services. Unfortunately most init systems don't do this correctly within Docker since they're built for hardware shutdowns instead. This causes processes to be hard killed with SIGKILL, which doesn't give them a chance to correctly deinitialize things. This can cause file corruption. <br><br>Baseimage-docker comes with an init process <code>/sbin/my_init</code> that performs both of these tasks correctly.</td>
-</tr>
-<tr>
-<td>Fixes APT incompatibilities with Docker</td>
-<td>See <a href="https://github.com/dotcloud/docker/issues/1024">https://github.com/dotcloud/docker/issues/1024</a>.</td>
-</tr>
-<tr>
-<td>syslog-ng</td>
-<td>A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally.</td>
-</tr>
-<tr>
-<td>ssh server</td>
-<td>Allows you to easily login to your container to inspect or administer things. <br><br>Password and challenge-response authentication are disabled by default. Only key authentication is allowed.<br>It allows an predefined key by default to make debugging easy. You should replace this ASAP. See instructions.</td>
-</tr>
-<tr>
-<td>cron</td>
-<td>The cron daemon must be running for cron jobs to work.</td>
-</tr>
-<tr>
-<td><a href="http://smarden.org/runit/">runit</a></td>
-<td>Replaces Ubuntu's Upstart. Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart.</td>
-</tr>
-<tr>
-<td><code>setuser</code></td>
-<td>A tool for running a command as another user. Easier to use than <code>su</code>, has a smaller attack vector than <code>sudo</code>, and unlike <code>chpst</code> this tool sets <code>$HOME</code> correctly. Available as <code>/sbin/setuser</code>.</td>
-</tr>
-</tbody>
-</table><p>Baseimage-docker is very lightweight: it only consumes 6 MB of memory.</p>
-
-<p><a name="docker_single_process"></a></p>
-
-<h3>
-<a name="wait-i-thought-docker-is-about-running-a-single-process-in-a-container" class="anchor" href="#wait-i-thought-docker-is-about-running-a-single-process-in-a-container"><span class="octicon octicon-link"></span></a>Wait, I thought Docker is about running a single process in a container?</h3>
-
-<p>Absolutely not true. Docker runs fine with multiple processes in a container. In fact, there is no technical reason why you should limit yourself to one process - it only makes things harder for you and breaks all kinds of essential system functionality, e.g. syslog.</p>
-
-<p>Baseimage-docker <em>encourages</em> multiple processes through the use of runit.</p>
-
-<p><a name="inspecting"></a></p>
-
-<h2>
-<a name="inspecting-baseimage-docker" class="anchor" href="#inspecting-baseimage-docker"><span class="octicon octicon-link"></span></a>Inspecting baseimage-docker</h2>
-
-<p>To look around in the image, run:</p>
-
-<pre><code>docker run -rm -t -i phusion/baseimage bash -l
-</code></pre>
-
-<p>You don't have to download anything manually. The above command will automatically pull the baseimage-docker image from the Docker registry.</p>
-
-<p><a name="using"></a></p>
-
-<h2>
-<a name="using-baseimage-docker-as-base-image" class="anchor" href="#using-baseimage-docker-as-base-image"><span class="octicon octicon-link"></span></a>Using baseimage-docker as base image</h2>
-
-<p><a name="getting_started"></a></p>
-
-<h3>
-<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h3>
-
-<p>The image is called <code>phusion/baseimage</code>, and is available on the Docker registry.</p>
-
-<p>By default, it allows SSH access for the key in <code>image/insecure_key</code>. This makes it easy for you to login to the container, but you should replace this key as soon as possible.</p>
-
-<pre><code># Use phusion/baseimage as base image. To make your builds reproducible, make
-# sure you lock down to a specific version, not to `latest`!
-# See https://github.com/phusion/baseimage-docker/blob/master/Changelog.md for
-# a list of version numbers.
+                    <p>Example Dockerfile:</p>
+                    <pre># Use phusion/baseimage as base image. To make your builds
+# reproducible, make sure you lock down to a specific version, not
+# to `latest`! See
+# https://github.com/phusion/baseimage-docker/blob/master/Changelog.md
+# for a list of version numbers.
 FROM phusion/baseimage:&lt;VERSION&gt;
 
 # Set correct environment variables.
@@ -199,134 +274,51 @@ CMD ["/sbin/my_init"]
 # ...put your own build instructions here...
 
 # Clean up APT when done.
-RUN apt-get clean &amp;&amp; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-</code></pre>
+RUN apt-get clean &amp;&amp; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*</pre>
 
-<p><a name="adding_additional_daemons"></a></p>
+                    <h2>More documentation</h2>
+                    <p>This website only covers the basics. Please refer to <a href="https://github.com/phusion/baseimage-docker#readme">the Github repository</a> for more documentation. Topics include:</p>
+                    <ul>
+                        <li>Adding additional daemons</li>
+                        <li>Running scripts during container startup</li>
+                        <li>Instructions on logging into the container</li>
+                    </ul>
 
-<h3>
-<a name="adding-additional-daemons" class="anchor" href="#adding-additional-daemons"><span class="octicon octicon-link"></span></a>Adding additional daemons</h3>
+                    <h2>You may also want to check out these</h2>
+                    <ul>
+                    <li>Using baseimage-docker? <a href="https://twitter.com/share">Tweet about us</a> or <a href="https://twitter.com/phusion_nl">follow us on Twitter</a>.</li>
+                    <li>Having problems? Want to participate in development? Please post a message at <a href="https://groups.google.com/d/forum/passenger-docker">the discussion forum</a>.</li>
+                    <li>Looking for a more complete base image, one that is ideal for <strong>Ruby, Python, Node.js and Meteor web apps</strong>? Take a look at <a href="https://github.com/phusion/passenger-docker">passenger-docker</a>.</li>
+                    </ul>
+                </div>
+            </div>
+        </div><!-- /container -->
+    </div><!-- /f -->
+    
 
-<p>You can add additional daemons to the image by creating runit entries. You only have to write a small shell script which runs your daemon, and runit will keep it up and running for you, restarting it when it crashes, etc.</p>
-
-<p>The shell script must be called <code>run</code>, must be executable, and is to be placed in the directory <code>/etc/service/&lt;NAME&gt;</code>.</p>
-
-<p>Here's an example showing you how to a memached server runit entry can be made.</p>
-
-<pre><code>### In memcached.sh (make sure this file is chmod +x):
-#!/bin/sh
-# `chpst` is part of running. `chpst -u memcache` runs the given command
-# as the user `memcache`. If you omit this, the command will be run as root.
-exec chpst -u memcache /usr/bin/memcached &gt;&gt;/var/log/memcached.log 2&gt;&amp;1
-
-### In Dockerfile:
-RUN mkdir /etc/service/memcached
-ADD memcached.sh /etc/service/memcached/run
-</code></pre>
-
-<p>Note that the shell script must run the daemon <strong>without letting it daemonize/fork it</strong>. Usually, daemons provide a command line flag or a config file option for that.</p>
-
-<p><a name="running_startup_scripts"></a></p>
-
-<h3>
-<a name="running-scripts-during-container-startup" class="anchor" href="#running-scripts-during-container-startup"><span class="octicon octicon-link"></span></a>Running scripts during container startup</h3>
-
-<p>The baseimage-docker init system, <code>/sbin/my_init</code>, runs the following scripts during startup, in the following order:</p>
-
-<ul>
-<li>All executable scripts in <code>/etc/my_init.d</code>, if this directory exists. The scripts are run during in lexicographic order.</li>
-<li>The script <code>/etc/rc.local</code>, if this file exists.</li>
-</ul><p>All scripts must exit correctly, e.g. with exit code 0. If any script exits with a non-zero exit code, the booting will fail.</p>
-
-<p>The following example shows how you can add a startup script. This script simply logs the time of boot to the file /tmp/boottime.txt.</p>
-
-<pre><code>### In logtime.sh (make sure this file is chmod +x):
-#!/bin/sh
-date &gt; /tmp/boottime.txt
-
-### In Dockerfile:
-RUN mkdir -p /etc/my_init.d
-ADD logtime.sh /etc/my_init.d/logtime.sh
-</code></pre>
-
-<p><a name="login"></a></p>
-
-<h3>
-<a name="login-to-the-container" class="anchor" href="#login-to-the-container"><span class="octicon octicon-link"></span></a>Login to the container</h3>
-
-<p>You can use SSH to login to any container that is based on baseimage-docker.</p>
-
-<p>Start a container based on baseimage-docker (or a container based on an image based on baseimage-docker):</p>
-
-<pre><code>docker run phusion/baseimage
-</code></pre>
-
-<p>Find out the ID of the container that you just ran:</p>
-
-<pre><code>docker ps
-</code></pre>
-
-<p>Once you have the ID, look for its IP address with:</p>
-
-<pre><code>docker inspect &lt;ID&gt; | grep IPAddress
-</code></pre>
-
-<p>Now SSH into the container. In this example we're using <a href="https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key">the default insecure key</a>, but if you're followed the instructions well then you've already replaced that with your own key. You did replace the key, didn't you?</p>
-
-<pre><code>ssh -i insecure_key root@&lt;IP address&gt;
-</code></pre>
-
-<p><a name="building"></a></p>
-
-<h2>
-<a name="building-the-image-yourself" class="anchor" href="#building-the-image-yourself"><span class="octicon octicon-link"></span></a>Building the image yourself</h2>
-
-<p>If for whatever reason you want to build the image yourself instead of downloading it from the Docker registry, follow these instructions.</p>
-
-<p>Clone this repository:</p>
-
-<pre><code>git clone https://github.com/phusion/baseimage-docker.git
-cd baseimage-docker
-</code></pre>
-
-<p>Start a virtual machine with Docker in it. You can use the Vagrantfile that we've already provided.</p>
-
-<pre><code>vagrant up
-vagrant ssh
-cd /vagrant
-</code></pre>
-
-<p>Build the image:</p>
-
-<pre><code>make build
-</code></pre>
-
-<p>If you want to call the resulting image something else, pass the NAME variable, like this:</p>
-
-<pre><code>make build NAME=joe/baseimage
-</code></pre>
-
-<p><a name="conclusion"></a></p>
-
-<h2>
-<a name="conclusion" class="anchor" href="#conclusion"><span class="octicon octicon-link"></span></a>Conclusion</h2>
-
-<ul>
-<li>Using baseimage-docker? <a href="https://twitter.com/share">Tweet about us</a> or <a href="https://twitter.com/phusion_nl">follow us on Twitter</a>.</li>
-<li>Having problems? Want to participate in development? Please post a message at <a href="https://groups.google.com/d/forum/passenger-docker">the discussion forum</a>.</li>
-<li>Looking for a more complete base image, one that is ideal for Ruby, Python, Node.js and Meteor web apps? Take a look at <a href="https://github.com/phusion/passenger-docker">passenger-docker</a>.</li>
-</ul><p><a href="http://www.phusion.nl/"><img src="http://www.phusion.nl/assets/logo.png"></a></p>
-
-<p>Please enjoy baseimage-docker, a product by <a href="http://www.phusion.nl/">Phusion</a>. :-)</p>
-        </section>
-
-        <footer>
-          Baseimage-docker is maintained by <a href="https://github.com/phusion">phusion</a><br>
-          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
-        </footer>
-
-        
-      </div>
+    <!-- ========== CONTACT SECTION ========== -->
+    <section id="contact" name="contact"></section>
+    <div id="f">
+        <div class="container">
+            <div class="row">
+                <h3>BROUGHT TO YOU BY PHUSION</h3>
+                <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
+                
+                <div class="col-lg-6 col-lg-offset-3 centered">
+                    <a href="https://www.phusionpassenger.com"><img src="icon.png" width="350" height="350" alt="Phusion"></a>
+                </div>
+            </div>
+        </div>
     </div>
-  </body>
+
+    
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/js/classie.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/smoothscroll.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
 </html>
