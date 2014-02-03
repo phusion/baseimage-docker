@@ -1,4 +1,4 @@
-## 0.9.4
+## 0.9.4 (release date: 2014-02-03)
 
  * Fixed syslog-ng startup problem.
 
