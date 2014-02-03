@@ -1,12 +1,15 @@
 NAME = phusion/baseimage
 VERSION = 0.9.3
 
-.PHONY: all build tag_latest release
+.PHONY: all build test tag_latest release
 
 all: build
 
 build:
 	docker build -t $(NAME):$(VERSION) -rm image
+
+test:
+	env NAME=$(NAME) VERSION=$(VERSION) ./test/runner.sh
 
 tag_latest:
 	docker tag $(NAME):$(VERSION) $(NAME):latest
