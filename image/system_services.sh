@@ -14,6 +14,7 @@ $minimal_apt_get_install runit
 $minimal_apt_get_install syslog-ng-core
 mkdir /etc/service/syslog-ng
 cp /build/runit/syslog-ng /etc/service/syslog-ng/run
+mkdir -p /var/lib/syslog-ng
 
 ## Install the SSH server.
 $minimal_apt_get_install openssh-server

@@ -1,3 +1,7 @@
+## 0.9.4
+
+ * Fixed syslog-ng startup problem.
+
 ## 0.9.3 (release date: 2014-01-31)
 
  * It looks like Docker changed their Ubuntu 12.04 base image, thereby breaking our Dockerfile. This has been fixed.
