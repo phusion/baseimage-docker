@@ -129,9 +129,9 @@ Here's an example showing you how to a memached server runit entry can be made.
 
     ### In memcached.sh (make sure this file is chmod +x):
     #!/bin/sh
-    # `chpst` is part of running. `chpst -u memcache` runs the given command
-    # as the user `memcache`. If you omit this, the command will be run as root.
-    exec chpst -u memcache /usr/bin/memcached >>/var/log/memcached.log 2>&1
+    # `/sbin/setuser memcache` runs the given command as the user `memcache`.
+    # If you omit that part, the command will be run as root.
+    exec /sbin/setuser memcache /usr/bin/memcached >>/var/log/memcached.log 2>&1
 
     ### In Dockerfile:
     RUN mkdir /etc/service/memcached
