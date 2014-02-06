@@ -40,7 +40,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
    * [Getting started](#getting_started)
    * [Adding additional daemons](#adding_additional_daemons)
    * [Running scripts during container startup](#running_startup_scripts)
-   * [Login to the container](#login)
+   * [Login to the container via SSH](#login)
  * [Building the image yourself](#building)
  * [Conclusion](#conclusion)
 
@@ -91,8 +91,6 @@ You don't have to download anything manually. The above command will automatical
 
 The image is called `phusion/baseimage`, and is available on the Docker registry.
 
-By default, it allows SSH access for the key in `image/insecure_key`. This makes it easy for you to login to the container, but you should replace this key as soon as possible.
-
     # Use phusion/baseimage as base image. To make your builds reproducible, make
     # sure you lock down to a specific version, not to `latest`!
     # See https://github.com/phusion/baseimage-docker/blob/master/Changelog.md for
@@ -101,9 +99,6 @@ By default, it allows SSH access for the key in `image/insecure_key`. This makes
     
     # Set correct environment variables.
     ENV HOME /root
-    
-    # Remove authentication rights for insecure_key.
-    RUN rm -f /root/.ssh/authorized_keys /home/*/.ssh/authorized_keys
     
     # Regenerate SSH host keys. baseimage-docker does not contain any, so you
     # have to do that yourself. You may also comment out this instruction; the
@@ -160,13 +155,26 @@ The following example shows how you can add a startup script. This script simply
     ADD logtime.sh /etc/my_init.d/logtime.sh
 
 <a name="login"></a>
-### Login to the container
+### Login to the container via SSH
 
 You can use SSH to login to any container that is based on baseimage-docker.
 
-Start a container based on baseimage-docker (or a container based on an image based on baseimage-docker):
+The first thing that you need to do is to ensure that you have the right SSH keys installed inside the container. By default, no keys are installed, so you can't login. For convenience reasons, we provide [a pregenerated, insecure key](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key) that you easily enable. However, please be aware that using this key is for convenience only. It does not provide any insecurity because this key (both the public and the private side) are publicly available. In production environments, you should use your own keys.
 
-    docker run phusion/baseimage
+Edit your Dockerfile to install an SSH key:
+
+    ## Install an SSH of your choice.
+    ADD your_key /tmp/your_key
+    RUN cat /tmp/your_key >> /root/.ssh/authorized_keys && rm -f /tmp/your_key
+
+    ## -OR-
+
+    ## Uncomment this to enable the insecure key.
+    # RUN /usr/sbin/enable_insecure_key
+
+Then rebuild your image. Once you have that, start a container based on that image:
+
+    docker run your-image-name
 
 Find out the ID of the container that you just ran:
 
@@ -176,8 +184,16 @@ Once you have the ID, look for its IP address with:
 
     docker inspect <ID> | grep IPAddress
 
-Now SSH into the container. In this example we're using [the default insecure key](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key), but if you're followed the instructions well then you've already replaced that with your own key. You did replace the key, didn't you?
+Now SSH into the container as follows:
 
+    ssh -i /path-to/your_key root@<IP address>
+
+    # -OR-
+
+    # If you're using the insecure key, download it and SSH
+    # into the container using that key.
+    curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/insecure_key
+    chmod 700 insecure_key
     ssh -i insecure_key root@<IP address>
 
 <a name="building"></a>
