@@ -1,4 +1,4 @@
-## 0.9.5 (release date pending)
+## 0.9.5 (release date: 2014-02-06)
 
  * Environment variables are now no longer reset by runit. This is achieved by running `runsvdir` directly instead of through Debian's `runsvdir-start`.
  * The insecure SSH key is now disabled by default. You have to explicitly opt-in to use it.
