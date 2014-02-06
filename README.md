@@ -121,7 +121,7 @@ By default, it allows SSH access for the key in `image/insecure_key`. This makes
 <a name="adding_additional_daemons"></a>
 ### Adding additional daemons
 
-You can add additional daemons to the image by creating runit entries. You only have to write a small shell script which runs your daemon, and runit will keep it up and running for you, restarting it when it crashes, etc.
+You can add additional daemons (e.g. your own app) to the image by creating runit entries. You only have to write a small shell script which runs your daemon, and runit will keep it up and running for you, restarting it when it crashes, etc.
 
 The shell script must be called `run`, must be executable, and is to be placed in the directory `/etc/service/<NAME>`.
 
