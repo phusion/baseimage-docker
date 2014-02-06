@@ -221,7 +221,6 @@ CMD ["/my_app/start.sh"]</pre>
             <dt>SSH server</dt>
             <dd><p>Allows you to easily login to your container to inspect or administer things.</p>
               <p>Password and challenge-response authentication are disabled by default. Only key authentication is allowed.</p>
-              <p><em><strong>Security note</strong>: by default, it allows access to a predefined key, in order to make debugging easy. You should replace this ASAP. See the instructions in the documentation.</em>
             </dd>
             <dt><a href="http://smarden.org/runit/">runit</a></dt>
             <dd><p>Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart.</p>
@@ -243,8 +242,6 @@ CMD ["/my_app/start.sh"]</pre>
         <div class="col-lg-6 col-lg-offset-3">
           <p>The image is called <code>phusion/baseimage</code>, and is available on the Docker registry.</p>
 
-          <p>By default, it allows SSH access for <a href="https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key.pub">a predefined key</a>. This makes it easy for you to login to the container, but <strong>you should replace this key as soon as possible</strong>.</p>
-
           <p>Example Dockerfile:</p>
           <pre># Use phusion/baseimage as base image. To make your builds
 # reproducible, make sure you lock down to a specific version, not
@@ -255,9 +252,6 @@ FROM phusion/baseimage:&lt;VERSION&gt;
 
 # Set correct environment variables.
 ENV HOME /root
-
-# Remove authentication rights for insecure_key.
-RUN rm -f /root/.ssh/authorized_keys /home/*/.ssh/authorized_keys
 
 # Regenerate SSH host keys. baseimage-docker does not contain any, so you
 # have to do that yourself. You may also comment out this instruction; the
@@ -295,7 +289,7 @@ ADD memcached.sh /etc/service/memcached/run</pre>
           <p>This website only covers the basics. Please refer to <a href="https://github.com/phusion/baseimage-docker#readme">the Github repository</a> for more documentation. Topics include:</p>
           <ul>
             <li><a href="https://github.com/phusion/baseimage-docker#running_startup_scripts">Running scripts during container startup</a></li>
-            <li><a href="https://github.com/phusion/baseimage-docker#login">Instructions on logging into the container</a></li>
+            <li><a href="https://github.com/phusion/baseimage-docker#login">Instructions for logging into the container using SSH</a></li>
           </ul>
 
           <p>Having problems? Want to participate in development? Please post a message at <a href="https://groups.google.com/d/forum/passenger-docker">the discussion forum</a>.</p>
