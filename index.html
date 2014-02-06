@@ -78,6 +78,12 @@
       white-space: pre;
     }
 
+    .image_container {
+      width: 350px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
     img {
       max-width: 100%;
     }
@@ -314,7 +320,7 @@ ADD memcached.sh /etc/service/memcached/run</pre>
         <div class="col-lg-6 col-lg-offset-3 centered">
           <p>Looking for a more complete base image, one that is ideal for <strong>Ruby, Python, Node.js and Meteor web apps</strong>?</p>
           <p>Take a look at <a href="https://github.com/phusion/passenger-docker">passenger-docker</a>.</p>
-          <a href="https://github.com/phusion/passenger-docker"><img src="passenger.png" alt="Phusion Passenger" width="512" height="512"></a>
+          <div class="image_container"><a href="https://github.com/phusion/passenger-docker"><img src="passenger.png" alt="Phusion Passenger"></a></div>
         </div>
       </div>
     </div><!-- /container -->
@@ -336,7 +342,7 @@ ADD memcached.sh /etc/service/memcached/run</pre>
             <a href="https://twitter.com/phusion_nl" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @phusion_nl</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
           </div>
-          <p><a href="https://www.phusionpassenger.com"><img src="icon.png" width="350" height="350" alt="Phusion"></a></p>
+          <p><div class="image_container"><a href="https://www.phusionpassenger.com"><img src="icon.png" alt="Phusion"></a></div></p>
         </div>
       </div>
     </div>
