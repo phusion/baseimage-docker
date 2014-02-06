@@ -1,3 +1,7 @@
+## 0.9.5 (release date pending)
+
+ * Environment variables are now no longer reset by runit. This is achieved by running `runsvdir` directly instead of through Debian's `runsvdir-start`.
+
 ## 0.9.4 (release date: 2014-02-03)
 
  * Fixed syslog-ng startup problem.
