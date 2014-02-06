@@ -72,7 +72,7 @@ if is_exe("/etc/rc.local"):
 # Start runit.
 signal.signal(signal.SIGCHLD, reap_child)
 print("*** Booting runit...")
-pid = os.spawnl(os.P_NOWAIT, "/usr/sbin/runsvdir-start", "/usr/sbin/runsvdir-start")
+pid = os.spawnl(os.P_NOWAIT, "/usr/bin/runsvdir", "/usr/bin/runsvdir", "-P", "/etc/service", "log: %s" % ('.' * 395))
 print("*** Runit started as PID %d" % pid)
 signal.signal(signal.SIGTERM, lambda signum, frame: stop_child_process("runit"))
 
