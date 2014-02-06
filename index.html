@@ -281,9 +281,9 @@ RUN apt-get clean &amp;&amp; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*</pre>
 
           <pre>### In memcached.sh (make sure this file is chmod +x):
 #!/bin/sh
-# `chpst` is part of running. `chpst -u memcache` runs the given command
-# as the user `memcache`. If you omit this, the command will be run as root.
-exec chpst -u memcache /usr/bin/memcached >>/var/log/memcached.log 2&gt;&amp;1
+# `/sbin/setuser memcache` runs the given command as the user `memcache`.
+# If you omit that part, the command will be run as root.
+exec /sbin/setuser memcache /usr/bin/memcached >>/var/log/memcached.log 2&gt;&amp;1
 
 ### In Dockerfile:
 RUN mkdir /etc/service/memcached
@@ -294,9 +294,8 @@ ADD memcached.sh /etc/service/memcached/run</pre>
           <h2>More documentation</h2>
           <p>This website only covers the basics. Please refer to <a href="https://github.com/phusion/baseimage-docker#readme">the Github repository</a> for more documentation. Topics include:</p>
           <ul>
-            <li>Adding additional daemons</li>
-            <li>Running scripts during container startup</li>
-            <li>Instructions on logging into the container</li>
+            <li><a href="https://github.com/phusion/baseimage-docker#running_startup_scripts">Running scripts during container startup</a></li>
+            <li><a href="https://github.com/phusion/baseimage-docker#login">Instructions on logging into the container</a></li>
           </ul>
 
           <p>Having problems? Want to participate in development? Please post a message at <a href="https://groups.google.com/d/forum/passenger-docker">the discussion forum</a>.</p>
