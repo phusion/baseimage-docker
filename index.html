@@ -51,6 +51,7 @@
 
     #f h1 {
       font-weight: bold;
+      margin: 1em 0 1em 0;
     }
 
     #f h2 {
@@ -87,6 +88,10 @@
     img {
       max-width: 90%;
     }
+
+    .footer {
+      background-color: black !important;
+    }
   </style>
   </head>
 
@@ -117,8 +122,10 @@
         </div>
         <br>
         <br>
-        <a href="https://twitter.com/share" class="twitter-share-button" data-text="Your Docker container might be broken without you knowing it" data-via="phusion_nl" data-size="large" data-hashtags="docker">Tweet</a>
+        <div style="margin-bottom: 2em">
+          <a href="https://twitter.com/share" class="twitter-share-button" data-text="Your Docker container might be broken without you knowing it" data-via="phusion_nl" data-size="large" data-hashtags="docker">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+        </div>
       </div>
     </div><!-- /container -->
   </div><!-- /headerwrap -->
@@ -312,7 +319,14 @@ ADD memcached.sh /etc/service/memcached/run</pre>
           </div>
         </div>
       </div>
+    </div><!-- /container -->
+  </div><!-- /f -->
 
+
+  <!-- ========== CONTACT SECTION ========== -->
+  <section id="related" name="related" class="footer"></section>
+  <div id="f" class="footer">
+    <div class="container">
       <div class="row">
         <h1>SEE ALSO: A BASE IMAGE FOR WEB APPS</h1>
         <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
@@ -328,11 +342,11 @@ ADD memcached.sh /etc/service/memcached/run</pre>
   
 
   <!-- ========== CONTACT SECTION ========== -->
-  <section id="contact" name="contact"></section>
-  <div id="f">
+  <section id="contact" name="contact" class="footer"></section>
+  <div id="f" class="footer">
     <div class="container">
       <div class="row">
-        <h3>BROUGHT TO YOU BY PHUSION</h3>
+        <h1>BROUGHT TO YOU BY PHUSION</h1>
         <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
         
         <div class="col-lg-6 col-lg-offset-3 centered">
