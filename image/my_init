@@ -29,8 +29,7 @@ def reap_child(signum, frame):
 	except OSError:
 		pass
 
-def stop_child_process(name):
-	global pid
+def stop_child_process(name, pid):
 	print("*** Shutting down %s (PID %d)..." % (name, pid))
 	try:
 		os.kill(pid, signal.SIGHUP)
@@ -41,15 +40,19 @@ def run_command_killable(*argv):
 	global pid
 	filename = argv[0]
 	pid = os.spawnvp(os.P_NOWAIT, filename, argv)
-	signal.signal(signal.SIGINT, lambda signum, frame: stop_child_process(filename))
-	signal.signal(signal.SIGTERM, lambda signum, frame: stop_child_process(filename))
+	signal.signal(signal.SIGINT, lambda signum, frame: stop_child_process(filename, pid))
+	signal.signal(signal.SIGTERM, lambda signum, frame: stop_child_process(filename, pid))
 	try:
-		this_pid, status = os.waitpid(pid, 0)
-	except OSError as e:
-		if e.errno == errno.EINTR:
-			sys.exit(2)
-		else:
-			raise
+		done = False
+		while not done:
+			try:
+				this_pid, status = os.waitpid(-1, 0)
+				done = this_pid == pid
+			except OSError as e:
+				if e.errno == errno.EINTR:
+					sys.exit(2)
+				else:
+					raise
 	finally:
 		signal.signal(signal.SIGINT, signal.SIG_DFL)
 		signal.signal(signal.SIGTERM, signal.SIG_DFL)
@@ -74,7 +77,7 @@ signal.signal(signal.SIGCHLD, reap_child)
 print("*** Booting runit...")
 pid = os.spawnl(os.P_NOWAIT, "/usr/bin/runsvdir", "/usr/bin/runsvdir", "-P", "/etc/service", "log: %s" % ('.' * 395))
 print("*** Runit started as PID %d" % pid)
-signal.signal(signal.SIGTERM, lambda signum, frame: stop_child_process("runit"))
+signal.signal(signal.SIGTERM, lambda signum, frame: stop_child_process("runit", pid))
 
 # Wait for runit, and while waiting, reap any adopted orphans.
 done = False

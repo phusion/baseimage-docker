@@ -1,3 +1,7 @@
+## 0.9.6
+
+ * Fixed a bug in `my_init`: child processes that have been adopted during execution of init scripts are now properly reaped.
+
 ## 0.9.5 (release date: 2014-02-06)
 
  * Environment variables are now no longer reset by runit. This is achieved by running `runsvdir` directly instead of through Debian's `runsvdir-start`.
