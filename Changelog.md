@@ -1,6 +1,9 @@
 ## 0.9.6
 
  * Fixed a bug in `my_init`: child processes that have been adopted during execution of init scripts are now properly reaped.
+ * Much improved `my_init`:
+   * It is now possible to run and watch a custom command, possibly in addition to running runit. See "Running a one-shot command in the container" in the README.
+   * It is now possible to skip running startup files such as /etc/rc.local.
 
 ## 0.9.5 (release date: 2014-02-06)
 
