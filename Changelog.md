@@ -1,10 +1,12 @@
-## 0.9.6
+## 0.9.6 (release date: 2014-02-17)
 
  * Fixed a bug in `my_init`: child processes that have been adopted during execution of init scripts are now properly reaped.
  * Much improved `my_init`:
    * It is now possible to run and watch a custom command, possibly in addition to running runit. See "Running a one-shot command in the container" in the README.
    * It is now possible to skip running startup files such as /etc/rc.local.
- * `setuser` now also set auxilliary groups, as well as more environment variables such as `USER` and `UID`.
+   * Shutdown is not much faster. It previously took a few seconds, but it is now almost instantaneous.
+   * It ensures that all processes in the container are properly shut down with SIGTERM, even those that are not direct child processes of `my_init`.
+ * `setuser` now also sets auxilliary groups, as well as more environment variables such as `USER` and `UID`.
 
 ## 0.9.5 (release date: 2014-02-06)
 
