@@ -4,7 +4,7 @@
  * Much improved `my_init`:
    * It is now possible to run and watch a custom command, possibly in addition to running runit. See "Running a one-shot command in the container" in the README.
    * It is now possible to skip running startup files such as /etc/rc.local.
-   * Shutdown is not much faster. It previously took a few seconds, but it is now almost instantaneous.
+   * Shutdown is now much faster. It previously took a few seconds, but it is now almost instantaneous.
    * It ensures that all processes in the container are properly shut down with SIGTERM, even those that are not direct child processes of `my_init`.
  * `setuser` now also sets auxilliary groups, as well as more environment variables such as `USER` and `UID`.
 
