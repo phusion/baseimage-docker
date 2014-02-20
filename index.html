@@ -238,6 +238,7 @@ CMD ["/my_app/start.sh"]</pre>
             <dt>SSH server</dt>
             <dd><p>Allows you to easily login to your container to inspect or administer things.</p>
               <p>Password and challenge-response authentication are disabled by default. Only key authentication is allowed.</p>
+              <p>In some cases, running the SSH daemon is not desirable. The SSH daemon <a href="https://github.com/phusion/baseimage-docker#disabling_ssh">can be easily disabled</a> if you so wish.</p>
             </dd>
             <dt><a href="http://smarden.org/runit/">runit</a></dt>
             <dd><p>Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart.</p>
@@ -307,6 +308,7 @@ ADD memcached.sh /etc/service/memcached/run</pre>
           <ul>
             <li><a href="https://github.com/phusion/baseimage-docker#running_startup_scripts">Running scripts during container startup</a></li>
             <li><a href="https://github.com/phusion/baseimage-docker#login">Instructions for logging into the container using SSH</a></li>
+            <li><a href="https://github.com/phusion/baseimage-docker#disabling_ssh">Disabling SSH</a></li>
           </ul>
 
           <p>Having problems? Want to participate in development? Please post a message at <a href="https://groups.google.com/d/forum/passenger-docker">the discussion forum</a>.</p>
