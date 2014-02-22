@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python2 -u
 import os, sys, stat, signal, errno, argparse, time
 
 KILL_PROCESS_TIMEOUT = 5
