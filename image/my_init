@@ -75,7 +75,7 @@ def stop_child_process(name, pid, signo = signal.SIGTERM, time_limit = KILL_PROC
 		except OSError:
 			pass
 	except AlarmException:
-		warn("%s (PID %d) did not shut down in time. Forcing it to exit.")
+		warn("%s (PID %d) did not shut down in time. Forcing it to exit." % (name, pid))
 		try:
 			os.kill(pid, signal.SIGKILL)
 		except OSError:
