@@ -17,6 +17,9 @@ cp /build/runit/syslog-ng /etc/service/syslog-ng/run
 mkdir -p /var/lib/syslog-ng
 cp /build/config/syslog_ng_default /etc/default/syslog-ng
 
+## Install logrotate.
+$minimal_apt_get_install logrotate
+
 ## Install the SSH server.
 $minimal_apt_get_install openssh-server
 mkdir /var/run/sshd
