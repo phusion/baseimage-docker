@@ -205,7 +205,30 @@ The following example runs `ls` without running the startup files and with less 
 
 You can use SSH to login to any container that is based on baseimage-docker.
 
-The first thing that you need to do is to ensure that you have the right SSH keys installed inside the container. By default, no keys are installed, so you can't login. For convenience reasons, we provide [a pregenerated, insecure key](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key.ppk) that you easily enable. However, please be aware that using this key is for convenience only. It does not provide any security because this key (both the public and the private side) is publicly available. In production environments, you should use your own keys.
+The first thing that you need to do is to ensure that you have the right SSH keys installed inside the container. By default, no keys are installed, so you can't login. For convenience reasons, we provide [a pregenerated, insecure key](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key.ppk) that you can easily enable. However, please be aware that using this key is for convenience only. It does not provide any security because this key (both the public and the private side) is publicly available. **In production environments, you should use your own keys**.
+
+#### Using the insecure key
+
+Start a container with `--enable-insecure-key`
+
+    docker run YOUR_IMAGE /sbin/my_init --enable-insecure-key
+   
+Find out the ID of the container that you just ran:
+
+    docker ps
+
+Once you have the ID, look for its IP address with:
+
+    docker inspect <ID> | grep IPAddress
+
+Now SSH into the container as follows:
+
+    curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/insecure_key
+    chmod 700 insecure_key
+    ssh -i insecure_key root@<IP address>
+
+
+#### Using your own key
 
 Edit your Dockerfile to install an SSH key:
 
@@ -213,15 +236,10 @@ Edit your Dockerfile to install an SSH key:
     ADD your_key /tmp/your_key
     RUN cat /tmp/your_key >> /root/.ssh/authorized_keys && rm -f /tmp/your_key
 
-    ## -OR-
-
-    ## Uncomment this to enable the insecure key.
-    # RUN /usr/sbin/enable_insecure_key
-
 Then rebuild your image. Once you have that, start a container based on that image:
 
     docker run your-image-name
-
+    
 Find out the ID of the container that you just ran:
 
     docker ps
@@ -234,13 +252,6 @@ Now SSH into the container as follows:
 
     ssh -i /path-to/your_key root@<IP address>
 
-    # -OR-
-
-    # If you're using the insecure key, download it and SSH
-    # into the container using that key.
-    curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/insecure_key
-    chmod 700 insecure_key
-    ssh -i insecure_key root@<IP address>
 
 <a name="building"></a>
 ## Building the image yourself

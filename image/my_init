@@ -167,7 +167,14 @@ def wait_for_runit_services():
 		if not done:
 			time.sleep(0.1)
 
+def install_insecure_key():
+	info("Installing insecure SSH key for user root")
+	run_command_killable("/usr/sbin/enable_insecure_key")
+
 def main(args):
+	if args.enable_insecure_key:
+		install_insecure_key()
+
 	if not args.skip_startup_files:
 		run_startup_files()
 	
@@ -217,6 +224,9 @@ parser.add_argument('--no-kill-all-on-exit', dest = 'kill_all_on_exit',
 parser.add_argument('--quiet', dest = 'log_level',
 	action = 'store_const', const = LOG_LEVEL_WARN, default = LOG_LEVEL_INFO,
 	help = 'Only print warnings and errors')
+parser.add_argument('--enable-insecure-key', dest = 'enable_insecure_key',
+	action = 'store_const', const = True, default = False,
+	help = 'Install the insecure SSH key')
 args = parser.parse_args()
 log_level = args.log_level
 
