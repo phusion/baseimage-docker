@@ -12,19 +12,12 @@ function cleanup()
 	echo " --> Stopping container"
 	docker stop $ID >/dev/null
 	docker rm $ID >/dev/null
-	docker rmi baseimage_test >/dev/null 2>/dev/null
 }
 
 PWD=`pwd`
 
-echo " --> Preparing container"
-ID=`docker run -d $NAME:$VERSION enable_insecure_key`
-docker wait $ID >/dev/null
-docker commit $ID baseimage_test >/dev/null
-docker rm $ID >/dev/null
-
-echo " --> Starting container"
-ID=`docker run -d -v $PWD/test:/test baseimage_test /sbin/my_init`
+echo " --> Starting insecure container"
+ID=`docker run -d -v $PWD/test:/test $NAME:$VERSION /sbin/my_init --enable-insecure-key`
 sleep 1
 
 echo " --> Obtaining IP"
