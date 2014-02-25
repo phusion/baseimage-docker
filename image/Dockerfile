@@ -11,4 +11,4 @@ RUN /build/prepare.sh && \
 	/build/cleanup.sh
 
 CMD ["/sbin/my_init"]
-EXPOSE 22 80 443
+EXPOSE 22
