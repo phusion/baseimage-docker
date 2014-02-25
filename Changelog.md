@@ -11,6 +11,7 @@
  * Fixed syslog-ng not being able to start because of a missing afsql module. Fixes the issue described in [pull request 7](https://github.com/phusion/baseimage-docker/pull/7).
  * Removed some default Ubuntu cron jobs which are not useful in Docker containers.
  * Added the logrotate service. Fixes GH-22.
+ * Fixed some warnings in `/etc/my_init.d/00_regen_ssh_host_keys.sh`.
  * Fixed some typos in the documentation. (Dr Nic Williams, Tomer Cohen)
 
 ## 0.9.6 (release date: 2014-02-17)
