@@ -1,4 +1,4 @@
-## 0.9.7
+## 0.9.7 (release date: 2014-02-25)
 
  * Improved and fixed bugs in `my_init` (Thomas LÉVEIL):
    * It is now possible to enable the insecure key by passing `--enable-insecure-key` to `my_init`. This allows users to easily enable the insecure key for convenience reasons, without having the insecure key enabled permanently in the image.
