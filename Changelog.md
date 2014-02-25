@@ -1,3 +1,7 @@
+## 0.9.8
+
+ * Fixed a regression in `my_init` which causes it to delete environment variables passed from Docker.
+
 ## 0.9.7 (release date: 2014-02-25)
 
  * Improved and fixed bugs in `my_init` (Thomas LÉVEIL):
