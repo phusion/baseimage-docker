@@ -1,3 +1,24 @@
 #!/bin/sh
 set -e
-exec syslog-ng -F -p /var/run/syslog-ng.pid
+
+SYSLOGNG_OPTS=""
+
+[ -r /etc/default/syslog-ng ] && . /etc/default/syslog-ng
+
+case "x$CONSOLE_LOG_LEVEL" in
+  x[1-8])
+    dmesg -n $CONSOLE_LOG_LEVEL
+    ;;
+  x)
+    ;;
+  *)
+    echo "CONSOLE_LOG_LEVEL is of unaccepted value."
+    ;;
+esac
+
+if [ ! -e /dev/xconsole ]
+then
+  mknod -m 640 /dev/xconsole p
+fi
+
+exec syslog-ng -F -p /var/run/syslog-ng.pid $SYSLOGNG_OPTS

@@ -7,6 +7,7 @@
    * Fixed a bug that causes it not to print messages to stdout when there is no pseudo terminal. This is because Python buffers stdout by default.
    * Fixed an incorrectly printed message.
  * The baseimage-docker image no longer EXPOSEs any ports by default. The EXPOSE entries were originally there to enable some default guest-to-host port forwarding entries, but in recent Docker versions they changed the meaning of EXPOSE, and now EXPOSE is used for linking containers. As such, we no longer have a reason to EXPOSE any ports by default. Fixes GH-15.
+ * Fixed syslog-ng not being able to start because of a missing afsql module. Fixes the issue described in [pull request 7](https://github.com/phusion/baseimage-docker/pull/7).
 
 ## 0.9.6 (release date: 2014-02-17)
 
