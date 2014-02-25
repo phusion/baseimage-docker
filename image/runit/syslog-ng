@@ -1,3 +1,4 @@
 #!/bin/sh
 set -e
-exec syslog-ng -F -p /var/run/syslog-ng.pid
+mkdir -p /var/lib/syslog-ng
+exec syslog-ng -F --default-modules=affile,afprog,afsocket,afuser,basicfuncs,csvparser,dbparser,syslogformat
