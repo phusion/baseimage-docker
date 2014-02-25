@@ -84,7 +84,7 @@ Baseimage-docker *encourages* multiple processes through the use of runit.
 
 To look around in the image, run:
 
-    docker run -rm -t -i phusion/baseimage bash -l
+    docker run -rm -t -i phusion/baseimage /sbin/my_init -- bash -l
 
 You don't have to download anything manually. The above command will automatically pull the baseimage-docker image from the Docker registry.
 
