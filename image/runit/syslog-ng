@@ -4,6 +4,7 @@ set -e
 SYSLOGNG_OPTS=""
 
 [ -r /etc/default/syslog-ng ] && . /etc/default/syslog-ng
+[ ! -S /dev/log ] && rm -f /dev/log
 
 case "x$CONSOLE_LOG_LEVEL" in
   x[1-8])
