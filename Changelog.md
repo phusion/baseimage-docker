@@ -1,12 +1,12 @@
 ## 0.9.7
 
- * The insecure key is now also available in PuTTY format. (Thomas LÉVEIL)
- * Fixed `enable_insecure_key` removing already installed SSH keys. (Thomas LÉVEIL)
  * Improved and fixed bugs in `my_init` (Thomas LÉVEIL):
    * It is now possible to enable the insecure key by passing `--enable-insecure-key` to `my_init`. This allows users to easily enable the insecure key for convenience reasons, without having the insecure key enabled permanently in the image.
    * `my_init` now exports environment variables to the directory `/etc/container_environment` and to the files `/etc/container_environment.sh`, `/etc/container_environment.json`. This allows all applications to query what the original environment variables were. It is also possible to change the environment variables in `my_init` by modifying `/etc/container_environment`. More information can be found in the README, section "Environment variables".
    * Fixed a bug that causes it not to print messages to stdout when there is no pseudo terminal. This is because Python buffers stdout by default.
    * Fixed an incorrectly printed message.
+ * The insecure key is now also available in PuTTY format. (Thomas LÉVEIL)
+ * Fixed `enable_insecure_key` removing already installed SSH keys. (Thomas LÉVEIL)
  * The baseimage-docker image no longer EXPOSEs any ports by default. The EXPOSE entries were originally there to enable some default guest-to-host port forwarding entries, but in recent Docker versions they changed the meaning of EXPOSE, and now EXPOSE is used for linking containers. As such, we no longer have a reason to EXPOSE any ports by default. Fixes GH-15.
  * Fixed syslog-ng not being able to start because of a missing afsql module. Fixes the issue described in [pull request 7](https://github.com/phusion/baseimage-docker/pull/7).
  * Removed some default Ubuntu cron jobs which are not useful in Docker containers.
