@@ -94,6 +94,13 @@ def shquote(s):
 def waitpid_reap_other_children(pid):
 	done = False
 	status = None
+	try:
+		this_pid, status = os.waitpid(pid, os.WNOHANG)
+	except OSError as e:
+		if e.errno == errno.ECHILD or e.errno == errno.ESRCH:
+			return None
+		else:
+			raise
 	while not done:
 		this_pid, status = os.waitpid(-1, 0)
 		done = this_pid == pid
@@ -135,7 +142,10 @@ def run_command_killable(*argv):
 		stop_child_process(filename, pid)
 		raise
 	if status != 0:
-		error("%s failed with exit code %d\n" % (filename, status))
+		if status is None:
+			error("%s exited with unknown exit code\n" % filename)
+		else:
+			error("%s failed with exit code %d\n" % (filename, status))
 		sys.exit(1)
 
 def run_command_killable_and_import_envvars(*argv):
@@ -232,13 +242,21 @@ def main(args):
 		if len(args.main_command) == 0:
 			runit_exited, exit_code = wait_for_runit_or_interrupt(runit_pid)
 			if runit_exited:
-				info("Runit exited with code %d" % exit_code)
+				if exit_code is None:
+					info("Runit exited with unknown exit code")
+					exit_code = 1
+				else:
+					info("Runit exited with code %d" % exit_code)
 		else:
 			info("Running %s..." % " ".join(args.main_command))
 			pid = os.spawnvp(os.P_NOWAIT, args.main_command[0], args.main_command)
 			try:
 				exit_code = waitpid_reap_other_children(pid)
-				info("%s exited with exit code %d." % (args.main_command[0], exit_code))
+				if exit_code is None:
+					info("%s exited with unknown exit code." % args.main_command[0])
+					exit_code = 1
+				else:
+					info("%s exited with exit code %d." % (args.main_command[0], exit_code))
 			except KeyboardInterrupt:
 				stop_child_process(args.main_command[0], pid)
 			except BaseException as s:
