@@ -1,4 +1,5 @@
 #!/bin/sh
+if [ ! -S /dev/log ]; then rm -f /dev/log; fi
 set -e
 
 SYSLOGNG_OPTS=""
