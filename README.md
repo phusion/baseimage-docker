@@ -41,6 +41,11 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
    * [Adding additional daemons](#adding_additional_daemons)
    * [Running scripts during container startup](#running_startup_scripts)
    * [Running a one-shot command in the container](#oneshot)
+   * [Environment variables](#environment_variables)
+     * [Centrally defining your own environment variables](#envvar_central_definition)
+     * [Environment variable dumps](#envvar_dumps)
+     * [Modifying environment variables](#modifying_envvars)
+     * [Security](#envvar_security)
    * [Login to the container via SSH](#login)
      * [Using the insecure key for one container only](#using_the_insecure_key_for_one_container_only)
      * [Enabling the insecure key permanently](#enabling_the_insecure_key_permanently)
@@ -203,6 +208,83 @@ The following example runs `ls` without running the startup files and with less 
 
     $ docker run phusion/baseimage:<VERSION> /sbin/my_init --skip-startup-files --quiet -- ls
     bin  boot  dev  etc  home  image  lib  lib64  media  mnt  opt  proc  root  run  sbin  selinux  srv  sys  tmp  usr  var
+
+<a name="environment_variables"></a>
+### Environment variables
+
+If you use `/sbin/my_init` as the main container command, then any environment variables set with `docker run --env` will be picked up by `my_init`, and passed to all child processes, including `/etc/my_init.d` startup scripts, Runit and Runit-managed services. There are however a few caveats you should be aware of:
+
+ * Environment variables on Unix are inherited on a per-process basis. This means that it is generally not possible for a child process to change the environment variables of other processes.
+ * Because of the aforementioned point, there is no good central place for defining environment variables for all applications and services. Debian has the `/etc/environment` file but it only works in some situations.
+ * Some services change environment variables for child processes. Nginx is one such example: it removes all environment variables unless you explicitly instruct it to retain them through the `env` configuration option. If you host any applications on Nginx (e.g. using the [passenger-docker](https://github.com/phusion/passenger-docker) image, or using Phusion Passenger in your own image) then they will not see the environment variables that were originally passed to `docker run --env`.
+
+`my_init` provides a solution for all these caveats.
+
+<a name="envvar_central_definition"></a>
+#### Centrally defining your own environment variables
+
+During startup, before running any [startup scripts](#running_startup_scripts), `my_init` imports environment variables from the directory `/etc/container_environment`. This directory contains files who are named after the environment variable names. The file contents contain the environment variable values. This directory is therefore a good place to centrally define your own environment variables, which will be inherited by all startup scripts and Runit services.
+
+For example, here's how you can define an environment variable from your Dockerfile:
+
+    RUN echo -n Apachai Hopachai > /etc/container_environment/MY_NAME
+
+You can verify that it works, as follows:
+
+    $ docker run -t -i <YOUR_NAME_IMAGE> /sbin/my_init -- bash -l
+    ...
+    *** Running bash -l...
+    # echo $MY_NAME
+    Apachai Hopachai
+
+<a name="envvar_dumps"></a>
+#### Environment variable dumps
+
+While the previously mentioned mechanism is good for centrally defining environment variables, it by itself does not prevent services (e.g. Nginx) from changing and resetting environment variables from child processes. However, the `my_init` mechanism does make it easy for you to query what the original environment variables are.
+
+During startup, right after importing environment variables from `/etc/container_environment`, `my_init` will dump all its environment variables (that is, all variables imported from `container_environment`, as well as all variables it picked up from `docker run --env`) to the following locations, in the following formats:
+
+ * `/etc/container_environment`
+ * `/etc/container_environment.sh` - a dump of the environment variables in Bash format. You can source the file directly from a Bash shell script.
+ * `/etc/container_environment.json` - a dump of the environment variables in JSON format.
+
+The multiple formats makes it easy for you to query the original environment variables no matter which language your scripts/apps are written in.
+
+Here is an example shell session showing you how the dumps look like:
+
+    $ docker run -t -i \
+      --env FOO=bar --env HELLO='my beautiful world' \
+      phusion/baseimage:<VERSION> /sbin/my_init -- \
+      bash -l
+    ...
+    *** Running bash -l...
+    # ls /etc/container_environment
+    FOO  HELLO  HOME  HOSTNAME  PATH  TERM  container
+    # cat /etc/container_environment/HELLO; echo
+    my beautiful world
+    # cat /etc/container_environment.json; echo
+    {"TERM": "xterm", "container": "lxc", "HOSTNAME": "f45449f06950", "HOME": "/root", "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", "FOO": "bar", "HELLO": "my beautiful world"}
+    # source /etc/container_environment.sh
+    # echo $HELLO
+    my beautiful world
+
+<a name="modifying_envvars"></a>
+#### Modifying environment variables
+
+It is even possible to modify the environment variables in `my_init` (and therefore the environment variables in all child processes that are spawned after that point in time), by altering the files in `/etc/container_environment`. After each time `my_init` runs a [startup script](#running_startup_scripts), it resets its own environment variables to the state in `/etc/container_environment`, and re-dumps the new environment variables to `container_environment.sh` and `container_environment.json`.
+
+But note that:
+
+ * modifying `container_environment.sh` and `container_environment.json` has no effect.
+ * Runit services cannot modify the environment like that. `my_init` only activates changes in `/etc/container_environment` when running startup scripts.
+
+<a name="envvar_security"></a>
+#### Security
+
+Because environment variables can potentially contain sensitive information, `/etc/container_environment` and its Bash and JSON dumps are by default owned by root, and root-accessible only. If you are sure that your environment variables don't contain sensitive data, then you can relax the permissions on that directory and those files by making them world-readable:
+
+    RUN chmod 755 /etc/container_environment
+    RUN chmod 644 /etc/container_environment.sh /etc/container_environment.json
 
 <a name="login"></a>
 ### Login to the container via SSH
