@@ -1,3 +1,12 @@
+## 0.9.7
+
+ * The insecure key is now also available in PuTTY format. (Thomas LÉVEIL)
+ * Fixed `enable_insecure_key` removing already installed SSH keys. (Thomas LÉVEIL)
+ * Improved and fixed bugs in `my_init` (Thomas LÉVEIL):
+   * It is now possible to enable the insecure key by passing `--enable-insecure-key` to `my_init`. This allows users to easily enable the insecure key for convenience reasons, without having the insecure key enabled permanently in the image.
+   * Fixed a bug that causes it not to print messages to stdout when there is no pseudo terminal. This is because Python buffers stdout by default.
+   * Fixed an incorrectly printed message.
+
 ## 0.9.6 (release date: 2014-02-17)
 
  * Fixed a bug in `my_init`: child processes that have been adopted during execution of init scripts are now properly reaped.
