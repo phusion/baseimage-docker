@@ -1,4 +1,4 @@
-## 0.9.8
+## 0.9.8 (release date: 2014-02-26)
 
  * Fixed a regression in `my_init` which causes it to delete environment variables passed from Docker.
  * Fixed `my_init` not properly forcing Runit to shut down if Runit appears to refuse to respond to SIGTERM.
