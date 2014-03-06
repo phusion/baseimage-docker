@@ -6,11 +6,15 @@ ROOT = File.dirname(File.expand_path(__FILE__))
 VAGRANTFILE_API_VERSION = '2'
 
 # Default env properties which can be overridden
-# Example override: echo "ENV['PASSENGER_PATH_URI'] ||= '../../phusion/passenger-docker' # " >> ~/.vagrant.d/Vagrantfile
-BASE_BOX_URL       = ENV['BASE_BOX_URL'      ] || 'https://oss-binaries.phusionpassenger.com/vagrant/boxes/'
-VAGRANT_BOX_URL    = ENV['VAGRANT_BOX_URL'   ] || BASE_BOX_URL + 'ubuntu-12.04.3-amd64-vbox.box'
-VMWARE_BOX_URL     = ENV['VMWARE_BOX_URL'    ] || BASE_BOX_URL + 'ubuntu-12.04.3-amd64-vmwarefusion.box'
-PASSENGER_PATH_URI = ENV['PASSENGER_PATH_URI'] || '../passenger-docker'
+# Example overrides:
+#   echo "ENV['PASSENGER_PATH_URI' ] ||= '../../phusion/passenger-docker'   " >> ~/.vagrant.d/Vagrantfile
+#   echo "ENV['BASE_BOX_URL']        ||= 'd\:/dev/vm/vagrant/boxes/phusion/'" >> ~/.vagrant.d/Vagrantfile
+BASE_BOX_URL        = ENV['BASE_BOX_URL'       ] || 'https://oss-binaries.phusionpassenger.com/vagrant/boxes/'
+VAGRANT_BOX_URL     = ENV['VAGRANT_BOX_URL'    ] || BASE_BOX_URL + 'ubuntu-12.04.3-amd64-vbox.box'
+VMWARE_BOX_URL      = ENV['VMWARE_BOX_URL'     ] || BASE_BOX_URL + 'ubuntu-12.04.3-amd64-vmwarefusion.box'
+BASEIMAGE_PATH_URI  = ENV['BASEIMAGE_PATH_URI' ] || '../baseimage-docker'
+PASSENGER_PATH_URI  = ENV['PASSENGER_PATH_URI' ] || '../passenger-docker'
+DOCKERIZER_PATH_URI = ENV['DOCKERIZER_PATH_URI'] || '../dockerizer'
 
 $script = <<SCRIPT
 wget -q -O - https://get.docker.io/gpg | apt-key add -
@@ -29,6 +33,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   passenger_path = "#{ROOT}/#{PASSENGER_PATH_URI}"
   if File.directory?(passenger_path)
     config.vm.synced_folder File.expand_path(passenger_path), '/vagrant/passenger-docker'
+  end
+  baseimage_path = "#{ROOT}/#{BASEIMAGE_PATH_URI}"
+  if File.directory?(baseimage_path)
+    config.vm.synced_folder File.expand_path(baseimage_path), '/vagrant/baseimage-docker'
+  end
+  dockerizer_path = "#{ROOT}/#{DOCKERIZER_PATH_URI}"
+  if File.directory?(dockerizer_path)
+    config.vm.synced_folder File.expand_path(dockerizer_path), '/vagrant/dockerizer'
   end
 
   config.vm.provider :vmware_fusion do |f, override|
