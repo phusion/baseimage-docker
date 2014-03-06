@@ -21,7 +21,7 @@ else
 		|                                                                              |
 		| DO NOT expose port 22 on the Internet unless you know what you are doing!    |
 		|                                                                              |
-		| Use the private key bellow to connect with user root                         |
+		| Use the private key below to connect with user root                         |
 		+------------------------------------------------------------------------------+
 
 	EOF
