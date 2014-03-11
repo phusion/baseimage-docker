@@ -313,7 +313,7 @@ Once you have the ID, look for its IP address with:
 Now SSH into the container as follows:
 
     curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/insecure_key
-    chmod 700 insecure_key
+    chmod 600 insecure_key
     ssh -i insecure_key root@<IP address>
 
 <a name="enabling_the_insecure_key_permanently"></a>
