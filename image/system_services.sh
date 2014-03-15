@@ -43,6 +43,9 @@ chmod 644 /etc/insecure_key*
 chown root:root /etc/insecure_key*
 cp /build/enable_insecure_key /usr/sbin/
 
+## Install ipsvd - internet protocol service daemons
+$minimal_apt_get_install ipsvd
+
 ## Install cron daemon.
 $minimal_apt_get_install cron
 mkdir /etc/service/cron
