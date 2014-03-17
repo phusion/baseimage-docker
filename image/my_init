@@ -1,5 +1,5 @@
-#!/usr/bin/python2 -u
-import os, os.path, sys, stat, signal, errno, argparse, time, json, re, posixfile
+#!/usr/bin/python3 -u
+import os, os.path, sys, stat, signal, errno, argparse, time, json, re
 
 KILL_PROCESS_TIMEOUT = 5
 KILL_ALL_PROCESSES_TIMEOUT = 5
