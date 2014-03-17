@@ -1,3 +1,7 @@
+## 0.9.9 (not yet released)
+
+ * Fixed a problem with rssh. (Slawomir Chodnicki)
+
 ## 0.9.8 (release date: 2014-02-26)
 
  * Fixed a regression in `my_init` which causes it to delete environment variables passed from Docker.
