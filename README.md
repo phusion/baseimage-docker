@@ -131,7 +131,7 @@ You can add additional daemons (e.g. your own app) to the image by creating runi
 
 The shell script must be called `run`, must be executable, and is to be placed in the directory `/etc/service/<NAME>`.
 
-Here's an example showing you how to a memached server runit entry can be made.
+Here's an example showing you how a memached server runit entry can be made.
 
     ### In memcached.sh (make sure this file is chmod +x):
     #!/bin/sh
@@ -313,7 +313,7 @@ Once you have the ID, look for its IP address with:
 Now SSH into the container as follows:
 
     curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/insecure_key
-    chmod 700 insecure_key
+    chmod 600 insecure_key
     ssh -i insecure_key root@<IP address>
 
 <a name="enabling_the_insecure_key_permanently"></a>
