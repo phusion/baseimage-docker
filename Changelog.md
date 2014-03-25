@@ -1,4 +1,4 @@
-## 0.9.9 (not yet released)
+## 0.9.9 (release date: 2014-03-25)
 
  * Fixed a problem with rssh. (Slawomir Chodnicki)
  * The `INITRD` environment variable is now set in the container by default. This prevents updates to the `initramfs` from running grub or lilo.
