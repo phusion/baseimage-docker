@@ -6,17 +6,30 @@ set -x
 ## Temporarily disable dpkg fsync to make building faster.
 echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/02apt-speedup
 
+## Prevent initramfs updates from trying to run grub and lilo.
+## https://journal.paul.querna.org/articles/2013/10/15/docker-ubuntu-on-rackspace/
+## http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594189
+export INITRD=no
+echo -n no > /etc/container_environment.d/INITRD
+
 ## Enable Ubuntu Universe and Multiverse.
 cp /build/sources.list /etc/apt/sources.list
 apt-get update
-
-## Install HTTPS support for APT.
-$minimal_apt_get_install apt-transport-https
 
 ## Fix some issues with APT packages.
 ## See https://github.com/dotcloud/docker/issues/1024
 dpkg-divert --local --rename --add /sbin/initctl
 ln -sf /bin/true /sbin/initctl
+
+## Replace the 'ischroot' tool to make it always return true.
+## Prevent initscripts updates from breaking /dev/shm.
+## https://journal.paul.querna.org/articles/2013/10/15/docker-ubuntu-on-rackspace/
+## https://bugs.launchpad.net/launchpad/+bug/974584
+dpkg-divert --local --rename --add /usr/bin/ischroot
+ln -sf /bin/true /usr/bin/ischroot
+
+## Install HTTPS support for APT.
+$minimal_apt_get_install apt-transport-https
 
 ## Upgrade all packages.
 echo "initscripts hold" | dpkg --set-selections

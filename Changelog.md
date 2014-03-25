@@ -1,6 +1,8 @@
 ## 0.9.9 (not yet released)
 
  * Fixed a problem with rssh. (Slawomir Chodnicki)
+ * The `INITRD` environment variable is now set in the container by default. This prevents updates to the `initramfs` from running grub or lilo.
+ * The `ischroot` tool in Ubuntu has been modified to always return true. This prevents updates to the `initscripts` package from breaking /dev/shm.
  * Various minor bug fixes, improvements and typo corrections. (Felix Hummel, Laurent Sarrazin, Dung Quang, Amir Gur)
 
 ## 0.9.8 (release date: 2014-02-26)
