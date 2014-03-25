@@ -10,7 +10,8 @@ echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/02apt-speedup
 ## https://journal.paul.querna.org/articles/2013/10/15/docker-ubuntu-on-rackspace/
 ## http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594189
 export INITRD=no
-echo -n no > /etc/container_environment.d/INITRD
+mkdir -p /etc/container_environment
+echo -n no > /etc/container_environment/INITRD
 
 ## Enable Ubuntu Universe and Multiverse.
 cp /build/sources.list /etc/apt/sources.list
@@ -32,8 +33,7 @@ ln -sf /bin/true /usr/bin/ischroot
 $minimal_apt_get_install apt-transport-https
 
 ## Upgrade all packages.
-echo "initscripts hold" | dpkg --set-selections
-apt-get upgrade -y --no-install-recommends
+apt-get dist-upgrade -y --no-install-recommends
 
 ## Fix locale.
 $minimal_apt_get_install language-pack-en
