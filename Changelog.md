@@ -1,6 +1,7 @@
 ## 0.9.9 (not yet released)
 
  * Fixed a problem with rssh. (Slawomir Chodnicki)
+ * Various minor bug fixes, improvements and typo corrections. (Felix Hummel, Laurent Sarrazin, Dung Quang, Amir Gur)
 
 ## 0.9.8 (release date: 2014-02-26)
 
