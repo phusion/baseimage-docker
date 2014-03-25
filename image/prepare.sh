@@ -3,6 +3,9 @@ set -e
 source /build/buildconfig
 set -x
 
+## Temporarily disable dpkg fsync to make building faster.
+echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/02apt-speedup
+
 ## Enable Ubuntu Universe.
 echo deb http://archive.ubuntu.com/ubuntu precise main universe > /etc/apt/sources.list
 echo deb http://archive.ubuntu.com/ubuntu precise-updates main universe >> /etc/apt/sources.list
