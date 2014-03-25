@@ -6,7 +6,7 @@ VERSION = 0.9.9
 all: build
 
 build:
-	docker build -t $(NAME):$(VERSION) -rm image
+	docker build -t $(NAME):$(VERSION) --rm image
 
 test:
 	env NAME=$(NAME) VERSION=$(VERSION) ./test/runner.sh
