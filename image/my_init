@@ -143,9 +143,9 @@ def run_command_killable(*argv):
 		raise
 	if status != 0:
 		if status is None:
-			error("%s exited with unknown exit code\n" % filename)
+			error("%s exited with unknown status\n" % filename)
 		else:
-			error("%s failed with exit code %d\n" % (filename, status))
+			error("%s failed with status %d\n" % (filename, os.WEXITSTATUS(status)))
 		sys.exit(1)
 
 def run_command_killable_and_import_envvars(*argv):
@@ -239,31 +239,34 @@ def main(args):
 	if not args.skip_runit:
 		runit_pid = start_runit()
 	try:
+		exit_status = None
 		if len(args.main_command) == 0:
 			runit_exited, exit_code = wait_for_runit_or_interrupt(runit_pid)
 			if runit_exited:
 				if exit_code is None:
-					info("Runit exited with unknown exit code")
-					exit_code = 1
+					info("Runit exited with unknown status")
+					exit_status = 1
 				else:
-					info("Runit exited with code %d" % exit_code)
+					exit_status = os.WEXITSTATUS(exit_code)
+					info("Runit exited with status %d" % exit_status)
 		else:
 			info("Running %s..." % " ".join(args.main_command))
 			pid = os.spawnvp(os.P_NOWAIT, args.main_command[0], args.main_command)
 			try:
 				exit_code = waitpid_reap_other_children(pid)
 				if exit_code is None:
-					info("%s exited with unknown exit code." % args.main_command[0])
-					exit_code = 1
+					info("%s exited with unknown status." % args.main_command[0])
+					exit_status = 1
 				else:
-					info("%s exited with exit code %d." % (args.main_command[0], exit_code))
+					exit_status = os.WEXITSTATUS(exit_code)
+					info("%s exited with status %d." % (args.main_command[0], exit_status))
 			except KeyboardInterrupt:
 				stop_child_process(args.main_command[0], pid)
 			except BaseException as s:
 				warn("An error occurred. Aborting.")
 				stop_child_process(args.main_command[0], pid)
 				raise
-		sys.exit(exit_code)
+		sys.exit(exit_status)
 	finally:
 		if not args.skip_runit:
 			shutdown_runit_services()
