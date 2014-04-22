@@ -66,8 +66,9 @@ def import_envvars(clear_existing_environment = True):
 		new_env[name] = value
 	if clear_existing_environment:
 		os.environ.clear()
-	for name, value in new_env.items():
-		os.environ[name] = value
+	# Preserve envs passed via `docker run -e` in preference to file-based
+	# envs. See https://github.com/phusion/baseimage-docker/issues/52
+	os.environ.update({k: v for k, v in new_env.items() if k not in os.environ})
 
 def export_envvars(to_dir = True):
 	shell_dump = ""
