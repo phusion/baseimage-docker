@@ -1,4 +1,6 @@
 #!/bin/sh
+# /dev/log is either a named pipe or it was placed there accidentally
+if [ ! -S /dev/log ]; then rm -f /dev/log; fi
 set -e
 
 SYSLOGNG_OPTS=""
