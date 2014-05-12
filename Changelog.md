@@ -10,6 +10,7 @@
    If you intended on adding a newline to the value, ensure you have *two* trailing newlines:
 
         echo -e "my_value\n" > /etc/container_environment/FOO
+ * It was not possible to use `docker run -e` to override environment variables defined in /etc/container_environment. This has been fixed (GH-52). Thanks to Stuart Campbell for reporting this bug.
 
 ## 0.9.9 (release date: 2014-03-25)
 

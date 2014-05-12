@@ -54,7 +54,7 @@ def is_exe(path):
 	except OSError:
 		return False
 
-def import_envvars(clear_existing_environment = True):
+def import_envvars(clear_existing_environment = True, override_existing_environment = True):
 	new_env = {}
 	for envfile in listdir("/etc/container_environment"):
 		name = os.path.basename(envfile)
@@ -67,7 +67,8 @@ def import_envvars(clear_existing_environment = True):
 	if clear_existing_environment:
 		os.environ.clear()
 	for name, value in new_env.items():
-		os.environ[name] = value
+		if override_existing_environment or not name in os.environ:
+			os.environ[name] = value
 
 def export_envvars(to_dir = True):
 	shell_dump = ""
@@ -227,7 +228,7 @@ def install_insecure_key():
 	run_command_killable("/usr/sbin/enable_insecure_key")
 
 def main(args):
-	import_envvars(False)
+	import_envvars(False, False)
 	export_envvars()
 
 	if args.enable_insecure_key:
