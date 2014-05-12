@@ -1,4 +1,4 @@
-## 0.9.10
+## 0.9.10 (release date: 2014-05-12)
 
  * Upgraded to Ubuntu 14.04 (Trusty). We will no longer release images based on 12.04.
    Thanks to contributions by mpeterson, Paul Jimenez, Santiago M. Mola and Kingdon Barrett.
