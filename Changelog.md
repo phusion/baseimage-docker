@@ -2,6 +2,14 @@
 
  * Upgraded to Ubuntu 14.04 (Trusty). We will no longer release images based on 12.04.
    Thanks to contributions by mpeterson, Paul Jimenez, Santiago M. Mola and Kingdon Barrett.
+ * Fixed a problem with my_init not correctly passing child processes' exit status. Fixes GH-45.
+ * When reading environment variables from /etc/container_environment, the trailing newline (if any) is ignored. This makes commands like this work, without unintentially adding a newline to the environment variable value:
+
+        echo my_value > /etc/container_environment/FOO
+
+   If you intended on adding a newline to the value, ensure you have *two* trailing newlines:
+
+        echo -e "my_value\n" > /etc/container_environment/FOO
 
 ## 0.9.9 (release date: 2014-03-25)
 
