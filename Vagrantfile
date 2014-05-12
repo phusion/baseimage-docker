@@ -10,8 +10,8 @@ VAGRANTFILE_API_VERSION = '2'
 #   echo "ENV['PASSENGER_DOCKER_PATH'] ||= '../../phusion/passenger-docker'   " >> ~/.vagrant.d/Vagrantfile
 #   echo "ENV['BASE_BOX_URL']          ||= 'd\:/dev/vm/vagrant/boxes/phusion/'" >> ~/.vagrant.d/Vagrantfile
 BASE_BOX_URL          = ENV['BASE_BOX_URL']    || 'https://oss-binaries.phusionpassenger.com/vagrant/boxes/latest/'
-VAGRANT_BOX_URL       = ENV['VAGRANT_BOX_URL'] || BASE_BOX_URL + 'ubuntu-12.04-amd64-vbox.box'
-VMWARE_BOX_URL        = ENV['VMWARE_BOX_URL']  || BASE_BOX_URL + 'ubuntu-12.04-amd64-vmwarefusion.box'
+VAGRANT_BOX_URL       = ENV['VAGRANT_BOX_URL'] || BASE_BOX_URL + 'ubuntu-14.04-amd64-vbox.box'
+VMWARE_BOX_URL        = ENV['VMWARE_BOX_URL']  || BASE_BOX_URL + 'ubuntu-14.04-amd64-vmwarefusion.box'
 BASEIMAGE_PATH        = ENV['BASEIMAGE_PATH' ] || '.'
 PASSENGER_DOCKER_PATH = ENV['PASSENGER_PATH' ] || '../passenger-docker'
 DOCKERIZER_PATH       = ENV['DOCKERIZER_PATH'] || '../dockerizer'
@@ -27,7 +27,7 @@ su - vagrant -c 'echo alias d=docker >> ~/.bash_aliases'
 SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = 'phusion-open-ubuntu-12.04-amd64'
+  config.vm.box = 'phusion-open-ubuntu-14.04-amd64'
   config.vm.box_url = VAGRANT_BOX_URL
   config.ssh.forward_agent = true
   passenger_docker_path = File.absolute_path(PASSENGER_DOCKER_PATH, ROOT)
