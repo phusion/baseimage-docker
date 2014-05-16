@@ -1,4 +1,4 @@
-## 0.9.11
+## 0.9.11 (not yet released)
 
  * The `ca-certificates` package is now installed by default. This is because we include `apt-transport-https`, but Ubuntu 14.04 no longer installs `ca-certificates` by default anymore. Closes GH-73.
 
