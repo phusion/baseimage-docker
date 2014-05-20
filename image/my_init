@@ -197,10 +197,12 @@ def run_startup_files():
 		info("Running /etc/rc.local...")
 		run_command_killable_and_import_envvars("/etc/rc.local")
 
-def start_runit():
+def start_runit(stderr):
 	info("Booting runit daemon...")
-	pid = os.spawnl(os.P_NOWAIT, "/usr/bin/runsvdir", "/usr/bin/runsvdir",
-		"-P", "/etc/service", "log: %s" % ('.' * 395))
+	spawn = [os.P_NOWAIT, "/usr/bin/runsvdir", "/usr/bin/runsvdir", "-P", "/etc/service"]
+	if not stderr:
+		spawn.append("log: %s" % ('.' * 395))
+	pid = os.spawnl(*spawn)
 	info("Runit started as PID %d" % pid)
 	return pid
 
@@ -241,7 +243,7 @@ def main(args):
 	exit_code = None
 
 	if not args.skip_runit:
-		runit_pid = start_runit()
+		runit_pid = start_runit(stderr = args.stderr)
 	try:
 		exit_status = None
 		if len(args.main_command) == 0:
@@ -291,6 +293,9 @@ parser.add_argument('--skip-startup-files', dest = 'skip_startup_files',
 parser.add_argument('--skip-runit', dest = 'skip_runit',
 	action = 'store_const', const = True, default = False,
 	help = 'Do not run runit services')
+parser.add_argument('--stderr', dest = 'stderr',
+	action = 'store_const', const = True, default = False,
+	help = 'Log stderr, instead of runit redirecting it to proctitle')
 parser.add_argument('--no-kill-all-on-exit', dest = 'kill_all_on_exit',
 	action = 'store_const', const = False, default = True,
 	help = 'Don\'t kill all processes on the system upon exiting')
