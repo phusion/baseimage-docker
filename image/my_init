@@ -106,8 +106,11 @@ def waitpid_reap_other_children(pid):
 		else:
 			raise
 	while not done:
-		this_pid, status = os.waitpid(-1, 0)
-		done = this_pid == pid
+		try:
+			this_pid, status = os.waitpid(-1, 0)
+			done = this_pid == pid
+		except OSError as e:
+			done = True
 	return status
 
 def stop_child_process(name, pid, signo = signal.SIGTERM, time_limit = KILL_PROCESS_TIMEOUT):
