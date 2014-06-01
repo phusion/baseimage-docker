@@ -11,6 +11,7 @@ touch /etc/container_environment.sh
 touch /etc/container_environment.json
 chmod 700 /etc/container_environment
 chmod 600 /etc/container_environment.sh /etc/container_environment.json
+ln -s /etc/container_environment.sh /etc/profile.d/
 
 ## Install runit.
 $minimal_apt_get_install runit
