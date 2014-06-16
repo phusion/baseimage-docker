@@ -314,7 +314,7 @@ Find out the ID of the container that you just ran:
 
 Once you have the ID, look for its IP address with:
 
-    docker inspect <ID> | grep IPAddress
+    docker inspect -f "{{ .NetworkSettings.IPAddress }}" <ID>
 
 Now SSH into the container as follows:
 
@@ -352,7 +352,7 @@ Find out the ID of the container that you just ran:
 
 Once you have the ID, look for its IP address with:
 
-    docker inspect <ID> | grep IPAddress
+    docker inspect -f "{{ .NetworkSettings.IPAddress }}" <ID>
 
 Now SSH into the container as follows:
 
