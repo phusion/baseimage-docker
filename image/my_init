@@ -96,7 +96,6 @@ def shquote(s):
 	return "'" + s.replace("'", "'\"'\"'") + "'"
 
 def waitpid_reap_other_children(pid):
-	done = False
 	status = None
 	try:
 		this_pid, status = os.waitpid(pid, os.WNOHANG)
@@ -105,9 +104,8 @@ def waitpid_reap_other_children(pid):
 			return None
 		else:
 			raise
-	while not done:
+	while this_pid != pid:
 		this_pid, status = os.waitpid(-1, 0)
-		done = this_pid == pid
 	return status
 
 def stop_child_process(name, pid, signo = signal.SIGTERM, time_limit = KILL_PROCESS_TIMEOUT):
