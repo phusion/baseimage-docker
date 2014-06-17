@@ -33,6 +33,9 @@ ln -sf /bin/true /usr/bin/ischroot
 ## Install HTTPS support for APT.
 $minimal_apt_get_install apt-transport-https ca-certificates
 
+## Install add-apt-repository
+$minimal_apt_get_install software-properties-common
+
 ## Upgrade all packages.
 apt-get dist-upgrade -y --no-install-recommends
 
