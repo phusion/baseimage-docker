@@ -359,7 +359,7 @@ Now SSH into the container as follows:
 
     ssh -i /path-to/your_key root@<IP address>
 
-<a name="docker_attach"></a>
+<a name="docker_bash"></a>
 #### The `docker-bash` tool
 
 Looking up the IP of a container and running an SSH command quickly becomes tedious. Luckily, we provide the `docker-bash` tool which automates this process. This tool is to be run on the *Docker host*, not inside a Docker container.
