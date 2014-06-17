@@ -1,5 +1,6 @@
 ## 0.9.11 (not yet released)
 
+ * Introduced the `docker-bash` tool. This is a shortcut tool for logging into a container using SSH. Usage: `docker-bash <CONTAINER ID>`. See the README for details.
  * Fixed various process waiting issues in `my_init`. Closes GH-27, GH-82 and GH-83. Thanks to André Luiz dos Santos and Paul Annesley.
  * The `ca-certificates` package is now installed by default. This is because we include `apt-transport-https`, but Ubuntu 14.04 no longer installs `ca-certificates` by default anymore. Closes GH-73.
  * `add-apt-repository` is now installed by default. Closes GH-74.
