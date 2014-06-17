@@ -24,7 +24,7 @@ esac
 if [ ! -e /dev/xconsole ]
 then
   mknod -m 640 /dev/xconsole p
-  chown root:adm
+  chown root:adm /dev/xconsole
   [ -x /sbin/restorecon ] && /sbin/restorecon $XCONSOLE
 fi
 
