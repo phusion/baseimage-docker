@@ -11,6 +11,8 @@ LOG_LEVEL_DEBUG = 3
 
 log_level = None
 
+terminated_child_processes = {}
+
 class AlarmException(Exception):
 	pass
 
@@ -95,19 +97,36 @@ def shquote(s):
 	# the string $'b is then quoted as '$'"'"'b'
 	return "'" + s.replace("'", "'\"'\"'") + "'"
 
+# Waits for the child process with the given PID, while at the same time
+# reaping any other child processes that have exited (e.g. adopted child
+# processes that have terminated).
 def waitpid_reap_other_children(pid):
+	global terminated_child_processes
+
+	status = terminated_child_processes.get(pid)
+	if status:
+		# A previous call to waitpid_reap_other_children(),
+		# with an argument not equal to the current argument,
+		# already waited for this process. Return the status
+		# that was obtained back then.
+		del terminated_child_processes[pid]
+		return status
+
 	done = False
 	status = None
-	try:
-		this_pid, status = os.waitpid(pid, os.WNOHANG)
-	except OSError as e:
-		if e.errno == errno.ECHILD or e.errno == errno.ESRCH:
-			return None
-		else:
-			raise
 	while not done:
-		this_pid, status = os.waitpid(-1, 0)
-		done = this_pid == pid
+		try:
+			this_pid, status = os.waitpid(-1, 0)
+			if this_pid == pid:
+				done = True
+			else:
+				# Save status for later.
+				terminated_child_processes[this_pid] = status
+		except OSError as e:
+			if e.errno == errno.ECHILD or e.errno == errno.ESRCH:
+				return None
+			else:
+				raise
 	return status
 
 def stop_child_process(name, pid, signo = signal.SIGTERM, time_limit = KILL_PROCESS_TIMEOUT):
