@@ -219,7 +219,7 @@ def run_startup_files():
 def start_runit():
 	info("Booting runit daemon...")
 	pid = os.spawnl(os.P_NOWAIT, "/usr/bin/runsvdir", "/usr/bin/runsvdir",
-		"-P", "/etc/service", "log: %s" % ('.' * 395))
+		"-P", "/etc/service")
 	info("Runit started as PID %d" % pid)
 	return pid
 
