@@ -288,7 +288,7 @@ But note that:
 <a name="envvar_security"></a>
 #### Security
 
-Because environment variables can potentially contain sensitive information, `/etc/container_environment` and its Bash and JSON dumps are by default owned by root, and root-accessible only. If you are sure that your environment variables don't contain sensitive data, then you can relax the permissions on that directory and those files by making them world-readable:
+Because environment variables can potentially contain sensitive information, `/etc/container_environment` and its Bash and JSON dumps are by default owned by root, and accessible only by docker_env group (so any user added this group will have these variables automatically loaded). If you are sure that your environment variables don't contain sensitive data, then you can relax the permissions on that directory and those files by making them world-readable:
 
     RUN chmod 755 /etc/container_environment
     RUN chmod 644 /etc/container_environment.sh /etc/container_environment.json
