@@ -3,8 +3,10 @@
  * Introduced the `docker-bash` tool. This is a shortcut tool for logging into a container using SSH. Usage: `docker-bash <CONTAINER ID>`. See the README for details.
  * Fixed various process waiting issues in `my_init`. Closes GH-27, GH-82 and GH-83. Thanks to André Luiz dos Santos and Paul Annesley.
  * The `ca-certificates` package is now installed by default. This is because we include `apt-transport-https`, but Ubuntu 14.04 no longer installs `ca-certificates` by default anymore. Closes GH-73.
+ * Output print by Runit services are now redirected to the Docker logs instead of to proctitle. Thanks to Paul Annesley.
+ * Container environment variables are now made available to SSH root shells. If you login with SSH through a non-root account, then container environment variables are only made available if that user is a member of the `docker_env` group. Thanks to Bernard Potocki.
  * `add-apt-repository` is now installed by default. Closes GH-74.
- * Various minor fixes thanks to yebyen and John Eckhart.
+ * Various minor fixes and contributions thanks to yebyen, John Eckhart, Christoffer Sawicki.
 
 ## 0.9.10 (release date: 2014-05-12)
 
