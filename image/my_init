@@ -75,6 +75,8 @@ def import_envvars(clear_existing_environment = True, override_existing_environm
 def export_envvars(to_dir = True):
 	shell_dump = ""
 	for name, value in os.environ.items():
+		if name in ['HOME', 'USER', 'GROUP', 'UID', 'GID', 'SHELL']:
+			continue
 		if to_dir:
 			with open("/etc/container_environment/" + name, "w") as f:
 				f.write(value)
