@@ -74,7 +74,7 @@ def export_envvars(to_dir = True):
 	shell_dump = ""
 	for name, value in os.environ.items():
 		if name in ['HOME', 'USER', 'GROUP', 'UID', 'GID', 'SHELL']:
-			break
+			continue
 		if to_dir:
 			with open("/etc/container_environment/" + name, "w") as f:
 				f.write(value)
