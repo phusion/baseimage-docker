@@ -339,11 +339,11 @@ Instructions for logging in the container is the same as in section [Using the i
 <a name="using_your_own_key"></a>
 #### Using your own key
 
-Edit your Dockerfile to install an SSH key:
+Edit your Dockerfile to install an SSH public key:
 
     ## Install an SSH of your choice.
-    ADD your_key /tmp/your_key
-    RUN cat /tmp/your_key >> /root/.ssh/authorized_keys && rm -f /tmp/your_key
+    ADD your_key.pub /tmp/your_key.pub
+    RUN cat /tmp/your_key.pub >> /root/.ssh/authorized_keys && rm -f /tmp/your_key.pub
 
 Then rebuild your image. Once you have that, start a container based on that image:
 
