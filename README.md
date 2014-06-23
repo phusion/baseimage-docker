@@ -151,7 +151,7 @@ Note that the shell script must run the daemon **without letting it daemonize/fo
 
 The baseimage-docker init system, `/sbin/my_init`, runs the following scripts during startup, in the following order:
 
- * All executable scripts in `/etc/my_init.d`, if this directory exists. The scripts are run during in lexicographic order.
+ * All executable scripts in `/etc/my_init.d`, if this directory exists. The scripts are run in lexicographic order.
  * The script `/etc/rc.local`, if this file exists.
 
 All scripts must exit correctly, e.g. with exit code 0. If any script exits with a non-zero exit code, the booting will fail.
