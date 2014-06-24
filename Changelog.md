@@ -6,7 +6,7 @@
  * Output print by Runit services are now redirected to the Docker logs instead of to proctitle. Thanks to Paul Annesley.
  * Container environment variables are now made available to SSH root shells. If you login with SSH through a non-root account, then container environment variables are only made available if that user is a member of the `docker_env` group. Thanks to Bernard Potocki.
  * `add-apt-repository` is now installed by default. Closes GH-74.
- * Various minor fixes and contributions thanks to yebyen, John Eckhart, Christoffer Sawicki.
+ * Various minor fixes and contributions thanks to yebyen, John Eckhart, Christoffer Sawicki and Brant Fitzsimmons.
 
 ## 0.9.10 (release date: 2014-05-12)
 
