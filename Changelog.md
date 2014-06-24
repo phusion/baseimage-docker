@@ -1,4 +1,4 @@
-## 0.9.11 (not yet released)
+## 0.9.11 (release date: 2014-06-24)
 
  * Introduced the `docker-bash` tool. This is a shortcut tool for logging into a container using SSH. Usage: `docker-bash <CONTAINER ID>`. See the README for details.
  * Fixed various process waiting issues in `my_init`. Closes GH-27, GH-82 and GH-83. Thanks to André Luiz dos Santos and Paul Annesley.
