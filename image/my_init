@@ -22,15 +22,15 @@ def error(message):
 
 def warn(message):
 	if log_level >= LOG_LEVEL_WARN:
-		print("*** %s" % message)
+		sys.stderr.write("*** %s\n" % message)
 
 def info(message):
 	if log_level >= LOG_LEVEL_INFO:
-		print("*** %s" % message)
+		sys.stderr.write("*** %s\n" % message)
 
 def debug(message):
 	if log_level >= LOG_LEVEL_DEBUG:
-		print("*** %s" % message)
+		sys.stderr.write("*** %s\n" % message)
 
 def ignore_signals_and_raise_keyboard_interrupt(signame):
 	signal.signal(signal.SIGTERM, signal.SIG_IGN)
