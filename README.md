@@ -386,31 +386,6 @@ By default, `docker-bash` will open a Bash session. You can also tell it to run 
 
     docker-bash YOUR-CONTAINER-ID echo hello world
 
-
-<a name="building"></a>
-## Building the image yourself
-
-If for whatever reason you want to build the image yourself instead of downloading it from the Docker registry, follow these instructions.
-
-Clone this repository:
-
-    git clone https://github.com/phusion/baseimage-docker.git
-    cd baseimage-docker
-
-Start a virtual machine with Docker in it. You can use the Vagrantfile that we've already provided.
-
-    vagrant up
-    vagrant ssh
-    cd /vagrant
-
-Build the image:
-
-    make build
-
-If you want to call the resulting image something else, pass the NAME variable, like this:
-
-    make build NAME=joe/baseimage
-
 <a name="disabling_ssh"></a>
 ### Disabling SSH
 
@@ -438,6 +413,32 @@ To verify that it works, [open a bash shell in your container](#inspecting), mod
     ...should ping 127.0.0.1...
 
 **Note on apt-get upgrading:** if any Ubuntu updates overwrite libnss_files.so.2, then the workaround is removed. You have to re-enable it by running `/usr/bin/workaround-docker-2267`. To be safe, you should run this command every time after running `apt-get upgrade`.
+
+
+<a name="building"></a>
+## Building the image yourself
+
+If for whatever reason you want to build the image yourself instead of downloading it from the Docker registry, follow these instructions.
+
+Clone this repository:
+
+    git clone https://github.com/phusion/baseimage-docker.git
+    cd baseimage-docker
+
+Start a virtual machine with Docker in it. You can use the Vagrantfile that we've already provided.
+
+    vagrant up
+    vagrant ssh
+    cd /vagrant
+
+Build the image:
+
+    make build
+
+If you want to call the resulting image something else, pass the NAME variable, like this:
+
+    make build NAME=joe/baseimage
+
 
 <a name="conclusion"></a>
 ## Conclusion
