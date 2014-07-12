@@ -6,7 +6,7 @@ Baseimage-docker is available for pulling from [the Docker registry](https://ind
 
 ### What are the problems with the stock Ubuntu base image?
 
-Ubuntu is not designed to be run inside docker. Its init system, Upstart, assumes that it's running on either real hardware or virtualized hardware, but not inside a Docker container. But inside a container you don't want a full system anyway, you want a minimal system. But configuring that minimal system for use within a container has many strange corner cases that are hard to get right if you are not intimately familiar with the Unix system model. This can cause a lot of strange problems.
+Ubuntu is not designed to be run inside Docker. Its init system, Upstart, assumes that it's running on either real hardware or virtualized hardware, but not inside a Docker container. But inside a container you don't want a full system anyway, you want a minimal system. But configuring that minimal system for use within a container has many strange corner cases that are hard to get right if you are not intimately familiar with the Unix system model. This can cause a lot of strange problems.
 
 Baseimage-docker gets everything right. The "Contents" section describes all the things that it modifies.
 
@@ -80,8 +80,6 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 | Workarounds for Docker bugs | [Learn more.](#workaroud_modifying_etc_hosts) |
 
 Baseimage-docker is very lightweight: it only consumes 6 MB of memory.
-
-It also works around Docker bug.
 
 <a name="docker_single_process"></a>
 ### Wait, I thought Docker is about running a single process in a container?
