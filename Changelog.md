@@ -1,6 +1,6 @@
 ## 0.9.12 (not yet released)
 
- * TODO
+ * Added a workaround for Docker's inability to modify /etc/hosts in the container ([Docker bug 2267](https://github.com/dotcloud/docker/issues/2267)). Please refer to the README for details.
 
 ## 0.9.11 (release date: 2014-06-24)
 

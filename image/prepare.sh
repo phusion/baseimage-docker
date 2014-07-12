@@ -30,6 +30,12 @@ ln -sf /bin/true /sbin/initctl
 dpkg-divert --local --rename --add /usr/bin/ischroot
 ln -sf /bin/true /usr/bin/ischroot
 
+## Workaround https://github.com/dotcloud/docker/issues/2267,
+## not being able to modify /etc/hosts.
+mkdir -p /etc/workaround-docker-2267
+ln -s /etc/workaround-docker-2267 /cte
+cp /build/bin/workaround-docker-2267 /usr/bin/
+
 ## Install HTTPS support for APT.
 $minimal_apt_get_install apt-transport-https ca-certificates
 

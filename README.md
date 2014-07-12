@@ -1,6 +1,6 @@
 # A minimal Ubuntu base image modified for Docker-friendliness
 
-Baseimage-docker is a special [Docker](http://www.docker.io) image that is configured for correct use within Docker containers. It is Ubuntu, plus modifications for Docker-friendliness. You can use it as a base for your own Docker images.
+Baseimage-docker is a special [Docker](http://www.docker.io) image that is configured for correct use within Docker containers. It is Ubuntu, plus modifications for Docker-friendliness, plus workarounds for [some Docker bugs](#workaroud_modifying_etc_hosts). You can use it as a base for your own Docker images.
 
 Baseimage-docker is available for pulling from [the Docker registry](https://index.docker.io/u/phusion/baseimage/)!
 
@@ -52,6 +52,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
      * [Using your own key](#using_your_own_key)
      * [The `docker-bash` tool](#docker_bash)
    * [Disabling SSH](#disabling_ssh)
+   * [Working around Docker's inability to modify /etc/hosts](#workaroud_modifying_etc_hosts)
  * [Building the image yourself](#building)
  * [Conclusion](#conclusion)
 
@@ -76,8 +77,11 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 | cron | The cron daemon must be running for cron jobs to work. |
 | [runit](http://smarden.org/runit/) | Replaces Ubuntu's Upstart. Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. |
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
+| Workarounds for Docker bugs | [Learn more.](#workaroud_modifying_etc_hosts) |
 
 Baseimage-docker is very lightweight: it only consumes 6 MB of memory.
+
+It also works around Docker bug.
 
 <a name="docker_single_process"></a>
 ### Wait, I thought Docker is about running a single process in a container?
@@ -413,6 +417,27 @@ If you want to call the resulting image something else, pass the NAME variable, 
 In case you do not want to enable SSH, here's how you can disable it:
 
     RUN rm -rf /etc/service/sshd /etc/my_init.d/00_regen_ssh_host_keys.sh
+
+<a name="workaroud_modifying_etc_hosts"></a>
+### Working around Docker's inability to modify /etc/hosts
+
+It is currently not possible to modify /etc/hosts inside a Docker container because of [Docker bug 2267](https://github.com/dotcloud/docker/issues/2267). Baseimage-docker includes a workaround for this. You have to be explicitly opt-in for the workaround.
+
+The workaround involves modifying a system library, libnss_files.so.2, so that it looks for the host file in /etc/workaround-docker-2267/hosts instead of /etc/hosts. Instead of modifying /etc/hosts, you modify /etc/workaround-docker-2267/hosts instead.
+
+Add this to your Dockerfile to opt-in for the workaround. This command modifies libnss_files.so.2 as described above.
+
+    RUN /usr/bin/workaround-docker-2267
+
+(You don't necessarily have to run this command from the Dockerfile. You can also run it from a shell inside the container.)
+
+To verify that it works, [open a bash shell in your container](#inspecting), modify /etc/workaround-docker-2267/hosts, and check whether it had any effect:
+
+    bash# echo 127.0.0.1 my-test-domain.com >> /etc/workaround-docker-2267/hosts
+    bash# ping my-test-domain.com
+    ...should ping 127.0.0.1...
+
+**Note on apt-get upgrading:** if any Ubuntu updates overwrite libnss_files.so.2, then the workaround is removed. You have to re-enable it by running `/usr/bin/workaround-docker-2267`. To be safe, you should run this command every time after running `apt-get upgrade`.
 
 <a name="conclusion"></a>
 ## Conclusion
