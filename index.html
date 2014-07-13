@@ -205,7 +205,13 @@ CMD ["/my_app/start.sh"]</pre>
         <div class="col-lg-6 col-lg-offset-3">
           <p>Solving <a href="#intro">all the aforementioned problems</a> is a huge pain. I'm sure you have better things to do than to worry about them. That's where <a href="https://github.com/phusion/baseimage-docker">baseimage-docker</a> jumps in.</p>
 
-          <p>Baseimage-docker is a special Docker image that is configured for correct use within Docker containers. It is Ubuntu, plus modifications for Docker-friendliness. Every single one of the aforementioned problem's are taken care of for you.</p>
+          <p>Baseimage-docker is a special Docker image that is configured for correct use within Docker containers. It is Ubuntu, plus:</p>
+          <ul>
+            <li>Modifications for Docker-friendliness.</li>
+            <li><a href="https://github.com/phusion/baseimage-docker#workaroud_modifying_etc_hosts">Workarounds for some Docker bugs.</a></li>
+            <li>Useful administration tools.</li>
+          </ul>
+          <p>Also, every single one of the aforementioned problems are taken care of for you.</p>
 
           <p>You can use it as a base for your own Docker images. That means it's available for pulling from <a href="https://index.docker.io/u/phusion/baseimage/">the Docker registry</a>!</p>
 
@@ -231,12 +237,15 @@ CMD ["/my_app/start.sh"]</pre>
             </dd>
             <dt>Fixes APT incompatibilities with Docker</dt>
             <dd>See <a href="https://github.com/dotcloud/docker/issues/1024">Docker issue #1024</a>.</dd>
+            <dt>Workarounds for Docker bugs</dt>
+            <dd><a href="https://github.com/phusion/baseimage-docker#workaroud_modifying_etc_hosts">Learn more.</a></dd>
             <dt>syslog-ng</dt>
             <dd>It runs a syslog daemon so that important system messages don't get lost.</dd>
             <dt>cron daemon</dt>
             <dd>It runs a cron daemon so that cronjobs work.</dd>
             <dt>SSH server</dt>
             <dd><p>Allows you to easily login to your container to inspect or administer things.</p>
+              <p><em>SSH is only one of the methods provided by baseimage-docker for this purpose. The other method is through <a href="https://github.com/phusion/baseimage-docker#login_nsenter">the nsenter tool</a>. SSH is also provided as an option because nsenter has many issues.</em></p>
               <p>Password and challenge-response authentication are disabled by default. Only key authentication is allowed.</p>
               <p>In some cases, running the SSH daemon is not desirable. The SSH daemon <a href="https://github.com/phusion/baseimage-docker#disabling_ssh">can be easily disabled</a> if you so wish.</p>
             </dd>
