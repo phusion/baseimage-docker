@@ -1,11 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 set -e
-set -o pipefail
 
 KNOWN_HOSTS_FILE=
 IP=
 
-function usage()
+usage()
 {
 	echo "Usage: docker-bash <CONTAINER_ID> [COMMAND...]"
 	echo "Login to a Baseimage-based Docker container using SSH."
@@ -13,19 +12,19 @@ function usage()
 	echo "Otherwise, runs COMMAND inside the container."
 }
 
-function cleanup()
+cleanup()
 {
 	local pids=`jobs -p`
-	if [[ "$pids" != "" ]]; then
+	if test "$pids" != ""; then
 		kill $pids
 	fi
 
-	if [[ "$KNOWN_HOSTS_FILE" != "" ]]; then
+	if test "$KNOWN_HOSTS_FILE" != ""; then
 		rm -f "$KNOWN_HOSTS_FILE"
 	fi
 }
 
-if [[ $# = 0 ]]; then
+if test $# = 0; then
 	usage
 	exit
 fi
@@ -35,13 +34,13 @@ shift
 
 trap cleanup EXIT
 
-if ! [[ -e ~/.baseimage_docker_insecure_key ]]; then
-	if [[ -e /usr/local/share/baseimage-docker/insecure_key ]]; then
+if ! test -e ~/.baseimage_docker_insecure_key; then
+	if test -e /usr/local/share/baseimage-docker/insecure_key; then
 		cp /usr/local/share/baseimage-docker/insecure_key ~/.baseimage_docker_insecure_key
 	else
 		dir=`dirname "$0"`
 		dir=`cd "$dir/.." && pwd`
-		if [[ -e "$dir/image/insecure_key" ]]; then
+		if test -e "$dir/image/insecure_key"; then
 			cp "$dir/image/insecure_key" ~/.baseimage_docker_insecure_key
 		else
 			echo "*** ERROR ***: Baseimage-docker insecure key not found." >&2
@@ -72,7 +71,7 @@ if ! ssh -i ~/.baseimage_docker_insecure_key \
 	"root@$IP" "$@"
 then
 	STATUS=$?
-	if [[ $# = 0 ]]; then
+	if test $# = 0; then
 		echo "----------------"
 		echo "It appears that login to the Docker container failed. This could be caused by the following reasons:"
 		echo "- The Docker container you're trying to login to is not based on Baseimage-docker. The docker-bash tool only works with Baseimage-docker-based containers."
