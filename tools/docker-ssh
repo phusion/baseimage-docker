@@ -1,0 +1,81 @@
+#!/bin/sh
+set -e
+
+KNOWN_HOSTS_FILE=
+IP=
+
+usage()
+{
+	echo "Usage: docker-ssh <CONTAINER_ID> [COMMAND...]"
+	echo "Login to a Baseimage-based Docker container using SSH." \
+		"If COMMAND is not given, opens an interactive shell." \
+		"Otherwise, runs COMMAND inside the container."
+}
+
+cleanup()
+{
+	local pids=`jobs -p`
+	if test "$pids" != ""; then
+		kill $pids
+	fi
+
+	if test "$KNOWN_HOSTS_FILE" != ""; then
+		rm -f "$KNOWN_HOSTS_FILE"
+	fi
+}
+
+if test $# = 0; then
+	usage
+	exit
+fi
+
+CONTAINER_ID="$1"
+shift
+
+trap cleanup EXIT
+
+if ! test -e ~/.baseimage_docker_insecure_key; then
+	if test -e /usr/local/share/baseimage-docker/insecure_key; then
+		cp /usr/local/share/baseimage-docker/insecure_key ~/.baseimage_docker_insecure_key
+	else
+		dir=`dirname "$0"`
+		dir=`cd "$dir/.." && pwd`
+		if test -e "$dir/image/insecure_key"; then
+			cp "$dir/image/insecure_key" ~/.baseimage_docker_insecure_key
+		else
+			echo "*** ERROR ***: Baseimage-docker insecure key not found." >&2
+			echo "You probably didn't install docker-ssh properly. Please reinstall it:" >&2
+			echo "" >&2
+			echo "  curl --fail -L -O https://github.com/phusion/baseimage-docker/archive/master.tar.gz && \\" >&2
+			echo "  tar xzf master.tar.gz && \\" >&2
+			echo "  sudo ./baseimage-docker-master/install-tools.sh" >&2
+			exit 1
+		fi
+	fi
+	chown "`whoami`": ~/.baseimage_docker_insecure_key
+	chmod 600 ~/.baseimage_docker_insecure_key
+fi
+
+KNOWN_HOSTS_FILE=`mktemp /tmp/docker-ssh.XXXXXXXXX`
+IP=`docker inspect -f "{{ .NetworkSettings.IPAddress }}" "$CONTAINER_ID"`
+
+# Prevent SSH from warning about adding a host to the known_hosts file.
+ssh-keyscan "$IP" >"$KNOWN_HOSTS_FILE" 2>&1
+
+if ! ssh -i ~/.baseimage_docker_insecure_key \
+	-o UserKnownHostsFile="$KNOWN_HOSTS_FILE" \
+	-o StrictHostKeyChecking=no \
+	-o PasswordAuthentication=no \
+	-o KbdInteractiveAuthentication=no \
+	-o ChallengeResponseAuthentication=no \
+	"root@$IP" "$@"
+then
+	STATUS=$?
+	if test $# = 0; then
+		echo "----------------"
+		echo "It appears that login to the Docker container failed. This could be caused by the following reasons:"
+		echo "- The Docker container you're trying to login to is not based on Baseimage-docker. The docker-ssh tool only works with Baseimage-docker-based containers."
+		echo "- You did not enable the the insecure key inside the container. Please read https://github.com/phusion/baseimage-docker/blob/master/README.md#login to learn how to enable the insecure key."
+	fi
+	exit $STATUS
+fi

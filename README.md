@@ -1,6 +1,12 @@
 # A minimal Ubuntu base image modified for Docker-friendliness
 
-Baseimage-docker is a special [Docker](http://www.docker.io) image that is configured for correct use within Docker containers. It is Ubuntu, plus modifications for Docker-friendliness, plus workarounds for [some Docker bugs](#workaroud_modifying_etc_hosts). You can use it as a base for your own Docker images.
+Baseimage-docker is a special [Docker](http://www.docker.io) image that is configured for correct use within Docker containers. It is Ubuntu, plus:
+
+ * Modifications for Docker-friendliness.
+ * Workarounds for [some Docker bugs](#workaroud_modifying_etc_hosts).
+ * Useful administration tools.
+
+You can use it as a base for your own Docker images.
 
 Baseimage-docker is available for pulling from [the Docker registry](https://index.docker.io/u/phusion/baseimage/)!
 
@@ -40,19 +46,24 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
    * [Getting started](#getting_started)
    * [Adding additional daemons](#adding_additional_daemons)
    * [Running scripts during container startup](#running_startup_scripts)
-   * [Running a one-shot command in the container](#oneshot)
    * [Environment variables](#environment_variables)
      * [Centrally defining your own environment variables](#envvar_central_definition)
      * [Environment variable dumps](#envvar_dumps)
      * [Modifying environment variables](#modifying_envvars)
      * [Security](#envvar_security)
-   * [Login to the container via SSH](#login)
+   * [Working around Docker's inability to modify /etc/hosts](#workaroud_modifying_etc_hosts)
+   * [Disabling SSH](#disabling_ssh)
+ * [Container administration](#container_administration)
+   * [Running a one-shot command in a new container](#oneshot)
+   * [Running a command in an existing, running container](#run_inside_existing_container)
+   * [Login to the container via nsenter](#login_nsenter)
+     * [Usage](#nsenter_usage)
+     * [The `docker-bash` tool](#docker_bash)
+   * [Login to the container via SSH](#login_ssh)
      * [Using the insecure key for one container only](#using_the_insecure_key_for_one_container_only)
      * [Enabling the insecure key permanently](#enabling_the_insecure_key_permanently)
      * [Using your own key](#using_your_own_key)
-     * [The `docker-bash` tool](#docker_bash)
-   * [Disabling SSH](#disabling_ssh)
-   * [Working around Docker's inability to modify /etc/hosts](#workaroud_modifying_etc_hosts)
+     * [The `docker-ssh` tool](#docker_ssh)
  * [Building the image yourself](#building)
  * [Conclusion](#conclusion)
 
@@ -71,13 +82,13 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 | Ubuntu 14.04 LTS | The base system. |
 | A **correct** init process | According to the Unix process model, [the init process](https://en.wikipedia.org/wiki/Init) -- PID 1 -- inherits all [orphaned child processes](https://en.wikipedia.org/wiki/Orphan_process) and must [reap them](https://en.wikipedia.org/wiki/Wait_(system_call)). Most Docker containers do not have an init process that does this correctly, and as a result their containers become filled with [zombie processes](https://en.wikipedia.org/wiki/Zombie_process) over time. <br><br>Furthermore, `docker stop` sends SIGTERM to the init process, which is then supposed to stop all services. Unfortunately most init systems don't do this correctly within Docker since they're built for hardware shutdowns instead. This causes processes to be hard killed with SIGKILL, which doesn't give them a chance to correctly deinitialize things. This can cause file corruption. <br><br>Baseimage-docker comes with an init process `/sbin/my_init` that performs both of these tasks correctly. |
 | Fixes APT incompatibilities with Docker | See https://github.com/dotcloud/docker/issues/1024. |
+| Workarounds for Docker bugs | [Learn more.](#workaroud_modifying_etc_hosts) |
 | syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. |
 | logrotate | Rotates and compresses logs on a regular basis. |
-| ssh server | Allows you to easily login to your container to inspect or administer things. <br><br>Password and challenge-response authentication are disabled by default. Only key authentication is allowed.<br><br>SSH access can be easily disabled if you so wish. Read on for instructions. |
+| SSH server | Allows you to easily login to your container to [inspect or administer](#login_ssh) things. <br><br>_SSH is only one of the methods provided by baseimage-docker for this purpose. The other method is through [the nsenter tool](#login_nsenter). SSH is also provided as an option because nsenter has many issues._<br><br>Password and challenge-response authentication are disabled by default. Only key authentication is allowed.<br><br>SSH access can be easily disabled if you so wish. Read on for instructions. |
 | cron | The cron daemon must be running for cron jobs to work. |
 | [runit](http://smarden.org/runit/) | Replaces Ubuntu's Upstart. Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. |
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
-| Workarounds for Docker bugs | [Learn more.](#workaroud_modifying_etc_hosts) |
 
 Baseimage-docker is very lightweight: it only consumes 6 MB of memory.
 
@@ -170,50 +181,6 @@ The following example shows how you can add a startup script. This script simply
     RUN mkdir -p /etc/my_init.d
     ADD logtime.sh /etc/my_init.d/logtime.sh
 
-<a name="oneshot"></a>
-### Running a one-shot command in the container
-
-Normally, when you want to run a single command in a container, and exit immediately after the command, you invoke Docker like this:
-
-    docker run YOUR_IMAGE COMMAND ARGUMENTS...
-
-However the downside of this approach is that the init system is not started. That is, while invoking `COMMAND`, important daemons such as cron and syslog are not running. Also, orphaned child processes are not properly reaped, because `COMMAND` is PID 1.
-
-Baseimage-docker provides a facility to run a single one-shot command, while solving all of the aforementioned problems. Run a single command in the following manner:
-
-    docker run YOUR_IMAGE /sbin/my_init -- COMMAND ARGUMENTS ...
-
-This will perform the following:
-
- * Runs all system startup files, such as /etc/my_init.d/* and /etc/rc.local.
- * Starts all runit services.
- * Runs the specified command.
- * When the specified command exits, stops all runit services.
-
-For example:
-
-    $ docker run phusion/baseimage:<VERSION> /sbin/my_init -- ls
-    *** Running /etc/my_init.d/00_regen_ssh_host_keys.sh...
-    No SSH host key available. Generating one...
-    Creating SSH2 RSA key; this may take some time ...
-    Creating SSH2 DSA key; this may take some time ...
-    Creating SSH2 ECDSA key; this may take some time ...
-    *** Running /etc/rc.local...
-    *** Booting runit daemon...
-    *** Runit started as PID 80
-    *** Running ls...
-    bin  boot  dev  etc  home  image  lib  lib64  media  mnt  opt  proc  root  run  sbin  selinux  srv  sys  tmp  usr  var
-    *** ls exited with exit code 0.
-    *** Shutting down runit daemon (PID 80)...
-    *** Killing all processes...
-
-You may find that the default invocation is too noisy. Or perhaps you don't want to run the startup files. You can customize all this by passing arguments to `my_init`. Invoke `docker run YOUR_IMAGE /sbin/my_init --help` for more information.
-
-The following example runs `ls` without running the startup files and with less messages, while running all runit services:
-
-    $ docker run phusion/baseimage:<VERSION> /sbin/my_init --skip-startup-files --quiet -- ls
-    bin  boot  dev  etc  home  image  lib  lib64  media  mnt  opt  proc  root  run  sbin  selinux  srv  sys  tmp  usr  var
-
 <a name="environment_variables"></a>
 ### Environment variables
 
@@ -299,10 +266,176 @@ If you are sure that your environment variables don't contain sensitive data, th
     RUN chmod 755 /etc/container_environment
     RUN chmod 644 /etc/container_environment.sh /etc/container_environment.json
 
-<a name="login"></a>
-### Login to the container via SSH
+<a name="workaroud_modifying_etc_hosts"></a>
+### Working around Docker's inability to modify /etc/hosts
 
-You can use SSH to login to any container that is based on baseimage-docker.
+It is currently not possible to modify /etc/hosts inside a Docker container because of [Docker bug 2267](https://github.com/dotcloud/docker/issues/2267). Baseimage-docker includes a workaround for this. You have to be explicitly opt-in for the workaround.
+
+The workaround involves modifying a system library, libnss_files.so.2, so that it looks for the host file in /etc/workaround-docker-2267/hosts instead of /etc/hosts. Instead of modifying /etc/hosts, you modify /etc/workaround-docker-2267/hosts instead.
+
+Add this to your Dockerfile to opt-in for the workaround. This command modifies libnss_files.so.2 as described above.
+
+    RUN /usr/bin/workaround-docker-2267
+
+(You don't necessarily have to run this command from the Dockerfile. You can also run it from a shell inside the container.)
+
+To verify that it works, [open a bash shell in your container](#inspecting), modify /etc/workaround-docker-2267/hosts, and check whether it had any effect:
+
+    bash# echo 127.0.0.1 my-test-domain.com >> /etc/workaround-docker-2267/hosts
+    bash# ping my-test-domain.com
+    ...should ping 127.0.0.1...
+
+**Note on apt-get upgrading:** if any Ubuntu updates overwrite libnss_files.so.2, then the workaround is removed. You have to re-enable it by running `/usr/bin/workaround-docker-2267`. To be safe, you should run this command every time after running `apt-get upgrade`.
+
+<a name="disabling_ssh"></a>
+### Disabling SSH
+
+Baseimage-docker enables an SSH server by default, so that you can [use SSH](#login_ssh) to [administer your container](#container_administration). In case you do not want to enable SSH, here's how you can disable it:
+
+    RUN rm -rf /etc/service/sshd /etc/my_init.d/00_regen_ssh_host_keys.sh
+
+<a name="container_administration"></a>
+## Container administration
+
+One of the ideas behind Docker is that containers should be stateless, easily restartable, and behave like a black box. However, you may occasionally encounter situations where you want to login to a container, or to run a command inside a container, for development, inspection and debugging purposes. This section describes how you can administer the container for those purposes.
+
+<a name="oneshot"></a>
+### Running a one-shot command in a new container
+
+_**Note:** This section describes how to run a command insider a -new- container. To run a command inside an existing running container, see [Running a command in an existing, running container](#run_inside_existing_container)._
+
+Normally, when you want to create a new container in order to run a single command inside it, and immediately exit after the command exits, you invoke Docker like this:
+
+    docker run YOUR_IMAGE COMMAND ARGUMENTS...
+
+However the downside of this approach is that the init system is not started. That is, while invoking `COMMAND`, important daemons such as cron and syslog are not running. Also, orphaned child processes are not properly reaped, because `COMMAND` is PID 1.
+
+Baseimage-docker provides a facility to run a single one-shot command, while solving all of the aforementioned problems. Run a single command in the following manner:
+
+    docker run YOUR_IMAGE /sbin/my_init -- COMMAND ARGUMENTS ...
+
+This will perform the following:
+
+ * Runs all system startup files, such as /etc/my_init.d/* and /etc/rc.local.
+ * Starts all runit services.
+ * Runs the specified command.
+ * When the specified command exits, stops all runit services.
+
+For example:
+
+    $ docker run phusion/baseimage:<VERSION> /sbin/my_init -- ls
+    *** Running /etc/my_init.d/00_regen_ssh_host_keys.sh...
+    No SSH host key available. Generating one...
+    Creating SSH2 RSA key; this may take some time ...
+    Creating SSH2 DSA key; this may take some time ...
+    Creating SSH2 ECDSA key; this may take some time ...
+    *** Running /etc/rc.local...
+    *** Booting runit daemon...
+    *** Runit started as PID 80
+    *** Running ls...
+    bin  boot  dev  etc  home  image  lib  lib64  media  mnt  opt  proc  root  run  sbin  selinux  srv  sys  tmp  usr  var
+    *** ls exited with exit code 0.
+    *** Shutting down runit daemon (PID 80)...
+    *** Killing all processes...
+
+You may find that the default invocation is too noisy. Or perhaps you don't want to run the startup files. You can customize all this by passing arguments to `my_init`. Invoke `docker run YOUR_IMAGE /sbin/my_init --help` for more information.
+
+The following example runs `ls` without running the startup files and with less messages, while running all runit services:
+
+    $ docker run phusion/baseimage:<VERSION> /sbin/my_init --skip-startup-files --quiet -- ls
+    bin  boot  dev  etc  home  image  lib  lib64  media  mnt  opt  proc  root  run  sbin  selinux  srv  sys  tmp  usr  var
+
+<a name="run_inside_existing_container"></a>
+### Running a command in an existing, running container
+
+There are two ways to run a command inside an existing, running container.
+
+ * Through the `nsenter` tool. This tool uses Linux kernel system calls in order to execute a command within the context of a container. Learn more in [Login to the container, or running a command inside it, via nsenter](#login_nsenter).
+ * Through SSH. This approach requires running an SSH daemon inside the container, and requires you to setup SSH keys. Learn more in [Login to the container, or running a command inside it, via SSH](#login_ssh).
+
+Both way have their own pros and cons, which you can learn in their respective subsections.
+
+<a name="login_nsenter"></a>
+### Login to the container, or running a command inside it, via nsenter
+
+You can use the `nsenter` tool on the Docker host OS to login to any container that is based on baseimage-docker. You can also use it to run a command inside a running container. `nsenter` works by using Linux kernel system calls.
+
+Here's how it compares to [using SSH to login to the container or to run a command inside it](#login_ssh):
+
+ * Pros
+   * Does not require running an SSH daemon inside the container.
+   * Does not require setting up SSH keys.
+   * Works on any container, even containers not based on baseimage-docker.
+ * Cons
+   * Processes executed by `nsenter` behave in a slightly different manner than normal. For example, they cannot be killed by any normal processes inside the container. This applies to all child processes as well.
+   * If the `nsenter` process is terminated by a signal (e.g. with the `kill` command), then the command that is executed by nsenter is *not* killed and cleaned up. You will have to do that manually. (Note that terminal control commands like Ctrl-C *do* clean up all child processes, because terminal signals are sent to all processes in the terminal session.)
+   * Requires learning another tool.
+   * Requires root privileges on the Docker host.
+   * Requires the `nsenter` tool to be available on the Docker host. At the time of writing (July 2014), most Linux distributions do not ship it. However, baseimage-docker provides a precompiled binary, and allows you to easily use it, through its [docker-bash](#docker_bash) tool.
+   * Not possible to allow users to login to the container without also letting them login to the Docker host.
+
+<a name="nsenter_usage"></a>
+#### Usage
+
+First, ensure that `nsenter` is installed. At the time of writing (July 2014), almost no Linux distribution ships the `nsenter` tool. However, we provide [a precompiled binary](#docker_bash) that anybody can use.
+
+Anyway, start a container:
+
+    docker run YOUR_IMAGE
+
+Find out the ID of the container that you just ran:
+
+    docker ps
+
+Once you have the ID, look for the PID of the main process inside the container.
+
+    docker inspect -f "{{ .State.Pid }}" <ID>
+
+Now that you have the container's main process PID, you can use `nsenter` to login to the container, or to execute a command inside it:
+
+    # Login to the container
+    nsenter --target <MAIN PROCESS PID> --mount --uts --ipc --net --pid bash -l
+
+    # Running a command inside the container
+    nsenter --target <MAIN PROCESS PID> --mount --uts --ipc --net --pid -- echo hello world
+
+<a name="docker_bash"></a>
+#### The `docker-bash` tool
+
+Looking up the main process PID of a container and typing the long nsenter command quickly becomes tedious. Luckily, we provide the `docker-bash` tool which automates this process. This tool is to be run on the *Docker host*, not inside a Docker container.
+
+This tool also comes with a precompiled `nsenter` binary, so that you don't have to install `nsenter` yourself. `docker-bash` works out-of-the-box!
+
+First, install the tool on the Docker host:
+
+    curl --fail -L -O https://github.com/phusion/baseimage-docker/archive/master.tar.gz && \
+    tar xzf master.tar.gz && \
+    sudo ./baseimage-docker-master/install-tools.sh
+
+Then run the tool as follows to login to a container:
+
+    docker-bash YOUR-CONTAINER-ID
+
+You can lookup `YOUR-CONTAINER-ID` by running `docker ps`.
+
+By default, `docker-bash` will open a Bash session. You can also tell it to run a command, and then exit:
+
+    docker-bash YOUR-CONTAINER-ID echo hello world
+
+<a name="login_ssh"></a>
+### Login to the container, or running a command inside it, via SSH
+
+You can use SSH to login to any container that is based on baseimage-docker. You can also use it to run a command inside a running container.
+
+Here's how it compares to [using nsenter to login to the container or to run a command inside it](#login_nsenter):
+
+ * Pros
+   * Does not require a tool like `nsenter` to be available on the Docker host. Virtually everybody already has an SSH client installed.
+   * There no surprises with processes behaving slightly differently than normal, as is the case when using `nsenter`.
+   * Does not require root privileges on the Docker host.
+   * Allows you to let users login to the container, without letting them login to the Docker host. However, this is not enabled by default because baseimage-docker does not expose the SSH server to the public Internet by default.
+ * Cons
+   * Requires setting up SSH keys. However, baseimage-docker makes this easy for many cases through a pregenerated, insecure key. Read on to learn more.
 
 The first thing that you need to do is to ensure that you have the right SSH keys installed inside the container. By default, no keys are installed, so you can't login. For convenience reasons, we provide [a pregenerated, insecure key](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key.ppk) that you can easily enable. However, please be aware that using this key is for convenience only. It does not provide any security because this key (both the public and the private side) is publicly available. **In production environments, you should use your own keys**.
 
@@ -323,11 +456,17 @@ Once you have the ID, look for its IP address with:
 
     docker inspect -f "{{ .NetworkSettings.IPAddress }}" <ID>
 
-Now SSH into the container as follows:
+Now that you have the IP address, you can use SSH to login to the container, or to execute a command inside it:
 
+    # Download the insecure private key
     curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/insecure_key
     chmod 600 insecure_key
+
+    # Login to the container
     ssh -i insecure_key root@<IP address>
+
+    # Running a command inside the container
+    ssh -i insecure_key root@<IP address> echo hello world
 
 <a name="enabling_the_insecure_key_permanently"></a>
 #### Enabling the insecure key permanently
@@ -361,14 +500,18 @@ Once you have the ID, look for its IP address with:
 
     docker inspect -f "{{ .NetworkSettings.IPAddress }}" <ID>
 
-Now SSH into the container as follows:
+Now that you have the IP address, you can use SSH to login to the container, or to execute a command inside it:
 
+    # Login to the container
     ssh -i /path-to/your_key root@<IP address>
 
-<a name="docker_bash"></a>
-#### The `docker-bash` tool
+    # Running a command inside the container
+    ssh -i /path-to/your_key root@<IP address> echo hello world
 
-Looking up the IP of a container and running an SSH command quickly becomes tedious. Luckily, we provide the `docker-bash` tool which automates this process. This tool is to be run on the *Docker host*, not inside a Docker container.
+<a name="docker_ssh"></a>
+#### The `docker-ssh` tool
+
+Looking up the IP of a container and running an SSH command quickly becomes tedious. Luckily, we provide the `docker-ssh` tool which automates this process. This tool is to be run on the *Docker host*, not inside a Docker container.
 
 First, install the tool on the Docker host:
 
@@ -378,41 +521,13 @@ First, install the tool on the Docker host:
 
 Then run the tool as follows to login to a container using SSH:
 
-    docker-bash YOUR-CONTAINER-ID
+    docker-ssh YOUR-CONTAINER-ID
 
 You can lookup `YOUR-CONTAINER-ID` by running `docker ps`.
 
-By default, `docker-bash` will open a Bash session. You can also tell it to run a command, and then exit:
+By default, `docker-ssh` will open a Bash session. You can also tell it to run a command, and then exit:
 
-    docker-bash YOUR-CONTAINER-ID echo hello world
-
-<a name="disabling_ssh"></a>
-### Disabling SSH
-
-In case you do not want to enable SSH, here's how you can disable it:
-
-    RUN rm -rf /etc/service/sshd /etc/my_init.d/00_regen_ssh_host_keys.sh
-
-<a name="workaroud_modifying_etc_hosts"></a>
-### Working around Docker's inability to modify /etc/hosts
-
-It is currently not possible to modify /etc/hosts inside a Docker container because of [Docker bug 2267](https://github.com/dotcloud/docker/issues/2267). Baseimage-docker includes a workaround for this. You have to be explicitly opt-in for the workaround.
-
-The workaround involves modifying a system library, libnss_files.so.2, so that it looks for the host file in /etc/workaround-docker-2267/hosts instead of /etc/hosts. Instead of modifying /etc/hosts, you modify /etc/workaround-docker-2267/hosts instead.
-
-Add this to your Dockerfile to opt-in for the workaround. This command modifies libnss_files.so.2 as described above.
-
-    RUN /usr/bin/workaround-docker-2267
-
-(You don't necessarily have to run this command from the Dockerfile. You can also run it from a shell inside the container.)
-
-To verify that it works, [open a bash shell in your container](#inspecting), modify /etc/workaround-docker-2267/hosts, and check whether it had any effect:
-
-    bash# echo 127.0.0.1 my-test-domain.com >> /etc/workaround-docker-2267/hosts
-    bash# ping my-test-domain.com
-    ...should ping 127.0.0.1...
-
-**Note on apt-get upgrading:** if any Ubuntu updates overwrite libnss_files.so.2, then the workaround is removed. You have to re-enable it by running `/usr/bin/workaround-docker-2267`. To be safe, you should run this command every time after running `apt-get upgrade`.
+    docker-ssh YOUR-CONTAINER-ID echo hello world
 
 
 <a name="building"></a>
