@@ -1,8 +1,11 @@
 ## 0.9.12 (not yet released)
 
+ * We now officially support `nsenter` as an alternative way to login to the container. With official support, we mean that we've provided extensive documentation on how to use `nsenter`, as well as related convenience tools. However, because `nsenter` has various issues, and for backward compatibility reasons, we still support SSH. Please refer to the README for details about `nsenter`, and what the pros and cons are compared to SSH.
+   * The `docker-bash` tool has been modified to use `nsenter` instead of SSH.
+   * What was previously the `docker-bash` tool, has now been renamed to `docker-ssh`. It now also works on a regular sh shell too, instead of bash specifically.
  * Added a workaround for Docker's inability to modify /etc/hosts in the container ([Docker bug 2267](https://github.com/dotcloud/docker/issues/2267)). Please refer to the README for details.
- * The docker-bash tool now works on a regular sh shell too, instead of bash specifically. Closes GH-102.
  * Fixed an issue with SSH X11 forwarding. Thanks to Anatoly Bubenkov. Closes GH-105.
+ * The init system now prints its own log messages to stderr. Thanks to mephi42. Closes GH-106.
 
 ## 0.9.11 (release date: 2014-06-24)
 
