@@ -1,4 +1,4 @@
-## 0.9.12 (not yet released)
+## 0.9.12 (release date: 2014-07-24)
 
  * We now officially support `nsenter` as an alternative way to login to the container. With official support, we mean that we've provided extensive documentation on how to use `nsenter`, as well as related convenience tools. However, because `nsenter` has various issues, and for backward compatibility reasons, we still support SSH. Please refer to the README for details about `nsenter`, and what the pros and cons are compared to SSH.
    * The `docker-bash` tool has been modified to use `nsenter` instead of SSH.
