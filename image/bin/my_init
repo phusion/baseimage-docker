@@ -291,6 +291,7 @@ def main(args):
 					info("%s exited with status %d." % (args.main_command[0], exit_status))
 			except KeyboardInterrupt:
 				stop_child_process(args.main_command[0], pid)
+				raise
 			except BaseException as s:
 				warn("An error occurred. Aborting.")
 				stop_child_process(args.main_command[0], pid)
