@@ -1,6 +1,7 @@
 ## 0.9.13 (not yet released)
 
  * Fixed `my_init` not properly exiting with a non-zero exit status when Ctrl-C is pressed.
+ * The GID of the `docker_env` group has been changed from 1000 to 8377, in order to avoid GID conflicts with any groups that you might want to introduce inside the container.
 
 ## 0.9.12 (release date: 2014-07-24)
 
