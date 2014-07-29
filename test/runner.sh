@@ -17,7 +17,7 @@ function cleanup()
 PWD=`pwd`
 
 echo " --> Starting insecure container"
-ID=`docker run -d -v $PWD/test:/test $NAME:$VERSION /sbin/my_init --enable-insecure-key`
+ID=`docker run -d -v $PWD/test:/test $NAME:$VERSION /sbin/my_init`
 sleep 1
 
 echo " --> Obtaining IP"
