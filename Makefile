@@ -1,4 +1,4 @@
-NAME = deis/baseimage
+NAME = deis/newbase
 VERSION = 0.1
 
 .PHONY: all build test tag_latest release ssh
