@@ -47,4 +47,15 @@ apt-get dist-upgrade -y --no-install-recommends
 
 ## Fix locale.
 $minimal_apt_get_install language-pack-en
-locale-gen en_US
+locale-gen en_US.UTF-8
+
+## teh deps
+$minimal_apt_get_install make net-tools sudo wget vim strace lsof netcat
+
+## Download our version of etcdctl
+wget https://s3-us-west-2.amazonaws.com/opdemand/etcdctl-v0.4.5 -O /usr/local/bin/etcdctl
+chmod +x /usr/local/bin/etcdctl
+
+## Download confd
+wget https://s3-us-west-2.amazonaws.com/opdemand/confd-v0.5.0 -O /usr/local/bin/confd
+chmod +x /usr/local/bin/confd
