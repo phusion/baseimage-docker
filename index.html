@@ -16,7 +16,7 @@
   <!-- Custom styles for this template -->
   <link href="assets/css/main.css" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/font-awesome.min.css">
-  
+
   <link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=EB+Garamond' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:600' rel='stylesheet' type='text/css'>
@@ -129,9 +129,9 @@
       </div>
     </div><!-- /container -->
   </div><!-- /headerwrap -->
-  
-  
-  
+
+
+
   <!-- ========== ABOUT SECTION ========== -->
   <section id="about" name="about"></section>
   <div id="f">
@@ -139,7 +139,7 @@
       <div class="row">
         <h1 id="intro">So you're building a Docker image. What might be wrong with it?</h1>
         <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
-        
+
         <!-- INTRO INFORMATIO-->
         <div class="col-lg-6 col-lg-offset-3">
           <p>You learned about <a href="http://www.docker.io">Docker</a>. It's awesome and you're excited. You go and create a Dockerfile:</p>
@@ -157,7 +157,7 @@ CMD ["/my_app/start.sh"]</pre>
           <p>Not quite. You have Ubuntu <em>installed</em> in Docker. The files are there. But that doesn't mean Ubuntu's running as it should.</p>
           <p>When your Docker container starts, <em>only</em> the CMD command is run. The only processes that will be running inside the container is the CMD command, and all processes that it spawns. That's why all kinds of important system services are not run automatically &ndash; you have to run them yourself.</p>
           <p>Furthermore, Ubuntu is not designed to be run inside Docker. Its init system, Upstart, assumes that it's running on either real hardware or virtualized hardware, but not inside a Docker container, which is a locked down environment with e.g. no direct access to many kernel resources. Normally, that's okay: inside a container you don't want to run Upstart anyway. You don't want a full system, you want a minimal system. But configuring that minimal system for use within a container has many strange corner cases that are hard to get right if you are not intimately familiar with the Unix system model. This can cause a lot of strange problems.</p>
-          
+
           <h2 class="quote">"What important system services am I missing?"</h2>
           <dl>
             <dt>A <em>correct</em> init process</dt>
@@ -298,7 +298,7 @@ RUN apt-get clean &amp;&amp; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*</pre>
 
           <p>The shell script must be called <code>run</code>, must be executable, and is to be placed in the directory <code>/etc/service/&lt;NAME&gt;</code>.</p>
 
-          <p>Here's an example showing you how a memached server runit entry can be made.</p>
+          <p>Here's an example showing you how a memcached server runit entry can be made.</p>
 
           <pre>### In memcached.sh (make sure this file is chmod +x):
 #!/bin/sh
@@ -350,7 +350,7 @@ ADD memcached.sh /etc/service/memcached/run</pre>
       </div>
     </div><!-- /container -->
   </div><!-- /f -->
-  
+
 
   <!-- ========== CONTACT SECTION ========== -->
   <section id="contact" name="contact" class="footer"></section>
@@ -359,7 +359,7 @@ ADD memcached.sh /etc/service/memcached/run</pre>
       <div class="row">
         <h1>BROUGHT TO YOU BY PHUSION</h1>
         <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
-        
+
         <div class="col-lg-6 col-lg-offset-3 centered">
           <div class="centered" style="margin-bottom: 2em">
             <a href="https://twitter.com/share" class="twitter-share-button" data-text="Your Docker container might be broken without you knowing it" data-via="phusion_nl" data-size="large" data-hashtags="docker">Tweet</a>
