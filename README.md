@@ -147,7 +147,7 @@ You can add additional daemons (e.g. your own app) to the image by creating runi
 
 The shell script must be called `run`, must be executable, and is to be placed in the directory `/etc/service/<NAME>`.
 
-Here's an example showing you how a memached server runit entry can be made.
+Here's an example showing you how a memcached server runit entry can be made.
 
     ### In memcached.sh (make sure this file is chmod +x):
     #!/bin/sh
