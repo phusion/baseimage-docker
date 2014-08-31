@@ -2,8 +2,8 @@ FROM ubuntu:14.04
 MAINTAINER Phusion <info@phusion.nl>
 
 ENV HOME /root
-ENV LC_ALL=C
-RNV DEBIAN_FRONTEND=noninteractive
+ENV LC_ALL C
+ENV DEBIAN_FRONTEND noninteractive
 RUN echo 'APT::Install-Recommends "0"; \n\
 APT::Get::Assume-Yes "true"; \n\
 APT::Get::force-yes "true"; \n\
