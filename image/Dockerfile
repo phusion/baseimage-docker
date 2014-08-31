@@ -11,8 +11,8 @@ APT::Install-Suggests "0";' > /etc/apt/apt.conf.d/01buildconfig \
  && mkdir /build
 ADD . /build
 
-RUN /build/system_services.sh && \
-    /build/utilities.sh && \
-    /build/cleanup.sh
+RUN /build/system_services.sh \
+ && /build/utilities.sh \
+ && /build/cleanup.sh
 
 CMD ["/sbin/my_init"]
