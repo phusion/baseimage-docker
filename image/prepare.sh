@@ -39,11 +39,11 @@ cp /build/bin/workaround-docker-2267 /usr/bin/
 apt-get install apt-transport-https ca-certificates
 
 ## Install add-apt-repository
-apt_get install software-properties-common
+apt-get install software-properties-common
 
 ## Upgrade all packages.
 apt-get dist-upgrade
 
 ## Fix locale.
-apt_get install language-pack-en
+apt-get install language-pack-en
 locale-gen en_US
