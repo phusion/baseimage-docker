@@ -106,7 +106,7 @@ To look around in the image, run:
 
     docker run --rm -t -i phusion/baseimage:<VERSION> /sbin/my_init -- bash -l
 
-where `<VERSION>` is [one of the baseimage-docker version numbers](https://github.com/phusion/baseimage-docker/blob/nsenter/Changelog.md).
+where `<VERSION>` is [one of the baseimage-docker version numbers](https://github.com/phusion/baseimage-docker/blob/master/Changelog.md).
 
 You don't have to download anything manually. The above command will automatically pull the baseimage-docker image from the Docker registry.
 
