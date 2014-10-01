@@ -1,3 +1,8 @@
+## 0.9.14 (release date: 2014-10-01)
+
+ * Installed all the latest Ubuntu security updates. This patches Shellshock, among other things.
+ * Some documentation updates by andreamtp.
+
 ## 0.9.13 (release date: 2014-08-22)
 
  * Fixed `my_init` not properly exiting with a non-zero exit status when Ctrl-C is pressed.
