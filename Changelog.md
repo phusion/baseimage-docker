@@ -1,3 +1,7 @@
+## 0.9.15 (release date: 2014-10-03)
+
+ * Fixed the setuid bit on /usr/bin/sudo. This problem was caused by Docker bug #6828.
+
 ## 0.9.14 (release date: 2014-10-01)
 
  * Installed all the latest Ubuntu security updates. This patches Shellshock, among other things.
