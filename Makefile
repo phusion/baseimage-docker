@@ -1,4 +1,4 @@
-NAME = phusion/baseimage
+NAME = gmacario/baseimage
 VERSION = 0.9.15
 
 .PHONY: all build test tag_latest release ssh
