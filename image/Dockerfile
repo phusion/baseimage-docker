@@ -1,6 +1,9 @@
 FROM ubuntu:14.04
 MAINTAINER Gianpaolo Macario <gmacario@gmail.com>
 
+# Create mountpoint for Vagrant synced folder
+RUN mkdir -p /vagrant
+
 ENV HOME /root
 RUN mkdir /build
 ADD . /build
