@@ -10,4 +10,7 @@ RUN /build/prepare.sh && \
 	/build/utilities.sh && \
 	/build/cleanup.sh
 
+# Create mountpoint for Vagrant synced folder
+RUN mkdir -p /vagrant
+
 CMD ["/sbin/my_init"]
