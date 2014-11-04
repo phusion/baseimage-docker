@@ -250,6 +250,8 @@ def wait_for_runit_services():
 def install_insecure_key():
 	info("Installing insecure SSH key for user root")
 	run_command_killable("/usr/sbin/enable_insecure_key")
+	info("Installing insecure SSH key for user vagrant")
+	run_command_killable("su", "-c", "/usr/sbin/enable_insecure_key", "vagrant")
 
 def main(args):
 	create_hosts_file()
