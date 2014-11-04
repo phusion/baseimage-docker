@@ -17,19 +17,11 @@ function cleanup()
 PWD=`pwd`
 
 echo " --> Starting insecure container"
-ID=`docker run -d -v $PWD/test:/test $NAME:$VERSION /sbin/my_init --enable-insecure-key`
+ID=`docker run -d -v $PWD/test:/test $NAME:$VERSION /sbin/my_init`
 sleep 1
-
-echo " --> Obtaining IP"
-IP=`docker inspect $ID | grep IPAddress | sed -e 's/.*: "//; s/".*//'`
-if [[ "$IP" = "" ]]; then
-	abort "Unable to obtain container IP"
-fi
 
 trap cleanup EXIT
 
 echo " --> Logging into container and running tests"
-chmod 600 image/insecure_key
 sleep 1 # Give container some more time to start up.
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i image/insecure_key root@$IP \
-	/bin/bash /test/test.sh
+docker exec $ID /bin/bash /test/test.sh

@@ -32,24 +32,6 @@ sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng/sys
 ## Install logrotate.
 $minimal_apt_get_install logrotate
 
-## Install the SSH server.
-$minimal_apt_get_install openssh-server
-mkdir /var/run/sshd
-mkdir /etc/service/sshd
-cp /build/runit/sshd /etc/service/sshd/run
-cp /build/config/sshd_config /etc/ssh/sshd_config
-cp /build/00_regen_ssh_host_keys.sh /etc/my_init.d/
-
-## Install default SSH key for root and app.
-mkdir -p /root/.ssh
-chmod 700 /root/.ssh
-chown root:root /root/.ssh
-cp /build/insecure_key.pub /etc/insecure_key.pub
-cp /build/insecure_key /etc/insecure_key
-chmod 644 /etc/insecure_key*
-chown root:root /etc/insecure_key*
-cp /build/bin/enable_insecure_key /usr/sbin/
-
 ## Install cron daemon.
 $minimal_apt_get_install cron
 mkdir /etc/service/cron
