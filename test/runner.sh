@@ -35,7 +35,7 @@ docker exec -t -i $ID sv start /etc/service/sshd
 sleep 1
 
 echo " --> Logging into container and running tests"
-cp image/insecure_key /tmp/insecure_key
+cp image/services/sshd/keys/insecure_key /tmp/insecure_key
 chmod 600 /tmp/insecure_key
 sleep 1 # Give container some more time to start up.
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /tmp/insecure_key root@$IP \
