@@ -2,7 +2,6 @@ FROM ubuntu:14.04
 MAINTAINER Phusion <info@phusion.nl>
 
 ENV HOME /root
-RUN mkdir /build
 ADD . /build
 
 RUN /build/prepare.sh && \
