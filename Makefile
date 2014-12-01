@@ -1,5 +1,5 @@
 NAME = gmacario/baseimage
-VERSION = 0.9.15
+VERSION = 0.9.15a
 
 .PHONY: all build test tag_latest release ssh
 
