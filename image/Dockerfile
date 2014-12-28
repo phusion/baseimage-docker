@@ -1,7 +1,9 @@
-FROM ubuntu:14.04
-MAINTAINER Phusion <info@phusion.nl>
+FROM armv7/ubuntu_core:14.10
+MAINTAINER Uli Middelberg <armv7@midelberg.de>
 
 ENV HOME /root
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN mkdir /build
 ADD . /build
 
