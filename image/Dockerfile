@@ -1,5 +1,5 @@
-FROM armv7/ubuntu_core:14.10
-MAINTAINER Uli Middelberg <armv7@midelberg.de>
+FROM armv7/ubuntu_core:14.04
+MAINTAINER Phusion <info@phusion.nl>
 
 ENV HOME /root
 ENV DEBIAN_FRONTEND noninteractive
