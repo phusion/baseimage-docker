@@ -1,4 +1,4 @@
-FROM armv7/ubuntu_core:14.04
+FROM armv7/armhf-ubuntu_core:14.10
 MAINTAINER Phusion <info@phusion.nl>
 
 ENV HOME /root
