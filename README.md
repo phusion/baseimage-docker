@@ -111,7 +111,7 @@ There are people who are under the impression that Baseimage-docker advocates tr
 
 The Docker developers advocate running multiple *logical services* inside a single container. But we are not disputing that. Baseimage-docker advocates running multiple *OS processes* inside a single container, and a single logical service can consist of multiple OS processes.
 
-It follows from this that Baseimage-docker also does not deny the Docker philosophy. In fact, many of the modifications we introduce are explicitly in line with the Docker philosophy.
+It follows from this that Baseimage-docker also does not deny the Docker philosophy. In fact, many of the modifications we introduce are explicitly in line with the Docker philosophy. For example, using environment variables to pass parameters to containers is very much the "Docker way", and provide [a mechanism to easily work with environment variables](#environment_variables) in the presence of multiple processes that may run as different users.
 
 <a name="inspecting"></a>
 ## Inspecting baseimage-docker
