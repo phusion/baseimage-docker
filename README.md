@@ -41,6 +41,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
  * [What's inside the image?](#whats_inside)
    * [Overview](#whats_inside_overview)
    * [Wait, I thought Docker is about running a single process in a container?](#docker_single_process)
+   * [Does Baseimage-docker advocate "fat containers" or "treating containers as VMs"?](#fat_containers)
  * [Inspecting baseimage-docker](#inspecting)
  * [Using baseimage-docker as base image](#using)
    * [Getting started](#getting_started)
@@ -95,9 +96,22 @@ Baseimage-docker is very lightweight: it only consumes 6 MB of memory.
 <a name="docker_single_process"></a>
 ### Wait, I thought Docker is about running a single process in a container?
 
-Absolutely not true. Docker runs fine with multiple processes in a container. In fact, there is no technical reason why you should limit yourself to one process - it only makes things harder for you and breaks all kinds of essential system functionality, e.g. syslog.
+The Docker developers advocate the philosophy of running a single *logical service* per container. A logical service can consist of multiple OS processes.
 
-Baseimage-docker *encourages* multiple processes through the use of runit.
+Baseimage-docker only advocates running multiple OS processes inside a single container. We believe this makes sense because at the very least it would solve [the PID 1 problem](#whats_inside_overview) and the "syslog blackhole" problem. By running multiple processes, we solve very real Unix OS-level problems, with minimal overhead and without turning the container into multiple logical services.
+
+Splitting your logical service into multiple OS processes also makes sense from a security standpoint. By running processes as different users, you can limit the impact of vulnerabilities. Baseimage-docker provides tools to encourage running processes as different users, e.g. the `setuser` tool.
+
+Do we advocate running multiple *logical services* in a single container? Not necessarily, but we do not prohibit it either. While the Docker developers are very opinionated and have very rigid philosophies about how containers *should* be built, Baseimage-docker is completely unopinionated. We believe in freedom: sometimes it makes sense to run multiple services in a single container, and sometimes it doesn't. It is up to you to decide what makes sense, not the Docker developers.
+
+<a name="fat_containers"></a>
+### Does Baseimage-docker advocate "fat containers" or "treating containers as VMs"?
+
+There are people who are under the impression that Baseimage-docker advocates treating containers as VMs, because of the fact that Baseimage-docker advocates the use of multiple processes. Therefore they are also under the impression that Baseimage-docker does not follow the Docker philosophy. Neither of these impressions are true.
+
+The Docker developers advocate running multiple *logical services* inside a single container. But we are not disputing that. Baseimage-docker advocates running multiple *OS processes* inside a single container, and a single logical service can consist of multiple OS processes.
+
+It follows from this that Baseimage-docker also does not deny the Docker philosophy. In fact, many of the modifications we introduce are explicitly in line with the Docker philosophy.
 
 <a name="inspecting"></a>
 ## Inspecting baseimage-docker
