@@ -4,7 +4,9 @@ source /build/buildconfig
 set -x
 
 ## Temporarily disable dpkg fsync to make building faster.
-echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/02apt-speedup
+if [[ ! -e /etc/dpkg/dpkg.cfg.d/docker-apt-speedup ]]; then
+	echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/docker-apt-speedup
+fi
 
 ## Prevent initramfs updates from trying to run grub and lilo.
 ## https://journal.paul.querna.org/articles/2013/10/15/docker-ubuntu-on-rackspace/
