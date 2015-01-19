@@ -4,7 +4,9 @@ source /build/buildconfig
 set -x
 
 ## Temporarily disable dpkg fsync to make building faster.
-echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/02apt-speedup
+if [[ ! -e /etc/dpkg/dpkg.cfg.d/docker-apt-speedup ]]; then
+	echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/docker-apt-speedup
+fi
 
 ## Prevent initramfs updates from trying to run grub and lilo.
 ## https://journal.paul.querna.org/articles/2013/10/15/docker-ubuntu-on-rackspace/
@@ -29,12 +31,6 @@ ln -sf /bin/true /sbin/initctl
 ## https://bugs.launchpad.net/launchpad/+bug/974584
 dpkg-divert --local --rename --add /usr/bin/ischroot
 ln -sf /bin/true /usr/bin/ischroot
-
-## Workaround https://github.com/dotcloud/docker/issues/2267,
-## not being able to modify /etc/hosts.
-mkdir -p /etc/workaround-docker-2267
-ln -s /etc/workaround-docker-2267 /cte
-cp /build/bin/workaround-docker-2267 /usr/bin/
 
 ## Install HTTPS support for APT.
 $minimal_apt_get_install apt-transport-https ca-certificates

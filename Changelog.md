@@ -1,3 +1,7 @@
+## 0.9.16 (next version, not yet released)
+
+ * The workaround for Docker bug 2267 (the inability to modify /etc/hosts) has been removed, because it has been fixed upstream.
+
 ## 0.9.15 (release date: 2014-10-03)
 
  * Fixed the setuid bit on /usr/bin/sudo. This problem was caused by Docker bug #6828.
