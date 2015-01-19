@@ -25,13 +25,19 @@ mkdir /etc/service/syslog-ng
 cp /build/runit/syslog-ng /etc/service/syslog-ng/run
 mkdir -p /var/lib/syslog-ng
 cp /build/config/syslog_ng_default /etc/default/syslog-ng
+touch /var/log/syslog
+chmod u=rw,g=r,o= /var/log/syslog
 # Replace the system() source because inside Docker we
 # can't access /proc/kmsg.
 sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng/syslog-ng.conf
 
+## Install syslog to "docker logs" forwarder.
+mkdir /etc/service/syslog-forwarder
+cp /build/runit/syslog-forwarder /etc/service/syslog-forwarder/run
+
 ## Install logrotate.
 $minimal_apt_get_install logrotate
-sed -i 's|invoke-rc.d syslog-ng reload|sv reload syslog-ng|g' /etc/logrotate.d/syslog-ng
+cp /build/config/logrotate_syslogng /etc/logrotate.d/syslog-ng
 
 ## Install the SSH server.
 $minimal_apt_get_install openssh-server
@@ -55,6 +61,7 @@ cp /build/bin/enable_insecure_key /usr/sbin/
 ## Install cron daemon.
 $minimal_apt_get_install cron
 mkdir /etc/service/cron
+chmod 600 /etc/crontab
 cp /build/runit/cron /etc/service/cron/run
 
 ## Remove useless cron entries.
