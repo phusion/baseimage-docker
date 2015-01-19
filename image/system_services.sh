@@ -31,6 +31,7 @@ sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng/sys
 
 ## Install logrotate.
 $minimal_apt_get_install logrotate
+sed -i 's|invoke-rc.d syslog-ng reload|sv reload syslog-ng|g' /etc/logrotate.d/syslog-ng
 
 ## Install the SSH server.
 $minimal_apt_get_install openssh-server

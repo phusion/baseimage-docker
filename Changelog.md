@@ -2,6 +2,7 @@
 
  * `docker exec` is now the default and recommended mechanism for running commands in the container. SSH is now disabled by default, but is still supported for those cases where "docker exec" is not appropriate. Closes GH-168.
  * The workaround for Docker bug 2267 (the inability to modify /etc/hosts) has been removed, because it has been fixed upstream. Closes GH-155.
+ * Logrotate now reloads syslog-ng properly. Closes GH-167.
 
 ## 0.9.15 (release date: 2014-10-03)
 
