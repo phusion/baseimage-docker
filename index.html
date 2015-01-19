@@ -180,11 +180,10 @@ CMD ["/my_app/start.sh"]</pre>
               <p>Many apps use cron services. But cron jobs never get run until the cron daemon is running in your container.</p>
               <p>The cron daemon is not run automatically. You have to start it yourself.</p>
             </dd>
-            <dt>SSH daemon</dt>
+            <dt>SSH daemon (sometimes)</dt>
             <dd>
-              <p>Your container is a full OS. It can run all kinds of things. Occasionally, you will have to administer it, e.g. checking its CPU usage and memory usage, inspecting what your app is doing, etc.</p>
-              <p>It's hard to do that properly from outside the container. You really should have a way to login to the container. That's why you should run an SSH daemon, so that you can SSH into the container.</p>
-              <p>The SSH daemon is not run automatically. You have to start it yourself.</p>
+              <p>Occasionally, you may want to run a command inside the container for contingency reasons. For example you may want to debug your misbehaving app. <tt>docker exec</tt> provides a great way of doing this, but unfortunately there are <a href="https://github.com/phusion/baseimage-docker#login_docker_exec">a number of drawbacks</a>. For example, users who run <tt>docker exec</tt> must have access to the Docker daemon, and that way they essentially have root access over the Docker host.</p>
+              <p>If that is problematic, then you should use SSH to log into the container instead. SSH has its own issues, like requiring key management, but that way you can prevent people from getting root access on the Docker host.</p>
             </dd>
           </dl>
 
@@ -208,8 +207,8 @@ CMD ["/my_app/start.sh"]</pre>
           <p>Baseimage-docker is a special Docker image that is configured for correct use within Docker containers. It is Ubuntu, plus:</p>
           <ul>
             <li>Modifications for Docker-friendliness.</li>
-            <li><a href="https://github.com/phusion/baseimage-docker#workaroud_modifying_etc_hosts">Workarounds for some Docker bugs.</a></li>
-            <li>Useful administration tools.</li>
+            <li>Administration tools that are especially useful in the context of Docker.</li>
+            <li>Mechanisms for easily running multiple processes, <a href="https://github.com/phusion/baseimage-docker#docker_single_process">without violating the Docker philosophy</a>.</li>
           </ul>
           <p>Also, every single one of the aforementioned problems are taken care of for you.</p>
 
@@ -237,17 +236,15 @@ CMD ["/my_app/start.sh"]</pre>
             </dd>
             <dt>Fixes APT incompatibilities with Docker</dt>
             <dd>See <a href="https://github.com/dotcloud/docker/issues/1024">Docker issue #1024</a>.</dd>
-            <dt>Workarounds for Docker bugs</dt>
-            <dd><a href="https://github.com/phusion/baseimage-docker#workaroud_modifying_etc_hosts">Learn more.</a></dd>
             <dt>syslog-ng</dt>
             <dd>It runs a syslog daemon so that important system messages don't get lost.</dd>
             <dt>cron daemon</dt>
             <dd>It runs a cron daemon so that cronjobs work.</dd>
             <dt>SSH server</dt>
             <dd><p>Allows you to easily login to your container to inspect or administer things.</p>
-              <p><em>SSH is only one of the methods provided by baseimage-docker for this purpose. The other method is through <a href="https://github.com/phusion/baseimage-docker#login_nsenter">the nsenter tool</a>. SSH is also provided as an option because nsenter has many issues.</em></p>
+              <p><em>SSH is only one of the methods provided by baseimage-docker for this purpose. The other method is through <a href="https://github.com/phusion/baseimage-docker#login_docker_exec">`docker exec`</a>. SSH is also provided as an option because `docker exec` has issues.</em></p>
               <p>Password and challenge-response authentication are disabled by default. Only key authentication is allowed.</p>
-              <p>In some cases, running the SSH daemon is not desirable. The SSH daemon <a href="https://github.com/phusion/baseimage-docker#disabling_ssh">can be easily disabled</a> if you so wish.</p>
+              <p>The SSH daemon is <a href="https://github.com/phusion/baseimage-docker#enabling_ssh">disabled by default</a>.</p>
             </dd>
             <dt><a href="http://smarden.org/runit/">runit</a></dt>
             <dd><p>Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart.</p>
