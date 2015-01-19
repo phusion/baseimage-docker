@@ -36,6 +36,7 @@ $minimal_apt_get_install logrotate
 $minimal_apt_get_install openssh-server
 mkdir /var/run/sshd
 mkdir /etc/service/sshd
+touch /etc/service/sshd/down
 cp /build/runit/sshd /etc/service/sshd/run
 cp /build/config/sshd_config /etc/ssh/sshd_config
 cp /build/00_regen_ssh_host_keys.sh /etc/my_init.d/
