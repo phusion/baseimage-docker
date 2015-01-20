@@ -1,4 +1,4 @@
-## 0.9.16 (next version, not yet released)
+## 0.9.16 (release date: 2015-01-20)
 
  * `docker exec` is now the default and recommended mechanism for running commands in the container. SSH is now disabled by default, but is still supported for those cases where "docker exec" is not appropriate. Closes GH-168.
  * All syslog output is now forwarded to `docker logs`. Closes GH-123.
