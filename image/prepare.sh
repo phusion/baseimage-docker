@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-source /build/buildconfig
 set -x
 
 ## Temporarily disable dpkg fsync to make building faster.
@@ -37,14 +36,14 @@ ln -s /etc/workaround-docker-2267 /cte
 cp /build/bin/workaround-docker-2267 /usr/bin/
 
 ## Install HTTPS support for APT.
-$minimal_apt_get_install apt-transport-https ca-certificates
+apt-get install apt-transport-https ca-certificates
 
 ## Install add-apt-repository
-$minimal_apt_get_install software-properties-common
+apt-get install software-properties-common
 
 ## Upgrade all packages.
-apt-get dist-upgrade -y --no-install-recommends
+apt-get dist-upgrade
 
 ## Fix locale.
-$minimal_apt_get_install language-pack-en
+apt-get install language-pack-en
 locale-gen en_US
