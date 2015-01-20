@@ -6,6 +6,7 @@
  * Logrotate now reloads syslog-ng properly. Closes GH-167.
  * Fixed some locale issues. Closes GH-178. Thanks to David J. M. Karlsen.
  * Fixed problems with cron. Closes GH-115.
+ * Contribution by Bryan Bishop.
 
 ## 0.9.15 (release date: 2014-10-03)
 
