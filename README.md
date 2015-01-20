@@ -3,7 +3,6 @@
 Baseimage-docker is a special [Docker](http://www.docker.io) image that is configured for correct use within Docker containers. It is Ubuntu, plus:
 
  * Modifications for Docker-friendliness.
- * Workarounds for [some Docker bugs](#workaroud_modifying_etc_hosts).
  * Useful administration tools.
 
 You can use it as a base for your own Docker images.
@@ -83,7 +82,6 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 | Ubuntu 14.04 LTS | The base system. |
 | A **correct** init process | According to the Unix process model, [the init process](https://en.wikipedia.org/wiki/Init) -- PID 1 -- inherits all [orphaned child processes](https://en.wikipedia.org/wiki/Orphan_process) and must [reap them](https://en.wikipedia.org/wiki/Wait_(system_call)). Most Docker containers do not have an init process that does this correctly, and as a result their containers become filled with [zombie processes](https://en.wikipedia.org/wiki/Zombie_process) over time. <br><br>Furthermore, `docker stop` sends SIGTERM to the init process, which is then supposed to stop all services. Unfortunately most init systems don't do this correctly within Docker since they're built for hardware shutdowns instead. This causes processes to be hard killed with SIGKILL, which doesn't give them a chance to correctly deinitialize things. This can cause file corruption. <br><br>Baseimage-docker comes with an init process `/sbin/my_init` that performs both of these tasks correctly. |
 | Fixes APT incompatibilities with Docker | See https://github.com/dotcloud/docker/issues/1024. |
-| Workarounds for Docker bugs | [Learn more.](#workaroud_modifying_etc_hosts) |
 | syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. |
 | logrotate | Rotates and compresses logs on a regular basis. |
 | SSH server | Allows you to easily login to your container to [inspect or administer](#login_ssh) things. <br><br>_SSH is only one of the methods provided by baseimage-docker for this purpose. The other method is through [the nsenter tool](#login_nsenter). SSH is also provided as an option because nsenter has many issues._<br><br>Password and challenge-response authentication are disabled by default. Only key authentication is allowed.<br><br>SSH access can be easily disabled if you so wish. Read on for instructions. |
@@ -137,20 +135,20 @@ The image is called `phusion/baseimage`, and is available on the Docker registry
     # See https://github.com/phusion/baseimage-docker/blob/master/Changelog.md for
     # a list of version numbers.
     FROM phusion/baseimage:<VERSION>
-    
+
     # Set correct environment variables.
     ENV HOME /root
-    
+
     # Regenerate SSH host keys. baseimage-docker does not contain any, so you
     # have to do that yourself. You may also comment out this instruction; the
     # init system will auto-generate one during boot.
     RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
-    
+
     # Use baseimage-docker's init system.
     CMD ["/sbin/my_init"]
-    
+
     # ...put your own build instructions here...
-    
+
     # Clean up APT when done.
     RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -283,23 +281,7 @@ If you are sure that your environment variables don't contain sensitive data, th
 <a name="workaroud_modifying_etc_hosts"></a>
 ### Working around Docker's inability to modify /etc/hosts
 
-It is currently not possible to modify /etc/hosts inside a Docker container because of [Docker bug 2267](https://github.com/dotcloud/docker/issues/2267). Baseimage-docker includes a workaround for this. You have to be explicitly opt-in for the workaround.
-
-The workaround involves modifying a system library, libnss_files.so.2, so that it looks for the host file in /etc/workaround-docker-2267/hosts instead of /etc/hosts. Instead of modifying /etc/hosts, you modify /etc/workaround-docker-2267/hosts instead.
-
-Add this to your Dockerfile to opt-in for the workaround. This command modifies libnss_files.so.2 as described above.
-
-    RUN /usr/bin/workaround-docker-2267
-
-(You don't necessarily have to run this command from the Dockerfile. You can also run it from a shell inside the container.)
-
-To verify that it works, [open a bash shell in your container](#inspecting), modify /etc/workaround-docker-2267/hosts, and check whether it had any effect:
-
-    bash# echo 127.0.0.1 my-test-domain.com >> /etc/workaround-docker-2267/hosts
-    bash# ping my-test-domain.com
-    ...should ping 127.0.0.1...
-
-**Note on apt-get upgrading:** if any Ubuntu updates overwrite libnss_files.so.2, then the workaround is removed. You have to re-enable it by running `/usr/bin/workaround-docker-2267`. To be safe, you should run this command every time after running `apt-get upgrade`.
+*Update*: Docker 1.2.0 introduced writable /etc/hosts (https://github.com/docker/docker/blob/master/CHANGELOG.md).
 
 <a name="disabling_ssh"></a>
 ### Disabling SSH
