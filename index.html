@@ -162,6 +162,8 @@ CMD ["/my_app/start.sh"]</pre>
           <dl>
             <dt>A <em>correct</em> init process</dt>
             <dd>
+              <p><em>Main article: <a href="http://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/">Docker and the PID 1 zombie reaping problem</a></em></p>
+
               <p>Here's how the Unix process model works. When a system is started, the first process in the system is called <a href="https://en.wikipedia.org/wiki/Init">the init process</a>, with PID 1. The system halts when this processs halts. If you call <code>CMD ["/my_app/start.sh"]</code> in your Dockerfile, then start.sh is your init process.</p>
 
               <p>But the init process has an extra responsibility. It inherits all <a href="https://en.wikipedia.org/wiki/Orphan_process">orphaned child processes</a>. It is expected that the init process <a href="https://en.wikipedia.org/wiki/Wait_(system_call)">reaps them</a>.</p>
@@ -276,11 +278,6 @@ FROM phusion/baseimage:&lt;VERSION&gt;
 
 # Set correct environment variables.
 ENV HOME /root
-
-# Regenerate SSH host keys. baseimage-docker does not contain any, so you
-# have to do that yourself. You may also comment out this instruction; the
-# init system will auto-generate one during boot.
-RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
 
 # Use baseimage-docker's init system.
 CMD ["/sbin/my_init"]
