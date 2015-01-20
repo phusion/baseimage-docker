@@ -1,6 +1,8 @@
 # 小巧玲珑的ubuntu镜像
 
-Baseimage-docker是一个特殊的 [Docker](http://www.docker.io) 镜像，可以很优雅的将它用于docker镜像。相对于 Ubuntu, 有这些新增：
+**This translation was last updated October 24, 2014.**
+
+Baseimage-docker是一个特殊的 [Docker](https://www.docker.com) 镜像，可以很优雅的将它用于docker镜像。相对于 Ubuntu, 有这些新增：
 
  * 修改之后，可以很友好的使用docker
  * 修复了一些docker的bug [some Docker bugs](#workaroud_modifying_etc_hosts).
@@ -8,7 +10,7 @@ Baseimage-docker是一个特殊的 [Docker](http://www.docker.io) 镜像，可�
 
 你可以用它作为你自己的基础docker镜像。
 
-Baseimage-docker 可以从[the Docker registry](https://index.docker.io/u/phusion/baseimage/)获取到!
+Baseimage-docker 可以从[the Docker registry](https://registry.hub.docker.com/u/phusion/baseimage/)获取到!
 
 ### 原生的ubuntu基础镜像有什么问题呢？
 
