@@ -136,9 +136,6 @@ The image is called `phusion/baseimage`, and is available on the Docker registry
     # a list of version numbers.
     FROM phusion/baseimage:<VERSION>
     
-    # Set correct environment variables.
-    ENV HOME /root
-    
     # Use baseimage-docker's init system.
     CMD ["/sbin/my_init"]
     
