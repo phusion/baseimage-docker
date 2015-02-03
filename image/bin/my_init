@@ -244,16 +244,9 @@ def wait_for_runit_services():
 		if not done:
 			time.sleep(0.1)
 
-def install_insecure_key():
-	info("Installing insecure SSH key for user root")
-	run_command_killable("/usr/sbin/enable_insecure_key")
-
 def main(args):
 	import_envvars(False, False)
 	export_envvars()
-
-	if args.enable_insecure_key:
-		install_insecure_key()
 
 	if not args.skip_startup_files:
 		run_startup_files()
@@ -304,9 +297,6 @@ def main(args):
 parser = argparse.ArgumentParser(description = 'Initialize the system.')
 parser.add_argument('main_command', metavar = 'MAIN_COMMAND', type = str, nargs = '*',
 	help = 'The main command to run. (default: runit)')
-parser.add_argument('--enable-insecure-key', dest = 'enable_insecure_key',
-	action = 'store_const', const = True, default = False,
-	help = 'Install the insecure SSH key')
 parser.add_argument('--skip-startup-files', dest = 'skip_startup_files',
 	action = 'store_const', const = True, default = False,
 	help = 'Skip running /etc/my_init.d/* and /etc/rc.local')

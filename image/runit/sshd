@@ -1,3 +1,29 @@
-#!/bin/sh
+#!/bin/bash
 set -e
+
+if [[ ! -e /etc/ssh/ssh_host_rsa_key ]]; then
+	echo "No SSH host key available. Generating one..."
+	export LC_ALL=C
+	export DEBIAN_FRONTEND=noninteractive
+	dpkg-reconfigure openssh-server
+fi
+
+if [ -n "${AUTHORIZED_KEYS}" -a "${AUTHORIZED_KEYS}" != "**None**" ]; then
+	echo "Found authorized keys"
+	mkdir -p /root/.ssh
+	chmod 755 /root/.ssh
+	touch /root/.ssh/authorized_keys
+	chmod 644 /root/.ssh/authorized_keys
+	# keys can be comma- or newline-delimited
+	IFS=$'\n'
+	keys=$(echo "${AUTHORIZED_KEYS}" | tr "," "\n")
+	for key in $keys; do
+		key=$(echo "$key" |sed -e 's/^ *//' -e 's/ *$//')
+		if ! grep -q "$key" /root/.ssh/authorized_keys; then
+			echo "Adding public key to /root/.ssh/authorized_keys: $key"
+			echo "$key" >> /root/.ssh/authorized_keys
+		fi
+	done
+fi
+
 exec /usr/sbin/sshd -D
