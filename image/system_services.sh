@@ -45,6 +45,7 @@ mkdir /var/run/sshd
 mkdir /etc/service/sshd
 touch /etc/service/sshd/down
 cp /build/runit/sshd /etc/service/sshd/run
+cp /build/runit/sshd-check /etc/service/sshd/check
 cp /build/config/sshd_config /etc/ssh/sshd_config
 cp /build/00_regen_ssh_host_keys.sh /etc/my_init.d/
 
