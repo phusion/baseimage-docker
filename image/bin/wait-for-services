@@ -1,0 +1,56 @@
+#!/usr/bin/python3 -u
+"""We want to be able to wait for our services to be ready.
+Add a /etc/service/<name>/check script to define what 'ready' means.
+
+We also need to wait for runit itself to be up, which makes this slightly tricky.
+If `sv check` completely errors out, we count the system as not ready yet.
+
+Thirdly, when a service's run script fails, `sv check` reports "ok".
+We handle that too.
+"""
+import os, time
+from subprocess import Popen, PIPE
+
+
+def runit_ready(svdir):
+	for service in os.listdir(svdir):
+		service = os.path.join(svdir, service)
+		if not os.path.isdir(service):
+			continue
+
+		cmd = Popen(('sv', 'check', service), stdout=PIPE, stderr=PIPE)
+		stdout, stderr = cmd.communicate()
+		status = cmd.wait()
+
+		if status != 0 or stderr:
+			os.write(2, stderr)
+			return False
+
+		if stdout.startswith(b'ok: down:') and stdout.endswith(b' want up\n'):
+			os.write(2, stdout)
+			return False
+
+	return True
+
+
+def wait_for_runit(svdir, timeout):
+	start = time.time()
+	while time.time() - start < timeout:
+		if runit_ready(svdir):
+			return 0
+		else:
+			time.sleep(.01)
+	
+	return 'timeout while waiting for runit'
+
+
+def main():
+	svdir = os.environ.get('SVDIR', '/etc/service')
+	timeout = os.environ.get('SVWAIT', '7')
+
+	timeout = int(timeout)
+	return wait_for_runit(svdir, timeout)
+
+
+if __name__ == '__main__':
+	exit(main())

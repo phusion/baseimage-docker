@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -u
-import os, os.path, sys, stat, signal, errno, argparse, time, json, re
+import os, os.path, sys, stat, signal, errno, argparse, json, re
 
 KILL_PROCESS_TIMEOUT = 5
 KILL_ALL_PROCESSES_TIMEOUT = 5
@@ -223,6 +223,7 @@ def start_runit():
 	pid = os.spawnl(os.P_NOWAIT, "/usr/bin/runsvdir", "/usr/bin/runsvdir",
 		"-P", "/etc/service")
 	info("Runit started as PID %d" % pid)
+	wait_for_runit_services()
 	return pid
 
 def wait_for_runit_or_interrupt(pid):
@@ -233,16 +234,14 @@ def wait_for_runit_or_interrupt(pid):
 		return (False, None)
 
 def shutdown_runit_services():
-	debug("Begin shutting down runit services...")
+	info("Begin shutting down runit services...")
 	os.system("/usr/bin/sv down /etc/service/*")
+	info("runit is down.")
 
 def wait_for_runit_services():
-	debug("Waiting for runit services to exit...")
-	done = False
-	while not done:
-		done = os.system("/usr/bin/sv status /etc/service/* | grep -q '^run:'") != 0
-		if not done:
-			time.sleep(0.1)
+	info("Waiting for runit services...")
+	run_command_killable("/sbin/wait-for-services")
+	info("Services ready.")
 
 def install_insecure_key():
 	info("Installing insecure SSH key for user root")

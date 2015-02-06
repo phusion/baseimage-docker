@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+# once sshd is up, we should get permission denied.
+ssh \
+		-o LogLevel=ERROR \
+		-o GlobalKnownHostsFile=/dev/null \
+		-o UserKnownHostsFile=/dev/null \
+		-o StrictHostKeyChecking=no \
+		-o BatchMode=yes \
+		-o ConnectTimeout=3 \
+		root@127.0.0.1 false |&
+	grep -q '^Permission denied '
