@@ -57,13 +57,6 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
    * [Running a command in an existing, running container](#run_inside_existing_container)
    * [Login to the container via `docker exec`](#login_docker_exec)
      * [Usage](#docker_exec)
-   * [Login to the container via SSH](#login_ssh)
-     * [Enabling SSH](#enabling_ssh)
-     * [About SSH keys](#ssh_keys)
-     * [Using the insecure key for one container only](#using_the_insecure_key_for_one_container_only)
-     * [Enabling the insecure key permanently](#enabling_the_insecure_key_permanently)
-     * [Using your own key](#using_your_own_key)
-     * [The `docker-ssh` tool](#docker_ssh)
  * [Building the image yourself](#building)
  * [Conclusion](#conclusion)
 
@@ -84,7 +77,6 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 | Fixes APT incompatibilities with Docker | See https://github.com/dotcloud/docker/issues/1024. |
 | syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. All syslog messages are forwarded to "docker logs". |
 | logrotate | Rotates and compresses logs on a regular basis. |
-| SSH server | Allows you to easily login to your container to [inspect or administer](#login_ssh) things. <br><br>_SSH is **disabled by default** and is only one of the methods provided by baseimage-docker for this purpose. The other method is through [docker exec](#login_docker_exec). SSH is also provided as an alternative because `docker exec` comes with several caveats._<br><br>Password and challenge-response authentication are disabled by default. Only key authentication is allowed. |
 | cron | The cron daemon must be running for cron jobs to work. |
 | [runit](http://smarden.org/runit/) | Replaces Ubuntu's Upstart. Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. |
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
@@ -322,7 +314,6 @@ The following example runs `ls` without running the startup files and with less 
 There are two ways to run a command inside an existing, running container.
 
  * Through the `docker exec` tool. This is builtin Docker tool, available since Docker 1.4. Internally, it uses Linux kernel system calls in order to execute a command within the context of a container. Learn more in [Login to the container, or running a command inside it, via `docker exec`](#login_docker_exec).
- * Through SSH. This approach requires running an SSH daemon inside the container, and requires you to setup SSH keys. Learn more in [Login to the container, or running a command inside it, via SSH](#login_ssh).
 
 Both way have their own pros and cons, which you can learn in their respective subsections.
 
@@ -331,11 +322,8 @@ Both way have their own pros and cons, which you can learn in their respective s
 
 You can use the `docker exec` tool on the Docker host OS to login to any container that is based on baseimage-docker. You can also use it to run a command inside a running container. `docker exec` works by using Linux kernel system calls.
 
-Here's how it compares to [using SSH to login to the container or to run a command inside it](#login_ssh):
 
  * Pros
-   * Does not require running an SSH daemon inside the container.
-   * Does not require setting up SSH keys.
    * Works on any container, even containers not based on baseimage-docker.
  * Cons
    * If the `docker exec` process on the host is terminated by a signal (e.g. with the `kill` command or even with Ctrl-C), then the command that is executed by `docker exec` is *not* killed and cleaned up. You will either have to do that manually, or you have to run `docker exec` with `-t -i`.
@@ -361,127 +349,6 @@ To open a bash session inside the container, you must pass `-t -i` so that a ter
 
     docker exec -t -i YOUR-CONTAINER-ID bash -l
 
-<a name="login_ssh"></a>
-### Login to the container, or running a command inside it, via SSH
-
-You can use SSH to login to any container that is based on baseimage-docker. You can also use it to run a command inside a running container.
-
-Here's how it compares to [using `docker exec` to login to the container or to run a command inside it](#login_docker_exec):
-
- * Pros
-   * Does not require root privileges on the Docker host.
-   * Allows you to let users login to the container, without letting them login to the Docker host. However, this is not enabled by default because baseimage-docker does not expose the SSH server to the public Internet by default.
- * Cons
-   * Requires setting up SSH keys. However, baseimage-docker makes this easy for many cases through a pregenerated, insecure key. Read on to learn more.
-
-<a name="enabling_ssh"></a>
-#### Enabling SSH
-
-Baseimage-docker disables the SSH server by default. Add the following to your Dockerfile to enable it:
-
-    RUN rm -f /etc/service/sshd/down
-    
-    # Regenerate SSH host keys. baseimage-docker does not contain any, so you
-    # have to do that yourself. You may also comment out this instruction; the
-    # init system will auto-generate one during boot.
-    RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
-
-<a name="ssh_keys"></a>
-#### About SSH keys
-
-First, you must ensure that you have the right SSH keys installed inside the container. By default, no keys are installed, so nobody can login. For convenience reasons, we provide [a pregenerated, insecure key](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key.ppk) that you can easily enable. However, please be aware that using this key is for convenience only. It does not provide any security because this key (both the public and the private side) is publicly available. **In production environments, you should use your own keys**.
-
-<a name="using_the_insecure_key_for_one_container_only"></a>
-#### Using the insecure key for one container only
-
-You can temporarily enable the insecure key for one container only. This means that the insecure key is installed at container boot. If you `docker stop` and `docker start` the container, the insecure key will still be there, but if you use `docker run` to start a new container then that container will not contain the insecure key.
-
-Start a container with `--enable-insecure-key`:
-
-    docker run YOUR_IMAGE /sbin/my_init --enable-insecure-key
-
-Find out the ID of the container that you just ran:
-
-    docker ps
-
-Once you have the ID, look for its IP address with:
-
-    docker inspect -f "{{ .NetworkSettings.IPAddress }}" <ID>
-
-Now that you have the IP address, you can use SSH to login to the container, or to execute a command inside it:
-
-    # Download the insecure private key
-    curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/insecure_key
-    chmod 600 insecure_key
-
-    # Login to the container
-    ssh -i insecure_key root@<IP address>
-
-    # Running a command inside the container
-    ssh -i insecure_key root@<IP address> echo hello world
-
-<a name="enabling_the_insecure_key_permanently"></a>
-#### Enabling the insecure key permanently
-
-It is also possible to enable the insecure key in the image permanently. This is not generally recommended, but is suitable for e.g. temporary development or demo environments where security does not matter.
-
-Edit your Dockerfile to install the insecure key permanently:
-
-    RUN /usr/sbin/enable_insecure_key
-
-Instructions for logging in the container is the same as in section [Using the insecure key for one container only](#using_the_insecure_key_for_one_container_only).
-
-<a name="using_your_own_key"></a>
-#### Using your own key
-
-Edit your Dockerfile to install an SSH public key:
-
-    ## Install an SSH of your choice.
-    ADD your_key.pub /tmp/your_key.pub
-    RUN cat /tmp/your_key.pub >> /root/.ssh/authorized_keys && rm -f /tmp/your_key.pub
-
-Then rebuild your image. Once you have that, start a container based on that image:
-
-    docker run your-image-name
-
-Find out the ID of the container that you just ran:
-
-    docker ps
-
-Once you have the ID, look for its IP address with:
-
-    docker inspect -f "{{ .NetworkSettings.IPAddress }}" <ID>
-
-Now that you have the IP address, you can use SSH to login to the container, or to execute a command inside it:
-
-    # Login to the container
-    ssh -i /path-to/your_key root@<IP address>
-
-    # Running a command inside the container
-    ssh -i /path-to/your_key root@<IP address> echo hello world
-
-<a name="docker_ssh"></a>
-#### The `docker-ssh` tool
-
-Looking up the IP of a container and running an SSH command quickly becomes tedious. Luckily, we provide the `docker-ssh` tool which automates this process. This tool is to be run on the *Docker host*, not inside a Docker container.
-
-First, install the tool on the Docker host:
-
-    curl --fail -L -O https://github.com/phusion/baseimage-docker/archive/master.tar.gz && \
-    tar xzf master.tar.gz && \
-    sudo ./baseimage-docker-master/install-tools.sh
-
-Then run the tool as follows to login to a container using SSH:
-
-    docker-ssh YOUR-CONTAINER-ID
-
-You can lookup `YOUR-CONTAINER-ID` by running `docker ps`.
-
-By default, `docker-ssh` will open a Bash session. You can also tell it to run a command, and then exit:
-
-    docker-ssh YOUR-CONTAINER-ID echo hello world
-
-
 <a name="building"></a>
 ## Building the image yourself
 
@@ -495,7 +362,6 @@ Clone this repository:
 Start a virtual machine with Docker in it. You can use the Vagrantfile that we've already provided.
 
     vagrant up
-    vagrant ssh
     cd /vagrant
 
 Build the image:
