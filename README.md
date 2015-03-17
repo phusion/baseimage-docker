@@ -167,7 +167,7 @@ In `memcached.sh` (make sure this file is chmod +x):
 In `Dockerfile`:
 
     RUN mkdir /etc/service/memcached
-    ADD memcached.sh /etc/service/memcached/run
+    COPY memcached.sh /etc/service/memcached/run
 
 Note that the shell script must run the daemon **without letting it daemonize/fork it**. Usually, daemons provide a command line flag or a config file option for that.
 
@@ -191,7 +191,7 @@ In `logtime.sh` (make sure this file is chmod +x):
 In `Dockerfile`:
 
     RUN mkdir -p /etc/my_init.d
-    ADD logtime.sh /etc/my_init.d/logtime.sh
+    COPY logtime.sh /etc/my_init.d/logtime.sh
 
 <a name="environment_variables"></a>
 ### Environment variables
@@ -456,7 +456,7 @@ Instructions for logging in the container is the same as in section [Using the i
 Edit your Dockerfile to install an SSH public key:
 
     ## Install an SSH of your choice.
-    ADD your_key.pub /tmp/your_key.pub
+    COPY your_key.pub /tmp/your_key.pub
     RUN cat /tmp/your_key.pub >> /root/.ssh/authorized_keys && rm -f /tmp/your_key.pub
 
 Then rebuild your image. Once you have that, start a container based on that image:

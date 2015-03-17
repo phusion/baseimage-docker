@@ -156,7 +156,7 @@ The image is called `phusion/baseimage`, and is available on the Docker registry
 	
 	### 在Dockerfile中:
     RUN mkdir /etc/service/memcached
-    ADD memcached.sh /etc/service/memcached/run
+    COPY memcached.sh /etc/service/memcached/run
 
 注意腳本必須運行在後臺的,**不能讓他們行程進行daemonize/fork**.通常,後臺行程會提供一個標誌位或者配置文件.
 
@@ -178,7 +178,7 @@ baseimage-docker的初始化腳本 `/sbin/my_init`,在啓動的時候行程運�
 
     ### 在 Dockerfile中:
     RUN mkdir -p /etc/my_init.d
-    ADD logtime.sh /etc/my_init.d/logtime.sh
+    COPY logtime.sh /etc/my_init.d/logtime.sh
 
 
 <a name="environment_variables"></a>
@@ -487,7 +487,7 @@ Baseimage-docker提供了一個靈活的方式運行只要一閃而過的命令,
 編輯你的dockerfile,來安裝ssh public key:
 
     ## 安裝你自己的public key.
-    ADD your_key.pub /tmp/your_key.pub
+    COPY your_key.pub /tmp/your_key.pub
     RUN cat /tmp/your_key.pub >> /root/.ssh/authorized_keys && rm -f /tmp/your_key.pub
 
 重新創建你的鏡像.一旦你創建成功,啓動基於這個鏡像的容器.
