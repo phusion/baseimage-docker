@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-AUTHORIZED_KEYS=/root/.ssh/authorized_keys
+AUTHORIZED_KEYS="${HOME}/.ssh/authorized_keys"
 
 if [[ -e "$AUTHORIZED_KEYS" ]] && grep -q baseimage-docker-insecure-key "$AUTHORIZED_KEYS"; then
 	echo "Insecure key has already been added to $AUTHORIZED_KEYS."
@@ -10,7 +10,7 @@ else
 	echo "Creating directory $DIR..."
 	mkdir -p "$DIR"
 	chmod 700 "$DIR"
-	chown root:root "$DIR"
+	chown "${USER}:${USER}" "$DIR"
 	echo "Editing $AUTHORIZED_KEYS..."
 	cat /etc/insecure_key.pub >> "$AUTHORIZED_KEYS"
 	echo "Success: insecure key has been added to $AUTHORIZED_KEYS"
@@ -21,7 +21,7 @@ else
 		|                                                                              |
 		| DO NOT expose port 22 on the Internet unless you know what you are doing!    |
 		|                                                                              |
-		| Use the private key below to connect with user root                         |
+		| Use the private key below to connect with user ${USER}                       |
 		+------------------------------------------------------------------------------+
 
 	EOF
