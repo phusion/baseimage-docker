@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:trusty
 MAINTAINER Phusion <info@phusion.nl>
 
 ENV HOME /root
