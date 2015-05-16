@@ -18,6 +18,12 @@ echo -n no > /etc/container_environment/INITRD
 ## Enable Ubuntu Universe and Multiverse.
 sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
 sed -i 's/^#\s*\(deb.*multiverse\)$/\1/g' /etc/apt/sources.list
+
+if [ -f "/build/prepare_custom.sh" ] ; then
+ chmod +x /build/prepare_custom.sh 
+ /build/prepare_custom.sh
+fi
+
 apt-get update
 
 ## Fix some issues with APT packages.
