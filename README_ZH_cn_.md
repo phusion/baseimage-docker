@@ -8,7 +8,7 @@ Baseimage-docker是一个特殊的[Docker](http://www.docker.io)镜像，在Dock
 
 可以用它作为自己基础的Docker镜像。
 
-Baseimage-docker项目可以直接从Docker的[registry](https://index.docker.io/u/phusion/baseimage/)获取!
+Baseimage-docker项目可以直接从Docker的[registry](https://index.docker.io/u/phusion/baseimage/)获取！
 
 ### 原生的ubuntu基础镜像有什么问题呢？
 
