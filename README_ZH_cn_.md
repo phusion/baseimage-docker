@@ -1,8 +1,8 @@
 # Docker友好的，Ubuntu下最小镜像
 
-Baseimage-docker是一个特殊的[Docker](http://www.docker.io)镜像，在Docker容器做了配置，并可以正确使用。相对于Ubuntu, 如下新增项：
+Baseimage-docker是一个特殊的[Docker](http://www.docker.io)镜像，在Docker容器内做了配置，并可以正确使用。相较于Ubuntu下的Docker, 如下新增项：
 
- * 为了更友好的支持Docker，做了修订。
+ * 为更加友好的支持Docker，做了修订。
  * 绕过了Docker的[一些bug](#workaroud_modifying_etc_hosts)。
  * 一个有用的管理员工具。
 
