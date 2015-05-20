@@ -1,3 +1,13 @@
+## 0.9.16 (release date: 2015-01-20)
+
+ * `docker exec` is now the default and recommended mechanism for running commands in the container. SSH is now disabled by default, but is still supported for those cases where "docker exec" is not appropriate. Closes GH-168.
+ * All syslog output is now forwarded to `docker logs`. Closes GH-123.
+ * The workaround for Docker bug 2267 (the inability to modify /etc/hosts) has been removed, because it has been fixed upstream. Closes GH-155.
+ * Logrotate now reloads syslog-ng properly. Closes GH-167.
+ * Fixed some locale issues. Closes GH-178. Thanks to David J. M. Karlsen.
+ * Fixed problems with cron. Closes GH-115.
+ * Contribution by Bryan Bishop.
+
 ## 0.9.15 (release date: 2014-10-03)
 
  * Fixed the setuid bit on /usr/bin/sudo. This problem was caused by Docker bug #6828.

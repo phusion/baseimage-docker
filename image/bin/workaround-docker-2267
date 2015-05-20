@@ -1,2 +1,0 @@
-#!/bin/sh
-exec /usr/bin/perl -pi -e 's:/etc/hosts:/cte/hosts:g' /lib/x86_64-linux-gnu/libnss_files.so.2
