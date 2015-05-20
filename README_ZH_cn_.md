@@ -1,45 +1,46 @@
-# 小巧玲珑的ubuntu镜像
+<a name="a-minimal-ubuntu-base-image-modified-for-docker-friendliness"></a>
+# Docker友好的，最小的Ubuntu基础镜像
 
-**This translation was last updated October 24, 2014.**
+Baseimage-docker是一个特殊的[Docker](http://www.docker.io)镜像，在Docker容器内做了配置，并且可以正确使用。它确实是一个Ubuntu系统, 除此之外进行了如下修订：
 
-Baseimage-docker是一个特殊的 [Docker](https://www.docker.com) 镜像，可以很优雅的将它用于docker镜像。相对于 Ubuntu, 有这些新增：
+ * 为更加友好的支持Docker，做了修订。
+ * 在Docker环境下，作为管理工具特别有用。
+ * 在[不违反Docker哲学](#docker_single_process)的前提下，能够很容易的运行多进程的机制。
 
- * 修改之后，可以很友好的使用docker
- * 修复了一些docker的bug [some Docker bugs](#workaroud_modifying_etc_hosts).
- * 很有用的管理员工具
+可以把它作为自己的基础Docker镜像。
 
-你可以用它作为你自己的基础docker镜像。
+Baseimage-docker项目可以直接从Docker的[registry](https://index.docker.io/u/phusion/baseimage/)获取！
+        
+<a name="what-are-the-problems-with-the-stock-ubuntu-base-image"></a>
+### 原生的Ubuntu基础镜像有什么问题呢？          
+            
+Baseimage-docker可以直接从Docker的[registry](https://registry.hub.docker.com/u/phusion/baseimage/)获取！
+        
+原生Ubuntu不是为了在Docker内运行而设计的。它的初始化系统Upstart，假定运行的环境要么是真实的硬件，要么是虚拟的硬件，而不是在Docker容器内。但是在一个Docker的容器内，并不需要一个完整的系统，你需要的只是一个很小的系统。但是如果你不是非常熟悉Unix的系统模型，想要在Docker容器内裁减出最小的系统，会碰到很多难以正确解决的陌生的技术坑。这些坑会引起很多莫名其妙的问题。
 
-Baseimage-docker 可以从[the Docker registry](https://registry.hub.docker.com/u/phusion/baseimage/)获取到!
+Baseimage-docker让这一切完美。在"内容"部分描述了所有这些修改。
 
-### 原生的ubuntu基础镜像有什么问题呢？
+<a name="why-use-baseimage-docker"></a>
+### 为什么使用baseimage-docker？
 
-原生ubuntu不是设计为运行docker的。它是假设运行到真实硬件或者虚拟硬件上的，但不是docker容器。你运行docker容器，不需要一个完整的系统，你需要一个小巧的系统。如果你不熟悉unix系统，那么配制出来的精简系统会有很奇怪的问题。这样就可以导致很多奇奇怪怪的问题。
-
-Baseimage-docker 将错误都修正了。在"内容"部分,可以看到哪些内容修改过了.
-
-<a name="why_use"></a>
-### 为什么使用 baseimage-docker?
-
-你可以用原生`ubuntu`镜像作为你的Dockerfile,那为什么又麻烦的使用baseimage-docker呢?
-
- * 配置一个友好的基础镜像不是一个简单的任务.正如之前提到的,会很有的坑在里面.当你处理那些坑之后,你又重复造了一个baseimage-docker.使用baseimage-docker会拯救你的努力.
- * 它减少了一个写正确Dockerfile文件的时间.你不用担心基础系统,你可以专注你的业务和你的项目.
- * 它减少了运行`docker build`的时间,让你更快的迭代Dockerfile.
- * 它减少了多次下载的时间.Docker只需要下载一次基础镜像:在第一次部署的时候.在之后的部署中,只需要对你最近的基础镜像进行修改.
+你自己可以从Dockerfile配置一个原生`ubuntu`镜像，为什么还要多此一举的使用baseimage-docker呢?
+        
+ * 配置一个Docker友好的基础系统并不是一个简单的任务。如前所述，过程中会碰到很多坑。当你搞定这些坑之后，只不过是又重新发明了一个baseimage-docker而已。使用baseimage-docker可以免去你这方面需要做的努力。          
+ * 减少需要正确编写Dockerfile文件的时间。你不用再担心基础系统，可以专注于你自己的技术栈和你的项目。            
+ * 减少需要运行`docker build`的时间，让你更快的迭代Dockerfile。         
+ * 减少了重新部署的时的下载时间。Docker只需要下载一次基础镜像：在第一次部署的时候。在之后的部署中,只需要下载你最近对基础镜像进行修改的部分。
 
 -----------------------------------------
 
 **相关资源**
 
-  [Website](http://phusion.github.io/baseimage-docker/) |
+  [网站](http://phusion.github.io/baseimage-docker/) |
   [Github](https://github.com/phusion/baseimage-docker) |
   [Docker registry](https://index.docker.io/u/phusion/baseimage/) |
-  [Discussion forum](https://groups.google.com/d/forum/passenger-docker) |
+  [论坛](https://groups.google.com/d/forum/passenger-docker) |
   [Twitter](https://twitter.com/phusion_nl) |
   [Blog](http://blog.phusion.nl/)
 
-**Table of contents**
 **目录**
 
  * [镜像里面包含什么?](#whats_inside)
