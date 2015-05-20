@@ -14,7 +14,7 @@ Baseimage-docker项目可以直接从Docker的[registry](https://index.docker.io
 <a name="what-are-the-problems-with-the-stock-ubuntu-base-image"></a>
 ### 原生的Ubuntu基础镜像有什么问题呢？          
             
-Baseimage-docker可以直接从[Docker registry](https://registry.hub.docker.com/u/phusion/baseimage/)获取！
+Baseimage-docker可以直接从Docker的[registry](https://registry.hub.docker.com/u/phusion/baseimage/)获取！
         
 原生Ubuntu不是为了在Docker内运行而设计的。它的初始化系统Upstart，假定运行的环境要么是真实的硬件，要么是虚拟的硬件，而不是在Docker容器内。但是在一个Docker的容器内，并不需要一个完整的系统，你需要的只是一个很小的系统。但是如果你不是非常熟悉Unix的系统模型，想要在Docker容器内裁减出最小的系统，会碰到很多难以正确解决的陌生的技术坑。这些坑会引起很多莫名其妙的问题。
 
