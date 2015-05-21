@@ -75,27 +75,25 @@ Baseimage-docker让这一切完美。在"内容"部分描述了所有这些修�
 -----------------------------------------
 
 <a name="whats_inside"></a>
-## 镜像里面包含什么?
+## 镜像里面有什么？
 
 <a name="whats_inside_overview"></a>
 ### 概述
 
-*想看一个完整的基础镜像?这里有一个包含Ruby,Python Node.js and Meteor的.可以看看[passenger-docker](https://github.com/phusion/passenger-docker).*
+*想看一个里面包含Ruby，Python，Node.js以及Meteor的完整基础镜像？可以看一下[passenger-docker](https://github.com/phusion/passenger-docker)。*            
 
-| 模块        | 包含什么 / 备注 |
+| 模块        | 为什么包含这些？以及备注 |
 | ---------------- | ------------------- |
-| Ubuntu 14.04 LTS | 基础系统. |
-| 一个**正确**的初始化进程  | 根据Unix进程模型,[初始化进程](https://en.wikipedia.org/wiki/Init) -- PID 1 -- 继承了所有[孤立的子进行],并且必须[监控他们](https://en.wikipedia.org/wiki/Wait_(system_call)).大多数Docker容器没有一个正确的初始化进程,结果是他们的容器就出现了大量的[僵尸进程](https://en.wikipedia.org/wiki/Zombie_process).<br><br>此外,`docker stop`发送终止信号给初始化进程,然后停止所有的服务进程.不幸的是,由于他们主机关闭了容器,大多初始系统没有正确运行.<br><br>Baseimage-docker包含了一个初始进程`/sbin/my_init`,来正确的执行这些任务. |
-| 修复了APT 与docker不兼容的问题 | See https://github.com/dotcloud/docker/issues/1024. |
-| 修复某些Docker bugs | [Learn more.](#workaroud_modifying_etc_hosts) |
-| syslog-ng | 必须要有一个监控很多服务的系统日志进程,包括内核本身,以便可以正确的输出日志到/var/log/syslog.如果没有后台日志进程,那么很多重要的信息就会丢失了.<br><br>只监听本地服务. |
-| logrotate | logrotate 程序是一个日志文件管理工具,可以定期转存和压缩日志. |
-| SSH server | 允许你可以很容易的登录到你的容器中进行[管理](#login_ssh).<br><br>_baseimage-docker提供了一个SSH的方法.还有其他方法,比如通过[nsenter](#login_nsenter).SSH提供了一个方法,因为nsenter还有很多的问题._<br><br>通过密码和challenge-response的方式,默认是禁用的.只有通过key认证的方式是允许的.<br><br>如果你想禁用SSH访问的方式,禁用也是很容易的.可以阅读下面的说明. |
-| cron | 定时任务进程保证定时任务的运行. |
-| [runit](http://smarden.org/runit/) | 替代Ubuntu的Upstart. 用于监控服务和管理.比SysV init更容易使用,同时支持当有服务挂掉之后,重启这些服务.比Upstart更易使用,也更加的轻量级. |
-| `setuser` |使用另一个用户运行命令的工具,比`su`更容易使用,减少使用`sudo`的安全性,不像使用`chpst`,需要正确的设置`$HOME`.`/sbin/setuser`这样使用就可以了. |
-Baseimage-docker is very lightweight: it only consumes 6 MB of memory.
-Baseimage-docker是非常轻量级的:仅仅小号6MB内存.
+| Ubuntu 14.04 LTS | 基础系统。 |
+| 一个**正确**的初始化进程  | *主要文章：[Docker和PID 1 僵尸进程回收问题](http://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/)*<br/><br/>根据Unix进程模型，[初始化进程](https://en.wikipedia.org/wiki/Init) -- PID 1 -- 继承了所有[孤立的子进程](https://en.wikipedia.org/wiki/Orphan_process)，并且必须[进行回收](https://en.wikipedia.org/wiki/Wait_(system_call))。大多数Docker容器没有一个初始化进程可以正确的完成此操作，随着时间的推移会导致他们的容器出现了大量的[僵尸进程](https://en.wikipedia.org/wiki/Zombie_process)。<br/><br/>而且，`docker stop`发送SIGTERM信号给初始化进程，照理说此信号应该可以停止所有服务。不幸的是由于它们对硬件进行了关闭操作，导致Docker内的大多数初始化系统没有正确执行。这会导致进程强行被SIGKILL信号关闭，从而丧失了一个正确取消初始化设置的机会。这会导致文件存坏。<br/><br/>Baseimage-docker配有一个名为`/sbin/my_init`的初始化进程来同时正确的完成这些任务。 |
+| 修复了APT与Docker不兼容的问题 | 详情参见：https://github.com/dotcloud/docker/issues/1024 。 |
+| syslog-ng | 对于很多服务－包括kernel自身，都需要一个syslog后台进程，以便可以正确的将log输出到/var/log/syslog中。如果没有运行syslog后台进程，很多重要的信息就会默默的丢失了。<br/><br/>只对本地进行监听。所有syslog信息会被转发给“docker logs”。 |
+| logrotate | 定期转存和压缩日志。 |
+| SSH服务 | 允许你很容易的登录到容器中进行[查询或管理](#login_ssh)操作。<br/><br/>_SSH**默认是禁用**的，这也是baseimage-docker为此目的提供的唯一方法。其它方法需要通过[docker exec](#login_docker_exec)。由于`docker exec`同时带来了几个需要注意的问题，SSH同时也提供了一个可替换的方法。_<br/><br/>密码和challenge-response认证方式默认是禁用的。只有key认证通过之后才能够开启。 |
+| cron | 为了保证cron任务能够工作，必须运行cron后台进程。 |
+| [runit](http://smarden.org/runit/) | 替换Ubuntu的Upstart。用于服务监控和管理。比SysV init更容易使用，同时当这些服务崩溃之后，支持后台进程自动重启。比Upstart更易使用，更加的轻量级。 |
+| `setuser` | 使用其它账户运行命令的工具。比`su`更容易使用，比使用`sudo`有那么一点优势，跟`chpst`不同，这个工具需要正确的设置`$HOME`。像`/sbin/setuser`这样。 |
+Baseimage-docker非常的轻量级：仅仅占用6MB内存。
 
 <a name="docker_single_process"></a>
 ### 等等,我认为Docker在一个容器中就运行一个进程吗?
