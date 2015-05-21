@@ -14,8 +14,6 @@ Baseimage-docker项目可以直接从Docker的[registry](https://index.docker.io
 <a name="what-are-the-problems-with-the-stock-ubuntu-base-image"></a>
 ### 原生的Ubuntu基础镜像有什么问题呢？          
             
-Baseimage-docker可以直接从Docker的[registry](https://registry.hub.docker.com/u/phusion/baseimage/)获取！
-        
 原生Ubuntu不是为了在Docker内运行而设计的。它的初始化系统Upstart，假定运行的环境要么是真实的硬件，要么是虚拟的硬件，而不是在Docker容器内。但是在一个Docker的容器内，并不需要一个完整的系统，你需要的只是一个很小的系统。但是如果你不是非常熟悉Unix的系统模型，想要在Docker容器内裁减出最小的系统，会碰到很多难以正确解决的陌生的技术坑。这些坑会引起很多莫名其妙的问题。
 
 Baseimage-docker让这一切完美。在"内容"部分描述了所有这些修改。
@@ -28,7 +26,7 @@ Baseimage-docker让这一切完美。在"内容"部分描述了所有这些修�
  * 配置一个Docker友好的基础系统并不是一个简单的任务。如前所述，过程中会碰到很多坑。当你搞定这些坑之后，只不过是又重新发明了一个baseimage-docker而已。使用baseimage-docker可以免去你这方面需要做的努力。          
  * 减少需要正确编写Dockerfile文件的时间。你不用再担心基础系统，可以专注于你自己的技术栈和你的项目。            
  * 减少需要运行`docker build`的时间，让你更快的迭代Dockerfile。         
- * 减少了重新部署的时的下载时间。Docker只需要下载一次基础镜像：在第一次部署的时候。在之后的部署中,只需要下载你最近对基础镜像进行修改的部分。
+ * 减少了重新部署的时的下载时间。Docker只需要在第一次部署的时候下载一次基础镜像。在随后的部署中,只需要改变你下载之后对基础镜像进行修改的部分。
 
 -----------------------------------------
 
