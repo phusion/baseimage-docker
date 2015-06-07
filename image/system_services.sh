@@ -20,11 +20,14 @@ ln -s /etc/container_environment.sh /etc/profile.d/
 $minimal_apt_get_install runit
 
 ## Install a syslog daemon.
+cp /build/config/syslog_ng_default /etc/default/syslog-ng
+mkdir -p /etc/syslog-ng/
+cp /build/config/syslog-ng.conf /etc/syslog-ng/
+cp /build/config/apt_local /etc/apt/apt.conf.d/local
 $minimal_apt_get_install syslog-ng-core
 mkdir /etc/service/syslog-ng
 cp /build/runit/syslog-ng /etc/service/syslog-ng/run
 mkdir -p /var/lib/syslog-ng
-cp /build/config/syslog_ng_default /etc/default/syslog-ng
 touch /var/log/syslog
 chmod u=rw,g=r,o= /var/log/syslog
 # Replace the system() source because inside Docker we
@@ -41,7 +44,6 @@ cp /build/config/logrotate_syslogng /etc/logrotate.d/syslog-ng
 
 ## Install the SSH server.
 $minimal_apt_get_install openssh-server
-mkdir /var/run/sshd
 mkdir /etc/service/sshd
 touch /etc/service/sshd/down
 cp /build/runit/sshd /etc/service/sshd/run
