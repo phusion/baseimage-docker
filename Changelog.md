@@ -4,7 +4,7 @@
  * Removed nano and replaced vim with vim-tiny. This reduces Baseimage-docker's virtual size by 42 MB.
  * When `my_init` generates `/etc/container_environment.sh`, it now ensures that environment variable names do not include any characters unsupported by Bash. Unsupported characters are now replaced with underscores. This fixes compatibility issues with Docker Compose. Closes GH-230.
  * `my_init` no longer reads from and writes to `/etc/container_environment` if that directory does not exist. Previously it would abort with an error. This change makes it easier to reuse `my_init` in other (non-Baseimage-docker-based) projects without having to modify it.
- * Baseimage-docker no longer sets the HOME environment variable by default. We used to set HOME by default to work around a Docker issue where HOME defaults to /, but this issue is now gone. Furthermore, the fact that we set HOME interfered with the USER stanza: USER would no longer set HOME. So we got rid of our HOME variable. Closes GH-231.
+ * Baseimage-docker no longer sets the HOME environment variable by default. We used to set HOME by default to work around [Docker issue 2968](https://github.com/docker/docker/issues/2968) where HOME defaults to /, but this issue is now fixed. Furthermore, the fact that we set HOME interfered with the USER stanza: USER would no longer set HOME. So we got rid of our HOME variable. Closes GH-231.
  * Some unnecessary Ubuntu cron jobs have been removed. Closes GH-205.
  * Syslog-ng no longer forwards messages to /dev/tty10. Closes GH-222.
 
