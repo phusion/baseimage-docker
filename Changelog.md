@@ -1,3 +1,7 @@
+## 0.9.17 (not yet released)
+
+ * `my_init` no longer reads from and writes to `/etc/container_environment` if that directory does not exist. Previously it would abort with an error. This change makes it easier to reuse `my_init` in other (non-Baseimage-docker-based) projects without having to modify it.
+
 ## 0.9.16 (release date: 2015-01-20)
 
  * `docker exec` is now the default and recommended mechanism for running commands in the container. SSH is now disabled by default, but is still supported for those cases where "docker exec" is not appropriate. Closes GH-168.
