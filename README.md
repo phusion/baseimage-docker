@@ -52,6 +52,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
      * [Environment variable dumps](#envvar_dumps)
      * [Modifying environment variables](#modifying_envvars)
      * [Security](#envvar_security)
+   * [Upgrading the operating system inside the container](#upgrading_os)
  * [Container administration](#container_administration)
    * [Running a one-shot command in a new container](#oneshot)
    * [Running a command in an existing, running container](#run_inside_existing_container)
@@ -273,6 +274,17 @@ If you are sure that your environment variables don't contain sensitive data, th
 
     RUN chmod 755 /etc/container_environment
     RUN chmod 644 /etc/container_environment.sh /etc/container_environment.json
+
+<a name="upgrading_os"></a>
+### Upgrading the operating system inside the container
+
+Baseimage-docker images contain an Ubuntu 14.04 operating system. You may want to update this OS from time to time, for example to pull in the latest security updates. OpenSSL is a notorious example. Vulnerabilities are discovered in OpenSSL on a regular basis, so you should keep OpenSSL up-to-date as much as you can.
+
+While we release Baseimage-docker images with the latest OS updates from time to time, you do not have to rely on us. You can update the OS inside Baseimage-docker images yourself, and it is recommend that you do this instead of waiting for us.
+
+To upgrade the OS in the image, run this in your Dockerfile:
+
+    RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
 
 <a name="container_administration"></a>
 ## Container administration
