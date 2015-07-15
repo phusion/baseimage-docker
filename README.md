@@ -530,45 +530,19 @@ If you want to call the resulting image something else, pass the NAME variable, 
 
 The default baseimage-docker installs `syslog-ng`, `cron` and `sshd` services during the build process.
 
-In case you don't need one or more of these services in your image, you can disable its installation and/or install the substituite service of your preference.
+In case you don't need one or more of these services in your image, you can disable its installation.
 
-You can user the `ENV` directive in your Dockerfile for these three variables :
-
-* `DISABLE_SYSLOG`
-* `DISABLE_SSH`
-* `DISABLE_CRON`
-
-For ex., if you want to disable ssh on your image :
-
-    #...
-    FROM phusion/baseimage:<VERSION>
-
-    # Set correct environment variables.
-    ENV HOME /root
-
-    # Disable SSH
-    ENV DISABLE_SSH 1
-
-    # Use baseimage-docker's init system.
-    CMD ["/sbin/my_init"]
-
-    # ...put your own build instructions here...
-
-    # Clean up APT when done.
-    RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-If you don't want to use the `ENV` directive inside your Dockerfile and avoid creating another image layer, as shown in the following example, to prevent `sshd` from being installed into your image, set `1` to the `DISABLE_SSH` variable in the `./image/buildconfig` file.
+As shown in the following example, to prevent `sshd` from being installed into your image, set `1` to the `DISABLE_SSH` variable in the `./image/buildconfig` file.
 
     ### In ./image/buildconfig
     # ...
     # Default services
     # Set 1 to the service you want to disable
-    export DISABLE_SYSLOG=${DISABLE_SYSLOG:-0}
-    export DISABLE_SSH=${DISABLE_SSH:-1}
-    export DISABLE_CRON=${DISABLE_CRON:-0}
+    export DISABLE_SYSLOG=0
+    export DISABLE_SSH=1
+    export DISABLE_CRON=0
 
-
-Then you can proceed with `docker build` command.
+Then you can proceed with `make build` command.
 
 <a name="conclusion"></a>
 ## Conclusion
