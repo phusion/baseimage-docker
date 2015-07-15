@@ -1,6 +1,7 @@
 ## 0.9.17 (not yet released)
 
  * `my_init` no longer reads from and writes to `/etc/container_environment` if that directory does not exist. Previously it would abort with an error. This change makes it easier to reuse `my_init` in other (non-Baseimage-docker-based) projects without having to modify it.
+ * Baseimage-docker no longer sets the HOME environment variable by default. We used to set HOME by default to work around a Docker issue where HOME defaults to /, but this issue is now gone. Furthermore, the fact that we set HOME interfered with the USER stanza: USER would no longer set HOME. So we got rid of our HOME variable. Closes GH-231.
 
 ## 0.9.16 (release date: 2015-01-20)
 

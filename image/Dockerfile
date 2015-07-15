@@ -1,7 +1,6 @@
 FROM ubuntu:14.04
 MAINTAINER Phusion <info@phusion.nl>
 
-ENV HOME /root
 ADD . /bd_build
 
 RUN /bd_build/prepare.sh && \
