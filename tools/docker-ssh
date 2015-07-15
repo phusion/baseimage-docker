@@ -40,8 +40,8 @@ if ! test -e ~/.baseimage_docker_insecure_key; then
 	else
 		dir=`dirname "$0"`
 		dir=`cd "$dir/.." && pwd`
-		if test -e "$dir/image/insecure_key"; then
-			cp "$dir/image/insecure_key" ~/.baseimage_docker_insecure_key
+		if test -e "$dir/image/services/sshd/keys/insecure_key"; then
+			cp "$dir/image/services/sshd/keys/insecure_key" ~/.baseimage_docker_insecure_key
 		else
 			echo "*** ERROR ***: Baseimage-docker insecure key not found." >&2
 			echo "You probably didn't install docker-ssh properly. Please reinstall it:" >&2

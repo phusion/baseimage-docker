@@ -68,6 +68,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
      * [Using your own key](#using_your_own_key)
      * [The `docker-ssh` tool](#docker_ssh)
  * [Building the image yourself](#building)
+  * [Removing optional services](#removing_optional_services)
  * [Conclusion](#conclusion)
 
 -----------------------------------------
@@ -138,12 +139,12 @@ The image is called `phusion/baseimage`, and is available on the Docker registry
     # See https://github.com/phusion/baseimage-docker/blob/master/Changelog.md for
     # a list of version numbers.
     FROM phusion/baseimage:<VERSION>
-    
+
     # Use baseimage-docker's init system.
     CMD ["/sbin/my_init"]
-    
+
     # ...put your own build instructions here...
-    
+
     # Clean up APT when done.
     RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -183,7 +184,7 @@ All scripts must exit correctly, e.g. with exit code 0. If any script exits with
 The following example shows how you can add a startup script. This script simply logs the time of boot to the file /tmp/boottime.txt.
 
 In `logtime.sh` (make sure this file is chmod +x):
-    
+
     #!/bin/sh
     date > /tmp/boottime.txt
 
@@ -398,7 +399,7 @@ Here's how it compares to [using `docker exec` to login to the container or to r
 Baseimage-docker disables the SSH server by default. Add the following to your Dockerfile to enable it:
 
     RUN rm -f /etc/service/sshd/down
-    
+
     # Regenerate SSH host keys. baseimage-docker does not contain any, so you
     # have to do that yourself. You may also comment out this instruction; the
     # init system will auto-generate one during boot.
@@ -407,7 +408,7 @@ Baseimage-docker disables the SSH server by default. Add the following to your D
 <a name="ssh_keys"></a>
 #### About SSH keys
 
-First, you must ensure that you have the right SSH keys installed inside the container. By default, no keys are installed, so nobody can login. For convenience reasons, we provide [a pregenerated, insecure key](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key.ppk) that you can easily enable. However, please be aware that using this key is for convenience only. It does not provide any security because this key (both the public and the private side) is publicly available. **In production environments, you should use your own keys**.
+First, you must ensure that you have the right SSH keys installed inside the container. By default, no keys are installed, so nobody can login. For convenience reasons, we provide [a pregenerated, insecure key](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key.ppk) that you can easily enable. However, please be aware that using this key is for convenience only. It does not provide any security because this key (both the public and the private side) is publicly available. **In production environments, you should use your own keys**.
 
 <a name="using_the_insecure_key_for_one_container_only"></a>
 #### Using the insecure key for one container only
@@ -429,7 +430,7 @@ Once you have the ID, look for its IP address with:
 Now that you have the IP address, you can use SSH to login to the container, or to execute a command inside it:
 
     # Download the insecure private key
-    curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/insecure_key
+    curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/services/sshd/keys/insecure_key
     chmod 600 insecure_key
 
     # Login to the container
@@ -524,6 +525,50 @@ If you want to call the resulting image something else, pass the NAME variable, 
 
     make build NAME=joe/baseimage
 
+<a name="removing_optional_services"></a>
+### Removing optional services
+
+The default baseimage-docker installs `syslog-ng`, `cron` and `sshd` services during the build process.
+
+In case you don't need one or more of these services in your image, you can disable its installation and/or install the substituite service of your preference.
+
+You can user the `ENV` directive in your Dockerfile for these three variables :
+
+* `DISABLE_SYSLOG`
+* `DISABLE_SSH`
+* `DISABLE_CRON`
+
+For ex., if you want to disable ssh on your image :
+
+    #...
+    FROM phusion/baseimage:<VERSION>
+
+    # Set correct environment variables.
+    ENV HOME /root
+
+    # Disable SSH
+    ENV DISABLE_SSH 1
+
+    # Use baseimage-docker's init system.
+    CMD ["/sbin/my_init"]
+
+    # ...put your own build instructions here...
+
+    # Clean up APT when done.
+    RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+If you don't want to use the `ENV` directive inside your Dockerfile and avoid creating another image layer, as shown in the following example, to prevent `sshd` from being installed into your image, set `1` to the `DISABLE_SSH` variable in the `./image/buildconfig` file.
+
+    ### In ./image/buildconfig
+    # ...
+    # Default services
+    # Set 1 to the service you want to disable
+    export DISABLE_SYSLOG=${DISABLE_SYSLOG:-0}
+    export DISABLE_SSH=${DISABLE_SSH:-1}
+    export DISABLE_CRON=${DISABLE_CRON:-0}
+
+
+Then you can proceed with `docker build` command.
 
 <a name="conclusion"></a>
 ## Conclusion

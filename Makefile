@@ -21,9 +21,9 @@ release: test tag_latest
 	@echo "*** Don't forget to create a tag. git tag rel-$(VERSION) && git push origin rel-$(VERSION)"
 
 ssh:
-	chmod 600 image/insecure_key
+	chmod 600 image/services/sshd/keys/insecure_key
 	@ID=$$(docker ps | grep -F "$(NAME):$(VERSION)" | awk '{ print $$1 }') && \
 		if test "$$ID" = ""; then echo "Container is not running."; exit 1; fi && \
 		IP=$$(docker inspect $$ID | grep IPAddr | sed 's/.*: "//; s/".*//') && \
 		echo "SSHing into $$IP" && \
-		ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i image/insecure_key root@$$IP
+		ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i image/services/sshd/keys/insecure_key root@$$IP

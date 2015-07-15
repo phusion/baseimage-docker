@@ -438,7 +438,7 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
  *　缺点
    * 需要设置ssh key.然而,baseimage-docker会提供一中办法,会让key的生成会很容器.阅读更多信息.
 
-第一件事情,就是你需要确定你在容器中已经安装设置了ssh key. 默认,没有任何安装key的,所有你无法登录.为了方便的原因,我们提供了一个[已经生成的key](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/insecure_key.ppk),为了让你使用方便.然后,请注意这个key仅仅是为方便.他没有任何安全行,因为它的key是在网络上提供的.**在生产环境,你必须使用你自己的key.**
+第一件事情,就是你需要确定你在容器中已经安装设置了ssh key. 默认,没有任何安装key的,所有你无法登录.为了方便的原因,我们提供了一个[已经生成的key](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key.ppk),为了让你使用方便.然后,请注意这个key仅仅是为方便.他没有任何安全行,因为它的key是在网络上提供的.**在生产环境,你必须使用你自己的key.**
 
 
 <a name="using_the_insecure_key_for_one_container_only"></a>
@@ -461,7 +461,7 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
 现在你有得了IP地址,你就看通过SSH来登录容器,或者在容器中执行命令了:
 
     # 下载key
-    curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/insecure_key
+    curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/services/sshd/keys/insecure_key
     chmod 600 insecure_key
 
     # 登录容器
