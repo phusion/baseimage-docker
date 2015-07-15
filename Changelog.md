@@ -1,4 +1,4 @@
-## 0.9.17 (not yet released)
+## 0.9.17 (release date: 2015-07-15)
 
  * The latest OpenSSL updates have been pulled in. This fixes [CVE-2015-1793](http://openssl.org/news/secadv_20150709.txt). Upgrading is strongly recommended.
  * Removed nano and replaced vim with vim-tiny. This reduces Baseimage-docker's virtual size by 42 MB.
