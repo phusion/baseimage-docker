@@ -27,9 +27,7 @@ mkdir -p /var/lib/syslog-ng
 cp /bd_build/config/syslog_ng_default /etc/default/syslog-ng
 touch /var/log/syslog
 chmod u=rw,g=r,o= /var/log/syslog
-# Replace the system() source because inside Docker we
-# can't access /proc/kmsg.
-sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng/syslog-ng.conf
+cp /bd_build/config/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 
 ## Install syslog to "docker logs" forwarder.
 mkdir /etc/service/syslog-forwarder
