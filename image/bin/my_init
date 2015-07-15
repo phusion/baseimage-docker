@@ -127,7 +127,10 @@ def waitpid_reap_other_children(pid):
 	status = None
 	while not done:
 		try:
-			this_pid, status = os.waitpid(-1, 0)
+			# https://github.com/phusion/baseimage-docker/issues/151#issuecomment-92660569
+			this_pid, status = os.waitpid(pid, os.WNOHANG)
+			if this_pid == 0:
+				this_pid, status = os.waitpid(-1, 0)
 			if this_pid == pid:
 				done = True
 			else:
