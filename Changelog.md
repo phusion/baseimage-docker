@@ -1,5 +1,6 @@
 ## 0.9.17 (not yet released)
 
+ * The latest OpenSSL updates have been pulled in. This fixes [CVE-2015-1793](http://openssl.org/news/secadv_20150709.txt). Upgrading is strongly recommended.
  * Removed nano and replaced vim with vim-tiny. This reduces Baseimage-docker's virtual size by 42 MB.
  * When `my_init` generates `/etc/container_environment.sh`, it now ensures that environment variable names do not include any characters unsupported by Bash. Unsupported characters are now replaced with underscores. This fixes compatibility issues with Docker Compose. Closes GH-230.
  * `my_init` no longer reads from and writes to `/etc/container_environment` if that directory does not exist. Previously it would abort with an error. This change makes it easier to reuse `my_init` in other (non-Baseimage-docker-based) projects without having to modify it.
