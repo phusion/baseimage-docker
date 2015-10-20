@@ -1,11 +1,11 @@
-FROM ubuntu:14.04
-MAINTAINER Phusion <info@phusion.nl>
+FROM debian:8.2
+MAINTAINER Jim Riordan <jim@j1mr10rd4n.info>
 
-ADD . /bd_build
+ADD . /dbd_build
 
-RUN /bd_build/prepare.sh && \
-	/bd_build/system_services.sh && \
-	/bd_build/utilities.sh && \
-	/bd_build/cleanup.sh
+RUN /dbd_build/prepare.sh && \
+	/dbd_build/system_services.sh && \
+	/dbd_build/utilities.sh && \
+	/dbd_build/cleanup.sh
 
 CMD ["/sbin/my_init"]
