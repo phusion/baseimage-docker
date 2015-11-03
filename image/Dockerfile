@@ -1,5 +1,5 @@
-FROM ubuntu:14.04
-MAINTAINER Phusion <info@phusion.nl>
+FROM debian:8.2
+MAINTAINER Jim Riordan <jim@j1mr10rd4n.info>
 
 ADD . /bd_build
 

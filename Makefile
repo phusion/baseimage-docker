@@ -1,5 +1,5 @@
-NAME = phusion/baseimage
-VERSION = 0.9.17
+NAME = j1mr10rd4n/debian-baseimage-docker
+VERSION = 8.2.1
 
 .PHONY: all build test tag_latest release ssh
 
