@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -u
-import os, os.path, sys, stat, signal, errno, argparse, time, json, re
+import os, os.path, sys, stat, signal, errno, argparse, time, json, re, jinja2, pwd, grp
 
 KILL_PROCESS_TIMEOUT = 5
 KILL_ALL_PROCESSES_TIMEOUT = 5
@@ -217,6 +217,71 @@ def kill_all_processes(time_limit):
 	finally:
 		signal.alarm(0)
 
+def process_templates():
+	output_tag = 'template_output:'
+	template_dir = '/etc/my_template.d'
+	decoder = json.decoder.JSONDecoder()
+
+	def read_output_args(template):
+		file_path = os.path.join(template_dir, tmpl)
+		with open(file_path) as fh:
+			content = fh.read()
+		output_args = content.find(output_tag)
+		if output_args < 0:
+			raise ValueError(
+				"No template output parameters found.\n"
+				"Add `{# %s {\"dest\": \"/path/to/file\"} -#}` to beginning of the template file.\n"
+				"Other possible configurable fields are mode, owner and group." %
+				output_tag
+			)
+		output_args += len(output_tag)
+		output_args = json.decoder.WHITESPACE.match(content, output_args).end()
+		try:
+			data, offset = decoder.raw_decode(content, output_args)
+		except ValueError as e:
+			raise ValueError("Can't decode template output parameters")
+		if "dest" not in data:
+			raise ValueError("Template output parameter `dest` missing")
+		return data
+
+	def set_file_args(fh, args):
+		fd = fh.fileno()
+		if 'mode' in args:
+			octal_mode = args['mode']
+			mode = int(str(octal_mode), 8)
+			os.fchmod(fd, mode)
+		owner, group = -1, -1
+		if 'owner' in args:
+			owner = args['owner']
+			if isinstance(owner, str):
+				owner = pwd.getpwnam(owner).pw_uid
+		if 'group' in args:
+			group = args['group']
+			if isinstance(group, str):
+				group = grp.getgrnam(group).gr_gid
+		if owner > -1 or group > -1:
+			os.fchown(fd, owner, group)
+
+	loader = jinja2.FileSystemLoader(template_dir)
+	env = jinja2.Environment(
+		loader=loader,
+		undefined=jinja2.StrictUndefined,
+	)
+	context = os.environ.copy()
+	non_recursive_templates = [
+		tmpl
+		for tmpl in loader.list_templates()
+		if '/' not in tmpl
+	]
+
+	for tmpl in non_recursive_templates:
+		info("Processing template %s..." % os.path.join(template_dir, tmpl))
+		output_args = read_output_args(tmpl)
+		template = env.get_template(tmpl)
+		with open(output_args['dest'], 'w') as fh:
+			template.stream(context).dump(fh)
+			set_file_args(fh, output_args)
+
 def run_startup_files():
 	# Run /etc/my_init.d/*
 	for name in listdir("/etc/my_init.d"):
@@ -267,9 +332,11 @@ def main(args):
 	if args.enable_insecure_key:
 		install_insecure_key()
 
+	if not args.skip_templates:
+		process_templates()
+
 	if not args.skip_startup_files:
 		run_startup_files()
-	
 	runit_exited = False
 	exit_code = None
 
@@ -322,6 +389,9 @@ parser.add_argument('--enable-insecure-key', dest = 'enable_insecure_key',
 parser.add_argument('--skip-startup-files', dest = 'skip_startup_files',
 	action = 'store_const', const = True, default = False,
 	help = 'Skip running /etc/my_init.d/* and /etc/rc.local')
+parser.add_argument('--skip-templates', dest = 'skip_templates',
+	action = 'store_const', const = True, default = False,
+	help = 'Skip processing /etc/my_template.d')
 parser.add_argument('--skip-runit', dest = 'skip_runit',
 	action = 'store_const', const = True, default = False,
 	help = 'Do not run runit services')
