@@ -9,3 +9,7 @@ ln -s /usr/bin/vim.tiny /usr/bin/vim
 
 ## This tool runs a command as another user and sets $HOME.
 cp /bd_build/bin/setuser /sbin/setuser
+
+## bash completion for sv
+cp /bd_build/sv /etc/bash_completion.d/sv
+
