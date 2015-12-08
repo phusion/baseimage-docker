@@ -21,7 +21,7 @@ ID=`docker run -d -v $PWD/test:/test $NAME:$VERSION /sbin/my_init --enable-insec
 sleep 1
 
 echo " --> Obtaining IP"
-IP=`docker inspect $ID | grep IPAddress | sed -e 's/.*: "//; s/".*//'`
+IP=`docker inspect -f "{{ .NetworkSettings.IPAddress }}" "$ID"`
 if [[ "$IP" = "" ]]; then
 	abort "Unable to obtain container IP"
 fi
