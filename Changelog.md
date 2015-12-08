@@ -1,3 +1,8 @@
+## 0.9.18 (release date: 2015-12-08)
+
+ * The latest OpenSSL updates have been pulled in. This fixes [CVE-2015-3193](https://www.openssl.org/news/secadv/20151203.txt) and a few others. Upgrading is strongly recommended.
+
+
 ## 0.9.17 (release date: 2015-07-15)
 
  * The latest OpenSSL updates have been pulled in. This fixes [CVE-2015-1793](http://openssl.org/news/secadv_20150709.txt). Upgrading is strongly recommended.
