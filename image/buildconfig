@@ -1,3 +1,9 @@
 export LC_ALL=C
 export DEBIAN_FRONTEND=noninteractive
 minimal_apt_get_install='apt-get install -y --no-install-recommends'
+
+# Default services
+# Set 1 to the service you want to disable
+export DISABLE_SYSLOG=${DISABLE_SYSLOG:-0}
+export DISABLE_SSH=${DISABLE_SSH:-0}
+export DISABLE_CRON=${DISABLE_CRON:-0}

@@ -9,6 +9,8 @@ LOG_LEVEL_WARN  = 1
 LOG_LEVEL_INFO  = 2
 LOG_LEVEL_DEBUG = 3
 
+SHENV_NAME_WHITELIST_REGEX = re.compile('[^\w\-_\.]')
+
 log_level = None
 
 terminated_child_processes = {}
@@ -57,6 +59,8 @@ def is_exe(path):
 		return False
 
 def import_envvars(clear_existing_environment = True, override_existing_environment = True):
+	if not os.path.exists("/etc/container_environment"):
+		return
 	new_env = {}
 	for envfile in listdir("/etc/container_environment"):
 		name = os.path.basename(envfile)
@@ -73,6 +77,8 @@ def import_envvars(clear_existing_environment = True, override_existing_environm
 			os.environ[name] = value
 
 def export_envvars(to_dir = True):
+	if not os.path.exists("/etc/container_environment"):
+		return
 	shell_dump = ""
 	for name, value in os.environ.items():
 		if name in ['HOME', 'USER', 'GROUP', 'UID', 'GID', 'SHELL']:
@@ -80,7 +86,7 @@ def export_envvars(to_dir = True):
 		if to_dir:
 			with open("/etc/container_environment/" + name, "w") as f:
 				f.write(value)
-		shell_dump += "export " + shquote(name) + "=" + shquote(value) + "\n"
+		shell_dump += "export " + sanitize_shenvname(name) + "=" + shquote(value) + "\n"
 	with open("/etc/container_environment.sh", "w") as f:
 		f.write(shell_dump)
 	with open("/etc/container_environment.json", "w") as f:
@@ -98,6 +104,9 @@ def shquote(s):
 	# use single quotes, and put single quotes into double quotes
 	# the string $'b is then quoted as '$'"'"'b'
 	return "'" + s.replace("'", "'\"'\"'") + "'"
+
+def sanitize_shenvname(s):
+	return re.sub(SHENV_NAME_WHITELIST_REGEX, "_", s)
 
 # Waits for the child process with the given PID, while at the same time
 # reaping any other child processes that have exited (e.g. adopted child
@@ -118,7 +127,10 @@ def waitpid_reap_other_children(pid):
 	status = None
 	while not done:
 		try:
-			this_pid, status = os.waitpid(-1, 0)
+			# https://github.com/phusion/baseimage-docker/issues/151#issuecomment-92660569
+			this_pid, status = os.waitpid(pid, os.WNOHANG)
+			if this_pid == 0:
+				this_pid, status = os.waitpid(-1, 0)
 			if this_pid == pid:
 				done = True
 			else:
