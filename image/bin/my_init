@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -u
-import os, os.path, sys, stat, signal, errno, argparse, time, json, re
+import os, os.path, sys, stat, signal, errno, argparse, time, json, re, fileinput
 
 KILL_PROCESS_TIMEOUT = 5
 KILL_ALL_PROCESSES_TIMEOUT = 5
@@ -260,16 +260,25 @@ def install_insecure_key():
 	info("Installing insecure SSH key for user root")
 	run_command_killable("/usr/sbin/enable_insecure_key")
 
+def change_sshd_config(port):
+	with fileinput.input(files=("/etc/ssh/sshd_config",), inplace=True) as f:
+		for line in f:
+			line = re.sub(r"^#?Port\s.*", r"Port {}".format(port), line)
+			sys.stdout.write(line)
+
 def main(args):
 	import_envvars(False, False)
 	export_envvars()
+
+	if args.ssh_port > 0:
+		change_sshd_config(args.ssh_port)
 
 	if args.enable_insecure_key:
 		install_insecure_key()
 
 	if not args.skip_startup_files:
 		run_startup_files()
-	
+
 	runit_exited = False
 	exit_code = None
 
@@ -331,6 +340,9 @@ parser.add_argument('--no-kill-all-on-exit', dest = 'kill_all_on_exit',
 parser.add_argument('--quiet', dest = 'log_level',
 	action = 'store_const', const = LOG_LEVEL_WARN, default = LOG_LEVEL_INFO,
 	help = 'Only print warnings and errors')
+parser.add_argument('--ssh-port', dest = 'ssh_port',
+	action = 'store', type = int, default = 22,
+	help = 'Specifies the port on which the ssh server listens for connections')
 args = parser.parse_args()
 log_level = args.log_level
 
