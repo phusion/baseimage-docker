@@ -116,7 +116,6 @@ Baseimage-docker *鼓励* 通过runit来运行多进程.
 <a name="getting_started"></a>
 ### 入门指南
 
-The image is called `phusion/baseimage`, and is available on the Docker registry.
 镜像名字叫`phusion/baseimage`,在Docker仓库上也是可用的.
 
 下面的这个是一个Dockerfile的模板.
