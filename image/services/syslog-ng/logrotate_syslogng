@@ -33,6 +33,6 @@
 	sharedscripts
 	postrotate
 		sv reload syslog-ng > /dev/null
-		sv restart cron-log-forwarder > /dev/null
+		sv restart syslog-forwarder > /dev/null
 	endscript
 }
