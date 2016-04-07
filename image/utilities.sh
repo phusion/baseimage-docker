@@ -4,7 +4,7 @@ source /bd_build/buildconfig
 set -x
 
 ## Often used tools.
-$minimal_apt_get_install curl less vim-tiny psmisc
+$minimal_apt_get_install curl less vim-tiny psmisc lsof tree traceroute python
 ln -s /usr/bin/vim.tiny /usr/bin/vim
 
 ## This tool runs a command as another user and sets $HOME.
@@ -15,7 +15,7 @@ rm -f /sbin/init /sbin/telinit /sbin/reboot /sbin/shutdown
 cat > /sbin/reboot << EOF
 #!/bin/sh
 # This file is intentionally changed by huanghao@yy.com
-/bin/echo -e "\n*** reboot was called from inside container" >> /dev/termination-log
+/bin/echo -n "Reboot was called from inside container" > /dev/termination-log
 /bin/kill 1
 EOF
 ln -s /sbin/reboot /sbin/shutdown
