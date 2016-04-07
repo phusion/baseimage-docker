@@ -1,4 +1,4 @@
-NAME = phusion/baseimage
+NAME = sigmas/baseimage
 VERSION = 0.9.18
 
 .PHONY: all build test tag_latest release ssh
