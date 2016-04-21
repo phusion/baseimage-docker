@@ -4,6 +4,6 @@ minimal_apt_get_install='apt-get install -y --no-install-recommends'
 
 # Default services
 # Set 1 to the service you want to disable
-export DISABLE_SYSLOG=${DISABLE_SYSLOG:-0}
-export DISABLE_SSH=${DISABLE_SSH:-0}
+export DISABLE_SYSLOG=${DISABLE_SYSLOG:-1}
+export DISABLE_SSH=${DISABLE_SSH:-1}
 export DISABLE_CRON=${DISABLE_CRON:-1}
