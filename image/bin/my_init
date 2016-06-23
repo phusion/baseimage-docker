@@ -255,6 +255,7 @@ def wait_for_runit_services():
 		done = os.system("/usr/bin/sv status /etc/service/* | grep -q '^run:'") != 0
 		if not done:
 			time.sleep(0.1)
+			shutdown_runit_services()
 
 def install_insecure_key():
 	info("Installing insecure SSH key for user root")
