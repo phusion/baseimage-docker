@@ -244,8 +244,9 @@ def wait_for_runit_or_interrupt(pid):
 	except KeyboardInterrupt:
 		return (False, None)
 
-def shutdown_runit_services():
-	debug("Begin shutting down runit services...")
+def shutdown_runit_services(quiet = False):
+	if not quiet:
+		debug("Begin shutting down runit services...")
 	os.system("/usr/bin/sv down /etc/service/*")
 
 def wait_for_runit_services():
@@ -255,6 +256,12 @@ def wait_for_runit_services():
 		done = os.system("/usr/bin/sv status /etc/service/* | grep -q '^run:'") != 0
 		if not done:
 			time.sleep(0.1)
+			# According to https://github.com/phusion/baseimage-docker/issues/315
+			# there is a bug or race condition in Runit, causing it
+			# not to shutdown services that are already being started.
+			# So during shutdown we repeatedly instruct Runit to shutdown
+			# services.
+			shutdown_runit_services(true)
 
 def install_insecure_key():
 	info("Installing insecure SSH key for user root")
