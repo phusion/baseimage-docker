@@ -1,3 +1,7 @@
+## 0.9.19 (not yet released)
+
+ * Upgraded to Ubuntu 16.04. Thanks to Pierre Jacomet for submitting this patch.
+
 ## 0.9.18 (release date: 2015-12-08)
 
  * The latest OpenSSL updates have been pulled in. This fixes [CVE-2015-3193](https://www.openssl.org/news/secadv/20151203.txt) and a few others. Upgrading is strongly recommended.
