@@ -82,7 +82,7 @@ Baseimage-docker让这一切完美。在"内容"部分描述了所有这些修�
 
 | 模块        | 为什么包含这些？以及备注 |
 | ---------------- | ------------------- |
-| Ubuntu 14.04 LTS | 基础系统。 |
+| Ubuntu 16.04 LTS | 基础系统。 |
 | 一个**正确**的初始化进程  | *主要文章：[Docker和PID 1 僵尸进程回收问题](http://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/)*<br/><br/>根据Unix进程模型，[初始化进程](https://en.wikipedia.org/wiki/Init) -- PID 1 -- 继承了所有[孤立的子进程](https://en.wikipedia.org/wiki/Orphan_process)，并且必须[进行回收](https://en.wikipedia.org/wiki/Wait_(system_call))。大多数Docker容器没有一个初始化进程可以正确的完成此操作，随着时间的推移会导致他们的容器出现了大量的[僵尸进程](https://en.wikipedia.org/wiki/Zombie_process)。<br/><br/>而且，`docker stop`发送SIGTERM信号给初始化进程，照理说此信号应该可以停止所有服务。不幸的是由于它们对硬件进行了关闭操作，导致Docker内的大多数初始化系统没有正确执行。这会导致进程强行被SIGKILL信号关闭，从而丧失了一个正确取消初始化设置的机会。这会导致文件损坏。<br/><br/>Baseimage-docker配有一个名为`/sbin/my_init`的初始化进程来同时正确的完成这些任务。 |
 | 修复了APT与Docker不兼容的问题 | 详情参见：https://github.com/dotcloud/docker/issues/1024 。 |
 | syslog-ng | 对于很多服务－包括kernel自身，都需要一个syslog后台进程，以便可以正确的将log输出到/var/log/syslog中。如果没有运行syslog后台进程，很多重要的信息就会默默的丢失了。<br/><br/>只对本地进行监听。所有syslog信息会被转发给“docker logs”。 |

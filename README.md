@@ -83,7 +83,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 
 | Component        | Why is it included? / Remarks |
 | ---------------- | ------------------- |
-| Ubuntu 14.04 LTS | The base system. |
+| Ubuntu 16.04 LTS | The base system. |
 | A **correct** init process | _Main article: [Docker and the PID 1 zombie reaping problem](http://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/)._ <br><br>According to the Unix process model, [the init process](https://en.wikipedia.org/wiki/Init) -- PID 1 -- inherits all [orphaned child processes](https://en.wikipedia.org/wiki/Orphan_process) and must [reap them](https://en.wikipedia.org/wiki/Wait_(system_call)). Most Docker containers do not have an init process that does this correctly, and as a result their containers become filled with [zombie processes](https://en.wikipedia.org/wiki/Zombie_process) over time. <br><br>Furthermore, `docker stop` sends SIGTERM to the init process, which is then supposed to stop all services. Unfortunately most init systems don't do this correctly within Docker since they're built for hardware shutdowns instead. This causes processes to be hard killed with SIGKILL, which doesn't give them a chance to correctly deinitialize things. This can cause file corruption. <br><br>Baseimage-docker comes with an init process `/sbin/my_init` that performs both of these tasks correctly. |
 | Fixes APT incompatibilities with Docker | See https://github.com/dotcloud/docker/issues/1024. |
 | syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. All syslog messages are forwarded to "docker logs". |
@@ -281,7 +281,7 @@ If you are sure that your environment variables don't contain sensitive data, th
 <a name="upgrading_os"></a>
 ### Upgrading the operating system inside the container
 
-Baseimage-docker images contain an Ubuntu 14.04 operating system. You may want to update this OS from time to time, for example to pull in the latest security updates. OpenSSL is a notorious example. Vulnerabilities are discovered in OpenSSL on a regular basis, so you should keep OpenSSL up-to-date as much as you can.
+Baseimage-docker images contain an Ubuntu 16.04 operating system. You may want to update this OS from time to time, for example to pull in the latest security updates. OpenSSL is a notorious example. Vulnerabilities are discovered in OpenSSL on a regular basis, so you should keep OpenSSL up-to-date as much as you can.
 
 While we release Baseimage-docker images with the latest OS updates from time to time, you do not have to rely on us. You can update the OS inside Baseimage-docker images yourself, and it is recommend that you do this instead of waiting for us.
 

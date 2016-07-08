@@ -82,7 +82,7 @@ Baseimage-docker讓這一切完美。在"內容"部分描述了所有這些修�
 
 | 模塊        | 爲什麼包含這些？以及備註 |
 | ---------------- | ------------------- |
-| Ubuntu 14.04 LTS | 基礎系統。 |
+| Ubuntu 16.04 LTS | 基礎系統。 |
 | 一個**正確**的初始化行程  | *主要文章：[Docker和PID 1 殭屍行程回收問題](http://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/)*<br/><br/>根據Unix行程模型，[初始化行程](https://en.wikipedia.org/wiki/Init) -- PID 1 -- 繼承了所有[孤立的子行程](https://en.wikipedia.org/wiki/Orphan_process)，並且必須[進行回收](https://en.wikipedia.org/wiki/Wait_(system_call))。大多數Docker容器沒有一個初始化行程可以正確的完成此操作，隨着時間的推移會導致他們的容器出現了大量的[殭屍行程](https://en.wikipedia.org/wiki/Zombie_process)。<br/><br/>而且，`docker stop`發送SIGTERM信號給初始化行程，照理說此信號應該可以停止所有服務。不幸的是由於它們對硬體進行了關閉操作，導致Docker內的大多數初始化系統沒有正確執行。這會導致行程強行被SIGKILL信號關閉，從而喪失了一個正確取消初始化設置的機會。這會導致文件損壞。<br/><br/>Baseimage-docker配有一個名爲`/sbin/my_init`的初始化行程來同時正確的完成這些任務。 |
 | 修復了APT與Docker不兼容的問題 | 詳情參見：https://github.com/dotcloud/docker/issues/1024 。 |
 | syslog-ng | 對於很多服務－包括kernel自身，都需要一個syslog後臺行程，以便可以正確的將log輸出到/var/log/syslog中。如果沒有運行syslog後臺行程，很多重要的信息就會默默的丟失了。<br/><br/>只對本地進行監聽。所有syslog信息會被轉發給“docker logs”。 |
