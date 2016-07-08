@@ -1,4 +1,4 @@
-## 0.9.19 (release date: 2017-07-08)
+## 0.9.19 (release date: 2016-07-08)
 
  * Upgraded to Ubuntu 16.04. Thanks to Pierre Jacomet for submitting this patch.
  * During shutdown, repeatedly tell Runit to shutdown services in order to workaround a potential race condition in Runit itself. Closes GH-315. Thanks to Chris Kite for submitting this patch.
