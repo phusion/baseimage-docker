@@ -3,7 +3,7 @@
  * Upgraded to Ubuntu 16.04. Thanks to Pierre Jacomet for submitting this patch.
  * During shutdown, repeatedly tell Runit to shutdown services in order to workaround a potential race condition in Runit itself. Closes GH-315. Thanks to Chris Kite for submitting this patch.
  * Fixed a problem in PAM which may cause chpasswd and related tools to fail. This is caused by Docker bug 6345 which is already closed, but for some reason the problem still persists. Closes GH-181. Thanks to Michael Zedeler for submitting the patch.
- * Fixed the syslog-ng logrotate script to correctly restart the syslog-to-Docker-logs forwarder.
+ * Fixed the syslog-ng logrotate script to correctly restart the syslog-to-Docker-logs forwarder. Closes GH-292. Thanks to Ernestas Lukoševičius for submitting the patch.
 
 
 ## 0.9.18 (release date: 2015-12-08)
