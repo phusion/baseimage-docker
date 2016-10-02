@@ -22,3 +22,6 @@ cp $SYSLOG_NG_BUILD_PATH/syslog-forwarder.runit /etc/service/syslog-forwarder/ru
 ## Install logrotate.
 $minimal_apt_get_install logrotate
 cp $SYSLOG_NG_BUILD_PATH/logrotate_syslogng /etc/logrotate.d/syslog-ng
+
+## Change logrotate default group
+sed -i 's/su root syslog/su root adm/' /etc/logrotate.conf
