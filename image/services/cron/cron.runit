@@ -1,2 +1,2 @@
 #!/bin/sh
-exec /usr/sbin/cron -f
+exec /usr/sbin/cron -f -L 0
