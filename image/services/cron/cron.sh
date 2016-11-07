@@ -4,9 +4,11 @@ source /bd_build/buildconfig
 set -x
 
 $minimal_apt_get_install cron
-mkdir /etc/service/cron
 chmod 600 /etc/crontab
-cp /bd_build/services/cron/cron.runit /etc/service/cron/run
+
+## Enable runit
+install -D -m 755  /bd_build/services/cron/cron.runit /etc/sv/cron/run
+ln -s /etc/sv/cron /etc/service
 
 ## Remove useless cron entries.
 # Checks for lost+found and scans for mtab.
