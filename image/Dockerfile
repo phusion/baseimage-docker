@@ -1,6 +1,8 @@
 FROM ubuntu:16.04
 MAINTAINER Phusion <info@phusion.nl>
 
+ENV DEBIAN_FRONTEND noninteractive
+
 ADD . /bd_build
 
 RUN /bd_build/prepare.sh && \
