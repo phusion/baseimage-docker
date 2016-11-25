@@ -9,4 +9,7 @@ RUN /bd_build/prepare.sh && \
 	/bd_build/fix_pam_bug.sh && \
 	/bd_build/cleanup.sh
 
+# Create mountpoint for Vagrant synced folder
+RUN mkdir -p /vagrant
+
 CMD ["/sbin/my_init"]
