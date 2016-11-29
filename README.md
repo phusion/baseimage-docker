@@ -170,6 +170,7 @@ In `Dockerfile`:
 
     RUN mkdir /etc/service/memcached
     ADD memcached.sh /etc/service/memcached/run
+    RUN chmod +x /etc/service/memcached/run
 
 Note that the shell script must run the daemon **without letting it daemonize/fork it**. Usually, daemons provide a command line flag or a config file option for that.
 
