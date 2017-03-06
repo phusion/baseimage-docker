@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM armhf/ubuntu
 MAINTAINER Phusion <info@phusion.nl>
 
 ADD . /bd_build
