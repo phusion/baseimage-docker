@@ -186,7 +186,7 @@ All scripts must exit correctly, e.g. with exit code 0. If any script exits with
 
 The following example shows how you can add a startup script. This script simply logs the time of boot to the file /tmp/boottime.txt.
 
-In `logtime.sh` (make sure this file is chmod +x):
+In `logtime.sh`:
 
     #!/bin/sh
     date > /tmp/boottime.txt
@@ -195,6 +195,7 @@ In `Dockerfile`:
 
     RUN mkdir -p /etc/my_init.d
     COPY logtime.sh /etc/my_init.d/logtime.sh
+	  RUN chmod +x /etc/my_init.d/logtime.sh
 
 <a name="environment_variables"></a>
 ### Environment variables
