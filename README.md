@@ -407,6 +407,19 @@ Baseimage-docker disables the SSH server by default. Add the following to your D
     # init system will auto-generate one during boot.
     RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
 
+Alternatively, to enable sshd only for a single instance of your container, create a folder with a [startup script](#running_startup_scripts).  The contents of that should be
+
+    ### In myfolder/enable_ssh.sh (make sure this file is chmod +x):
+    #!/bin/sh
+    rm -f /etc/service/sshd/down
+    ssh-keygen -P "" -t dsa -f /etc/ssh/ssh_host_dsa_key
+
+Then, you can start your container with
+
+    docker run -d -v `pwd`/myfolder:/etc/my_init.d my/dockerimage
+
+This will initialize sshd on container boot.  You can then access it with the insecure key as below, or using the methods to add a secure key.  Further, you can publish the port to your machine with -p 22:2222 allowing you to ssh to localhost:2222 instead of looking up the ip address.
+
 <a name="ssh_keys"></a>
 #### About SSH keys
 
