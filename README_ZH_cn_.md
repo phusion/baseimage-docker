@@ -142,7 +142,7 @@ Baseimage-docker *鼓励* 通过runit来运行多进程.
 <a name="adding_additional_daemons"></a>
 ### 增加后台进程
 
-你可以通过runit工具向你的镜像中添加后台进程(例如:你自己的某些应用).你需要编写一个运行你需要的后台进程的脚步就可以了,runit工具会保证它的正常运行,如果进程死掉,runit也会重启它的.
+你可以通过runit工具向你的镜像中添加后台进程(例如:你自己的某些应用).你需要编写一个运行你需要的后台进程的脚本就可以了,runit工具会保证它的正常运行,如果进程死掉,runit也会重启它的.
 
 脚本的名称必须是`run`,必须是可以运行的,它需要放到`/etc/service/<NAME>`.
 
@@ -434,10 +434,10 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
    * 不想使用`nsenter`,运行的进程和正在的进程会不一样.
    * 不需要docker主机提供root权限.
    * 运行你让用户登录到容器,而不需要登录到docker主机.然而,默认这是不启用的,因为baseimage-docker默认不是开放ssh服务的.
- *　缺点
-   * 需要设置ssh key.然而,baseimage-docker会提供一中办法,会让key的生成会很容器.阅读更多信息.
+ * 缺点
+   * 需要设置ssh key.然而,baseimage-docker会提供一中办法,会让key的生成会很容易.阅读更多信息.
 
-第一件事情,就是你需要确定你在容器中已经安装设置了ssh key. 默认,没有任何安装key的,所有你无法登录.为了方便的原因,我们提供了一个[已经生成的key](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key.ppk),为了让你使用方便.然后,请注意这个key仅仅是为方便.他没有任何安全行,因为它的key是在网络上提供的.**在生产环境,你必须使用你自己的key.**
+第一件事情,就是你需要确定你在容器中已经安装设置了ssh key. 默认是不安装任何key的,所以任何人都无法登录.为了方便的原因,我们提供了一个[已经生成的key](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key.ppk),为了让你使用方便.然后,请注意这个key仅仅是为方便.他没有任何安全性,因为它的key是在网络上提供的.**在生产环境,你必须使用你自己的key.**
 
 
 <a name="using_the_insecure_key_for_one_container_only"></a>
