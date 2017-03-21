@@ -207,6 +207,7 @@ If you use `/sbin/my_init` as the main container command, then any environment v
  * Environment variables on Unix are inherited on a per-process basis. This means that it is generally not possible for a child process to change the environment variables of other processes.
  * Because of the aforementioned point, there is no good central place for defining environment variables for all applications and services. Debian has the `/etc/environment` file but it only works in some situations.
  * Some services change environment variables for child processes. Nginx is one such example: it removes all environment variables unless you explicitly instruct it to retain them through the `env` configuration option. If you host any applications on Nginx (e.g. using the [passenger-docker](https://github.com/phusion/passenger-docker) image, or using Phusion Passenger in your own image) then they will not see the environment variables that were originally passed by Docker.
+ * We ignore HOME, SHELL, USER and a bunch of other environment variables on purpose, because _not_ ignoring them will break multi-user containers. See https://github.com/phusion/baseimage-docker/pull/86 -- A workaround for setting the `HOME` environment variable looks like this: `RUN echo /root > /etc/container_environment/HOME`. See https://github.com/phusion/baseimage-docker/issues/119
 
 `my_init` provides a solution for all these caveats.
 
