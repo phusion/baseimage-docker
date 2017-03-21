@@ -27,7 +27,7 @@ Baseimage-docker gets everything right. The "Contents" section describes all the
 You can configure the stock `ubuntu` image yourself from your Dockerfile, so why bother using baseimage-docker?
 
  * Configuring the base system for Docker-friendliness is no easy task. As stated before, there are many corner cases. By the time that you've gotten all that right, you've reinvented baseimage-docker. Using baseimage-docker will save you from this effort.
- * It reduces the time needed to write a correct Dockerfile. You won't have to worry about the base system and focusing you on the stack and the app.
+ * It reduces the time needed to write a correct Dockerfile. You won't have to worry about the base system and you can focus on the stack and the app.
  * It reduces the time needed to run `docker build`, allowing you to iterate your Dockerfile more quickly.
  * It reduces download time during redeploys. Docker only needs to download the base image once: during the first deploy. On every subsequent deploys, only the changes you make on top of the base image are downloaded.
 
