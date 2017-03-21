@@ -143,7 +143,7 @@ The image is called `phusion/baseimage`, and is available on the Docker registry
 <a name="adding_additional_daemons"></a>
 ### 增加後臺行程
 
-你可以通過runit工具向你的鏡像中添加後臺行程(例如:你自己的某些應用).你需要編寫一個運行你需要的後臺行程的腳步就可以了,runit工具會保證它的正常運行,如果行程死掉,runit也會重啓它的.
+你可以通過runit工具向你的鏡像中添加後臺行程(例如:你自己的某些應用).你需要編寫一個運行你需要的後臺行程的腳本就可以了,runit工具會保證它的正常運行,如果行程死掉,runit也會重啓它的.
 
 腳本的名稱必須是`run`,必須是可以運行的,它需要放到`/etc/service/<NAME>`.
 
@@ -156,7 +156,7 @@ The image is called `phusion/baseimage`, and is available on the Docker registry
 	
 	### 在Dockerfile中:
     RUN mkdir /etc/service/memcached
-    ADD memcached.sh /etc/service/memcached/run
+    COPY memcached.sh /etc/service/memcached/run
 
 注意腳本必須運行在後臺的,**不能讓他們行程進行daemonize/fork**.通常,後臺行程會提供一個標誌位或者配置文件.
 
@@ -178,7 +178,7 @@ baseimage-docker的初始化腳本 `/sbin/my_init`,在啓動的時候行程運�
 
     ### 在 Dockerfile中:
     RUN mkdir -p /etc/my_init.d
-    ADD logtime.sh /etc/my_init.d/logtime.sh
+    COPY logtime.sh /etc/my_init.d/logtime.sh
 
 
 <a name="environment_variables"></a>
@@ -435,10 +435,10 @@ Baseimage-docker提供了一個靈活的方式運行只要一閃而過的命令,
    * 不想使用`nsenter`,運行的行程和正在的行程會不一樣.
    * 不需要docker主機提供root權限.
    * 運行你讓用戶登錄到容器,而不需要登錄到docker主機.然而,默認這是不啓用的,因爲baseimage-docker默認不是開放ssh服務的.
- *　缺點
-   * 需要設置ssh key.然而,baseimage-docker會提供一中辦法,會讓key的生成會很容器.閱讀更多信息.
+ * 缺點
+   * 需要設置ssh key.然而,baseimage-docker會提供一中辦法,會讓key的生成會很容易.閱讀更多信息.
 
-第一件事情,就是你需要確定你在容器中已經安裝設置了ssh key. 默認,沒有任何安裝key的,所有你無法登錄.爲了方便的原因,我們提供了一個[已經生成的key](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key.ppk),爲了讓你使用方便.然後,請注意這個key僅僅是爲方便.他沒有任何安全行,因爲它的key是在網絡上提供的.**在生產環境,你必須使用你自己的key.**
+第一件事情,就是你需要確定你在容器中已經安裝設置了ssh key. 默認是不安裝任何key的,所以任何人都無法登錄.爲了方便的原因,我們提供了一個[已經生成的key](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key.ppk),爲了讓你使用方便.然後,請注意這個key僅僅是爲方便.他沒有任何安全性,因爲它的key是在網絡上提供的.**在生產環境,你必須使用你自己的key.**
 
 
 <a name="using_the_insecure_key_for_one_container_only"></a>
@@ -487,7 +487,7 @@ Baseimage-docker提供了一個靈活的方式運行只要一閃而過的命令,
 編輯你的dockerfile,來安裝ssh public key:
 
     ## 安裝你自己的public key.
-    ADD your_key.pub /tmp/your_key.pub
+    COPY your_key.pub /tmp/your_key.pub
     RUN cat /tmp/your_key.pub >> /root/.ssh/authorized_keys && rm -f /tmp/your_key.pub
 
 重新創建你的鏡像.一旦你創建成功,啓動基於這個鏡像的容器.

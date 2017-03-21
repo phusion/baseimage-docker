@@ -1,6 +1,7 @@
 # A minimal Ubuntu base image modified for Docker-friendliness
 
 [![](https://badge.imagelayers.io/phusion/baseimage:0.9.17.svg)](https://imagelayers.io/?images=phusion/baseimage:latest 'Get your own badge on imagelayers.io')
+[![Travis](https://img.shields.io/travis/phusion/baseimage-docker.svg)](https://travis-ci.org/phusion/baseimage-docker)
 
 _Baseimage-docker only consumes 6 MB RAM and is much powerful than Busybox or Alpine. See why below._
 
@@ -16,7 +17,7 @@ Baseimage-docker is available for pulling from [the Docker registry](https://reg
 
 ### What are the problems with the stock Ubuntu base image?
 
-Ubuntu is not designed to be run inside Docker. Its init system, Upstart, assumes that it's running on either real hardware or virtualized hardware, but not inside a Docker container. But inside a container you don't want a full system anyway, you want a minimal system. But configuring that minimal system for use within a container has many strange corner cases that are hard to get right if you are not intimately familiar with the Unix system model. This can cause a lot of strange problems.
+Ubuntu is not designed to be run inside Docker. Its init system, Upstart, assumes that it's running on either real hardware or virtualized hardware, but not inside a Docker container. But inside a container you don't want a full system; you want a minimal system.  Configuring that minimal system for use within a container has many strange corner cases that are hard to get right if you are not intimately familiar with the Unix system model. This can cause a lot of strange problems.
 
 Baseimage-docker gets everything right. The "Contents" section describes all the things that it modifies.
 
@@ -26,7 +27,7 @@ Baseimage-docker gets everything right. The "Contents" section describes all the
 You can configure the stock `ubuntu` image yourself from your Dockerfile, so why bother using baseimage-docker?
 
  * Configuring the base system for Docker-friendliness is no easy task. As stated before, there are many corner cases. By the time that you've gotten all that right, you've reinvented baseimage-docker. Using baseimage-docker will save you from this effort.
- * It reduces the time needed to write a correct Dockerfile. You won't have to worry about the base system and can focus on your stack and your app.
+ * It reduces the time needed to write a correct Dockerfile. You won't have to worry about the base system and focusing you on the stack and the app.
  * It reduces the time needed to run `docker build`, allowing you to iterate your Dockerfile more quickly.
  * It reduces download time during redeploys. Docker only needs to download the base image once: during the first deploy. On every subsequent deploys, only the changes you make on top of the base image are downloaded.
 
@@ -86,9 +87,9 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 | Component        | Why is it included? / Remarks |
 | ---------------- | ------------------- |
 | Ubuntu 16.04 LTS | The base system. |
-| A **correct** init process | _Main article: [Docker and the PID 1 zombie reaping problem](http://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/)._ <br><br>According to the Unix process model, [the init process](https://en.wikipedia.org/wiki/Init) -- PID 1 -- inherits all [orphaned child processes](https://en.wikipedia.org/wiki/Orphan_process) and must [reap them](https://en.wikipedia.org/wiki/Wait_(system_call)). Most Docker containers do not have an init process that does this correctly, and as a result their containers become filled with [zombie processes](https://en.wikipedia.org/wiki/Zombie_process) over time. <br><br>Furthermore, `docker stop` sends SIGTERM to the init process, which is then supposed to stop all services. Unfortunately most init systems don't do this correctly within Docker since they're built for hardware shutdowns instead. This causes processes to be hard killed with SIGKILL, which doesn't give them a chance to correctly deinitialize things. This can cause file corruption. <br><br>Baseimage-docker comes with an init process `/sbin/my_init` that performs both of these tasks correctly. |
+| A **correct** init process | _Main article: [Docker and the PID 1 zombie reaping problem](http://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/)._ <br><br>According to the Unix process model, [the init process](https://en.wikipedia.org/wiki/Init) -- PID 1 -- inherits all [orphaned child processes](https://en.wikipedia.org/wiki/Orphan_process) and must [reap them](https://en.wikipedia.org/wiki/Wait_(system_call)). Most Docker containers do not have an init process that does this correctly. As a result, their containers become filled with [zombie processes](https://en.wikipedia.org/wiki/Zombie_process) over time. <br><br>Furthermore, `docker stop` sends SIGTERM to the init process, which stops all services. Unfortunately most init systems don't do this correctly within Docker since they're built for hardware shutdowns instead. This causes processes to be hard killed with SIGKILL, which doesn't give them a chance to correctly deinitialize things. This can cause file corruption. <br><br>Baseimage-docker comes with an init process `/sbin/my_init` that performs both of these tasks correctly. |
 | Fixes APT incompatibilities with Docker | See https://github.com/dotcloud/docker/issues/1024. |
-| syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. All syslog messages are forwarded to "docker logs". |
+| syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. All syslog messages are forwarded to "docker logs".<br><br>Why syslog-ng?<br>I've had bad experience with rsyslog. I regularly run into bugs with rsyslog, and once in a while it takes my log host down by entering a 100% CPU loop in which it can't do anything. Syslog-ng seems to be much more stable. |
 | logrotate | Rotates and compresses logs on a regular basis. |
 | SSH server | Allows you to easily login to your container to [inspect or administer](#login_ssh) things. <br><br>_SSH is **disabled by default** and is only one of the methods provided by baseimage-docker for this purpose. The other method is through [docker exec](#login_docker_exec). SSH is also provided as an alternative because `docker exec` comes with several caveats._<br><br>Password and challenge-response authentication are disabled by default. Only key authentication is allowed. |
 | cron | The cron daemon must be running for cron jobs to work. |
@@ -111,11 +112,11 @@ Do we advocate running multiple *logical services* in a single container? Not ne
 <a name="fat_containers"></a>
 ### Does Baseimage-docker advocate "fat containers" or "treating containers as VMs"?
 
-There are people who are under the impression that Baseimage-docker advocates treating containers as VMs, because of the fact that Baseimage-docker advocates the use of multiple processes. Therefore they are also under the impression that Baseimage-docker does not follow the Docker philosophy. Neither of these impressions are true.
+There are people who think that Baseimage-docker advocates treating containers as VMs because Baseimage-docker advocates the use of multiple processes. Therefore, they also think that Baseimage-docker does not follow the Docker philosophy. Neither of these impressions are true.
 
 The Docker developers advocate running a single *logical service* inside a single container. But we are not disputing that. Baseimage-docker advocates running multiple *OS processes* inside a single container, and a single logical service can consist of multiple OS processes.
 
-It follows from this that Baseimage-docker also does not deny the Docker philosophy. In fact, many of the modifications we introduce are explicitly in line with the Docker philosophy. For example, using environment variables to pass parameters to containers is very much the "Docker way", and provide [a mechanism to easily work with environment variables](#environment_variables) in the presence of multiple processes that may run as different users.
+It follows that Baseimage-docker also does not deny the Docker philosophy. In fact, many of the modifications we introduce are explicitly in line with the Docker philosophy. For example, using environment variables to pass parameters to containers is very much the "Docker way", and providing [a mechanism to easily work with environment variables](#environment_variables) in the presence of multiple processes that may run as different users.
 
 <a name="inspecting"></a>
 ## Inspecting baseimage-docker
@@ -169,7 +170,8 @@ In `memcached.sh` (make sure this file is chmod +x):
 In `Dockerfile`:
 
     RUN mkdir /etc/service/memcached
-    ADD memcached.sh /etc/service/memcached/run
+    COPY memcached.sh /etc/service/memcached/run
+    RUN chmod +x /etc/service/memcached/run
 
 Note that the shell script must run the daemon **without letting it daemonize/fork it**. Usually, daemons provide a command line flag or a config file option for that.
 
@@ -183,9 +185,11 @@ The baseimage-docker init system, `/sbin/my_init`, runs the following scripts du
 
 All scripts must exit correctly, e.g. with exit code 0. If any script exits with a non-zero exit code, the booting will fail.
 
+**Important note:** If you are executing the container in interactive mode (i.e. when you run a container with `-it`), rather than daemon mode, you are sending stdout directly to the terminal (`-i` interactive `-t` terminal). If you are not calling `/sbin/my_init` in your run declaration, `/sbin/my_init` will not be executed, therefore your scripts will not be called during container startup.
+
 The following example shows how you can add a startup script. This script simply logs the time of boot to the file /tmp/boottime.txt.
 
-In `logtime.sh` (make sure this file is chmod +x):
+In `logtime.sh`:
 
     #!/bin/sh
     date > /tmp/boottime.txt
@@ -193,7 +197,8 @@ In `logtime.sh` (make sure this file is chmod +x):
 In `Dockerfile`:
 
     RUN mkdir -p /etc/my_init.d
-    ADD logtime.sh /etc/my_init.d/logtime.sh
+    COPY logtime.sh /etc/my_init.d/logtime.sh
+	  RUN chmod +x /etc/my_init.d/logtime.sh
 
 <a name="environment_variables"></a>
 ### Environment variables
@@ -203,13 +208,14 @@ If you use `/sbin/my_init` as the main container command, then any environment v
  * Environment variables on Unix are inherited on a per-process basis. This means that it is generally not possible for a child process to change the environment variables of other processes.
  * Because of the aforementioned point, there is no good central place for defining environment variables for all applications and services. Debian has the `/etc/environment` file but it only works in some situations.
  * Some services change environment variables for child processes. Nginx is one such example: it removes all environment variables unless you explicitly instruct it to retain them through the `env` configuration option. If you host any applications on Nginx (e.g. using the [passenger-docker](https://github.com/phusion/passenger-docker) image, or using Phusion Passenger in your own image) then they will not see the environment variables that were originally passed by Docker.
+ * We ignore HOME, SHELL, USER and a bunch of other environment variables on purpose, because _not_ ignoring them will break multi-user containers. See https://github.com/phusion/baseimage-docker/pull/86 -- A workaround for setting the `HOME` environment variable looks like this: `RUN echo /root > /etc/container_environment/HOME`. See https://github.com/phusion/baseimage-docker/issues/119
 
 `my_init` provides a solution for all these caveats.
 
 <a name="envvar_central_definition"></a>
 #### Centrally defining your own environment variables
 
-During startup, before running any [startup scripts](#running_startup_scripts), `my_init` imports environment variables from the directory `/etc/container_environment`. This directory contains files who are named after the environment variable names. The file contents contain the environment variable values. This directory is therefore a good place to centrally define your own environment variables, which will be inherited by all startup scripts and Runit services.
+During startup, before running any [startup scripts](#running_startup_scripts), `my_init` imports environment variables from the directory `/etc/container_environment`. This directory contains files named after the environment variable names. The file contents contain the environment variable values. This directory is therefore a good place to centrally define your own environment variables, which will be inherited by all startup scripts and Runit services.
 
 For example, here's how you can define an environment variable from your Dockerfile:
 
@@ -225,14 +231,14 @@ You can verify that it works, as follows:
 
 **Handling newlines**
 
-If you've looked carefully, you'll notice that the 'echo' command actually prints a newline. Why does $MY_NAME not contain a newline then? It's because `my_init` strips the trailing newline, if any. If you intended on the value having a newline, you should add *another* newline, like this:
+If you've looked carefully, you'll notice that the 'echo' command actually prints a newline. Why does $MY_NAME not contain a newline then? It's because `my_init` strips the trailing newline. If you intended on the value having a newline, you should add *another* newline, like this:
 
     RUN echo -e "Apachai Hopachai\n" > /etc/container_environment/MY_NAME
 
 <a name="envvar_dumps"></a>
 #### Environment variable dumps
 
-While the previously mentioned mechanism is good for centrally defining environment variables, it by itself does not prevent services (e.g. Nginx) from changing and resetting environment variables from child processes. However, the `my_init` mechanism does make it easy for you to query what the original environment variables are.
+While the previously mentioned mechanism is good for centrally defining environment variables, itself does not prevent services (e.g. Nginx) from changing and resetting environment variables from child processes. However, the `my_init` mechanism does make it easy for you to query what the original environment variables are.
 
 During startup, right after importing environment variables from `/etc/container_environment`, `my_init` will dump all its environment variables (that is, all variables imported from `container_environment`, as well as all variables it picked up from `docker run --env`) to the following locations, in the following formats:
 
@@ -240,7 +246,7 @@ During startup, right after importing environment variables from `/etc/container
  * `/etc/container_environment.sh` - a dump of the environment variables in Bash format. You can source the file directly from a Bash shell script.
  * `/etc/container_environment.json` - a dump of the environment variables in JSON format.
 
-The multiple formats makes it easy for you to query the original environment variables no matter which language your scripts/apps are written in.
+The multiple formats make it easy for you to query the original environment variables no matter which language your scripts/apps are written in.
 
 Here is an example shell session showing you how the dumps look like:
 
@@ -273,7 +279,7 @@ But note that:
 <a name="envvar_security"></a>
 #### Security
 
-Because environment variables can potentially contain sensitive information, `/etc/container_environment` and its Bash and JSON dumps are by default owned by root, and accessible only by the `docker_env` group (so that any user added this group will have these variables automatically loaded).
+Because environment variables can potentially contain sensitive information, `/etc/container_environment` and its Bash and JSON dumps are by default owned by root, and accessible only to the `docker_env` group (so that any user added this group will have these variables automatically loaded).
 
 If you are sure that your environment variables don't contain sensitive data, then you can also relax the permissions on that directory and those files by making them world-readable:
 
@@ -285,7 +291,7 @@ If you are sure that your environment variables don't contain sensitive data, th
 
 Baseimage-docker images contain an Ubuntu 16.04 operating system. You may want to update this OS from time to time, for example to pull in the latest security updates. OpenSSL is a notorious example. Vulnerabilities are discovered in OpenSSL on a regular basis, so you should keep OpenSSL up-to-date as much as you can.
 
-While we release Baseimage-docker images with the latest OS updates from time to time, you do not have to rely on us. You can update the OS inside Baseimage-docker images yourself, and it is recommend that you do this instead of waiting for us.
+While we release Baseimage-docker images with the latest OS updates from time to time, you do not have to rely on us. You can update the OS inside Baseimage-docker images yourself, and it is recommended that you do this instead of waiting for us.
 
 To upgrade the OS in the image, run this in your Dockerfile:
 
@@ -407,6 +413,19 @@ Baseimage-docker disables the SSH server by default. Add the following to your D
     # init system will auto-generate one during boot.
     RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
 
+Alternatively, to enable sshd only for a single instance of your container, create a folder with a [startup script](#running_startup_scripts).  The contents of that should be
+
+    ### In myfolder/enable_ssh.sh (make sure this file is chmod +x):
+    #!/bin/sh
+    rm -f /etc/service/sshd/down
+    ssh-keygen -P "" -t dsa -f /etc/ssh/ssh_host_dsa_key
+
+Then, you can start your container with
+
+    docker run -d -v `pwd`/myfolder:/etc/my_init.d my/dockerimage
+
+This will initialize sshd on container boot.  You can then access it with the insecure key as below, or using the methods to add a secure key.  Further, you can publish the port to your machine with -p 22:2222 allowing you to ssh to localhost:2222 instead of looking up the ip address.
+
 <a name="ssh_keys"></a>
 #### About SSH keys
 
@@ -458,7 +477,7 @@ Instructions for logging in the container is the same as in section [Using the i
 Edit your Dockerfile to install an SSH public key:
 
     ## Install an SSH of your choice.
-    ADD your_key.pub /tmp/your_key.pub
+    COPY your_key.pub /tmp/your_key.pub
     RUN cat /tmp/your_key.pub >> /root/.ssh/authorized_keys && rm -f /tmp/your_key.pub
 
 Then rebuild your image. Once you have that, start a container based on that image:

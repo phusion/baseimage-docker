@@ -1,5 +1,5 @@
 NAME = phusion/baseimage
-VERSION = 0.9.19
+VERSION = 0.9.20
 
 .PHONY: all build test tag_latest release ssh
 
@@ -12,13 +12,13 @@ test:
 	env NAME=$(NAME) VERSION=$(VERSION) ./test/runner.sh
 
 tag_latest:
-	docker tag -f $(NAME):$(VERSION) $(NAME):latest
+	docker tag $(NAME):$(VERSION) $(NAME):latest
 
 release: test tag_latest
 	@if ! docker images $(NAME) | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME) version $(VERSION) is not yet built. Please run 'make build'"; false; fi
 	@if ! head -n 1 Changelog.md | grep -q 'release date'; then echo 'Please note the release date in Changelog.md.' && false; fi
 	docker push $(NAME)
-	@echo "*** Don't forget to create a tag. git tag rel-$(VERSION) && git push origin rel-$(VERSION)"
+	@echo "*** Don't forget to create a tag. git tag $(VERSION) && git push origin $(VERSION)"
 
 ssh:
 	chmod 600 image/services/sshd/keys/insecure_key
