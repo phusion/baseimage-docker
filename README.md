@@ -184,6 +184,8 @@ The baseimage-docker init system, `/sbin/my_init`, runs the following scripts du
 
 All scripts must exit correctly, e.g. with exit code 0. If any script exits with a non-zero exit code, the booting will fail.
 
+**Important note:** If you are executing the container in interactive mode (i.e. when you run a container with `-it`), rather than daemon mode, you are sending stdout directly to the terminal (`-i` interactive `-t` terminal). If you are not calling `/sbin/my_init` in your run declaration, `/sbin/my_init` will not be executed, therefore your scripts will not be called during container startup.
+
 The following example shows how you can add a startup script. This script simply logs the time of boot to the file /tmp/boottime.txt.
 
 In `logtime.sh`:
