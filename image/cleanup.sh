@@ -4,7 +4,7 @@ source /bd_build/buildconfig
 set -x
 
 apt-get clean
-ls -d -1 /bd_build/**/* | grep -v "cleanup.sh" | grep -v "buildconfig" | xargs rm -f
+rm -rf /bd_build
 rm -rf /tmp/* /var/tmp/*
 rm -rf /var/lib/apt/lists/*
 
