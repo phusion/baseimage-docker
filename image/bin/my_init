@@ -92,7 +92,7 @@ def export_envvars(to_dir = True):
 	with open("/etc/container_environment.json", "w") as f:
 		f.write(json.dumps(dict(os.environ)))
 
-_find_unsafe = re.compile(r'[^\w@%+=:,./-]').search
+_find_unsafe = re.compile(r'[\W@%+=:,./-]').search
 
 def shquote(s):
 	"""Return a shell-escaped version of the string *s*."""
