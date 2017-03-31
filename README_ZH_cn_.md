@@ -387,7 +387,7 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
 
     docker ps
 
-一旦得到容器的id,找到运行容器的主要进程`PID`.
+一旦得到容器的id, 找到运行容器的主进程`PID`.
 
     docker inspect -f "{{ .State.Pid }}" <ID>
 
@@ -553,7 +553,7 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
 
     make build
 
-如果你想修改镜像的名字,通过`NAME`变量可以设置:
+如果你想修改镜像的名称, 通过`NAME`变量可以设置:
 
     make build NAME=joe/baseimage
 
