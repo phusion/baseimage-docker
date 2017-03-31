@@ -289,7 +289,7 @@ baseimage-docker的初始化脚本 `/sbin/my_init`,在启动的时候进程运�
 
 <a name="disabling_ssh"></a>
 ### 禁用SSH
-Baseimage-docker默认是支持SSH的,所以可以[使用SSH](#login_ssh)来[管理你的容器](#container_administration).万一你不想支持SSH,你可以只要禁用它:
+Baseimage-docker默认是支持SSH的,所以可以[使用SSH](#login_ssh)来[管理你的容器](#container_administration).万一你不想支持SSH,你只要禁用它就可以:
 
     RUN rm -rf /etc/service/sshd /etc/my_init.d/00_regen_ssh_host_keys.sh
 
@@ -338,7 +338,7 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
     *** Shutting down runit daemon (PID 80)...
     *** Killing all processes...
 
-你会发现默认的启动流程太复杂或者你不希望执行启动文件.你可以自定义所有通过给`my_init`增加参数.调用`docker run YOUR_IMAGE /sbin/my_init --help`可以看到帮助信息.
+你会发现默认的启动流程太复杂或者你不希望执行启动文件, 你可以自定义这些参数传递给 `my_init`. 调用`docker run YOUR_IMAGE /sbin/my_init --help`可以看到帮助信息.
 
 例如上面运行`ls`命令,同时要求不运行启动脚本,减少信息打印,运行runit所有命令.
 
@@ -348,12 +348,12 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
 <a name="run_inside_existing_container"></a>
 ### 在一个已经运行的容器中,运行一条命令
 
-这里有两种办法去在一个已经运行的容器中运行命令.
+这里有两种办法, 在一个已经运行的容器内执行命令.
 
- * 通过`nseneter`工具.这个工具用于Linux内核调用在内嵌容器中运行命令.可以查看[通过`nsenter`,登录容器或者在容器内执行命令](#login_nsenter).
- * 通过SSH.这种办法需要在容器中运行ssh服务,而且需要你创建自己的sshkey.可以查看[通过`ssh`,登录容器或者在容器内执行命令](#login_ssh).
+ * 通过`nseneter`工具. 这个工具用于Linux内核调用在内嵌容器中运行命令. 可以查看[通过`nsenter`,登录容器或者在容器内执行命令](#login_nsenter).
+ * 通过SSH.这种办法需要在容器中运行ssh服务,而且需要你创建自己的sshkey. 可以查看[通过`ssh`,登录容器或者在容器内执行命令](#login_ssh).
 
-两种方法都是他们各自的优点和确定,你可以学习他们各自的章节来了他们.
+两种方法都是他们各自的优点和确定, 你可以学习他们各自的章节来了解他们.
 
 <a name="login_nsenter"></a>
 ### 通过`nsenter`,登录容器或者在容器内执行命令
@@ -387,11 +387,11 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
 
     docker ps
 
-一旦拥有容器的id,找到运行容器的主要进程额`PID`.
+一旦得到容器的id,找到运行容器的主要进程`PID`.
 
     docker inspect -f "{{ .State.Pid }}" <ID>
 
-现在你有的容器的主进程的PID,就可以使用`nsenter`来登录容器,或者在容器里面执行命令:
+现在你已得到容器的主进程PID, 就可以使用`nsenter`来登录容器, 或者在容器中执行命令:
 
     # 登录容器
     nsenter --target <MAIN PROCESS PID> --mount --uts --ipc --net --pid bash -l
@@ -401,8 +401,9 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
 
 <a name="docker_bash"></a>
 #### `docker-bash`工具
+目前(2017-03-31), 英文文档没有发现这个命令
 
-查找一个容器的主要进程的PID和输入这么长的nsenter命令很快会变得乏味无论.幸运的是,我们提供了一个`docker-bash` 工具,它可以自动完成只要的工具.这个工具是运行在*docker主机*上面,不是在docker容器中.
+查找一个容器的主要进程的PID和输入这么长的nsenter命令很快会变得乏味无比.幸运的是,我们提供了一个`docker-bash` 工具,它可以自动完成只要的工具.这个工具是运行在*docker主机*上面,不是在docker容器中.
 
 该工具还附带了一个预编译的二进制`nsenter`,这样你不需要自己安装`nsenter`了.`docker-bash`是很简单的使用的.
 
@@ -435,7 +436,7 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
    * 不需要docker主机提供root权限.
    * 运行你让用户登录到容器,而不需要登录到docker主机.然而,默认这是不启用的,因为baseimage-docker默认不是开放ssh服务的.
  * 缺点
-   * 需要设置ssh key.然而,baseimage-docker会提供一中办法,会让key的生成会很容易.阅读更多信息.
+   * 需要设置ssh key.然而,baseimage-docker会提供一种方法,会让key的生成变得很容易.阅读更多信息.
 
 第一件事情,就是你需要确定你在容器中已经安装设置了ssh key. 默认是不安装任何key的,所以任何人都无法登录.为了方便的原因,我们提供了一个[已经生成的key](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key) [(PuTTY format)](https://github.com/phusion/baseimage-docker/blob/master/image/services/sshd/keys/insecure_key.ppk),为了让你使用方便.然后,请注意这个key仅仅是为方便.他没有任何安全性,因为它的key是在网络上提供的.**在生产环境,你必须使用你自己的key.**
 
@@ -453,11 +454,13 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
 
     docker ps
 
-一旦你拥有容器的ID,就能找到容器使用的IP地址:
+一旦你得到容器的ID,就能找到容器使用的IP地址:
 
     docker inspect -f "{{ .NetworkSettings.IPAddress }}" <ID>
 
-现在你有得了IP地址,你就看通过SSH来登录容器,或者在容器中执行命令了:
+译者注:  类似 `"{{ .NetworkSettings.IPAddress }}"` 是用到了 [Go的模板语法](https://gohugo.io/templates/go-templates/).
+
+现在你得到了IP地址, 你就可以通过SSH来登录容器,或者在容器中执行命令了:
 
     # 下载key
     curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/services/sshd/keys/insecure_key
@@ -501,7 +504,7 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
 
     docker inspect -f "{{ .NetworkSettings.IPAddress }}" <ID>
 
-现在你有得了IP地址,你就看通过SSH来登录容器,或者在容器中执行命令了:
+现在你有得了IP地址,你就可以通过SSH来登录容器,或者在容器中执行命令了:
 
     # 登录容器
     ssh -i /path-to/your_key root@<IP address>
@@ -540,7 +543,7 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
     git clone https://github.com/phusion/baseimage-docker.git
     cd baseimage-docker
 
-创建一个包含docker在的虚拟机.你可以使用我们提供的Vagrantfile.
+创建一个包含docker在内的虚拟机.你可以使用我们提供的Vagrantfile.
 
     vagrant up
     vagrant ssh
@@ -550,7 +553,7 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
 
     make build
 
-如果你想把创建的镜像名字,叫其他名字,通过`NAME`变量可以设置:
+如果你想修改镜像的名字,通过`NAME`变量可以设置:
 
     make build NAME=joe/baseimage
 
