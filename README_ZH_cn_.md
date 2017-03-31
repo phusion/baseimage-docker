@@ -10,10 +10,10 @@ Baseimage-docker是一个特殊的[Docker](http://www.docker.io)镜像，在Dock
 可以把它作为自己的基础Docker镜像。
 
 Baseimage-docker项目可以直接从Docker的[registry](https://index.docker.io/u/phusion/baseimage/)获取！
-        
+
 <a name="what-are-the-problems-with-the-stock-ubuntu-base-image"></a>
 ### 原生的Ubuntu基础镜像有什么问题呢？          
-            
+
 原生Ubuntu不是为了在Docker内运行而设计的。它的初始化系统Upstart，假定运行的环境要么是真实的硬件，要么是虚拟的硬件，而不是在Docker容器内。但是在一个Docker的容器内，并不需要一个完整的系统，你需要的只是一个很小的系统。但是如果你不是非常熟悉Unix的系统模型，想要在Docker容器内裁减出最小的系统，会碰到很多难以正确解决的陌生的技术坑。这些坑会引起很多莫名其妙的问题。
 
 Baseimage-docker让这一切完美。在"内容"部分描述了所有这些修改。
@@ -22,7 +22,7 @@ Baseimage-docker让这一切完美。在"内容"部分描述了所有这些修�
 ### 为什么使用baseimage-docker？
 
 你自己可以从Dockerfile配置一个原生`ubuntu`镜像，为什么还要多此一举的使用baseimage-docker呢?
-        
+
  * 配置一个Docker友好的基础系统并不是一个简单的任务。如前所述，过程中会碰到很多坑。当你搞定这些坑之后，只不过是又重新发明了一个baseimage-docker而已。使用baseimage-docker可以免去你这方面需要做的努力。          
  * 减少需要正确编写Dockerfile文件的时间。你不用再担心基础系统，可以专注于你自己的技术栈和你的项目。            
  * 减少需要运行`docker build`的时间，让你更快的迭代Dockerfile。         
@@ -123,18 +123,18 @@ Baseimage-docker *鼓励* 通过runit来运行多进程.
 	# 使用phusion/baseimage作为基础镜像,去构建你自己的镜像,需要下载一个明确的版本,千万不要使用`latest`.
 	# 查看https://github.com/phusion/baseimage-docker/blob/master/Changelog.md,可用看到版本的列表.
 	FROM phusion/baseimage:<VERSION>
-	
+
 	# 设置正确的环境变量.
 	ENV HOME /root
-	
+
 	# 生成SSH keys,baseimage-docker不包含任何的key,所以需要你自己生成.你也可以注释掉这句命令,系统在启动过程中,会生成一个.
 	RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
-	
+
 	# 初始化baseimage-docker系统
 	CMD ["/sbin/my_init"]
-	
+
 	# 这里可以放置你自己需要构建的命令
-	
+
 	# 当完成后,清除APT.
 	RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -152,7 +152,7 @@ Baseimage-docker *鼓励* 通过runit来运行多进程.
 	#!/bin/sh
 	# `/sbin/setuser memcache` 指定一个`memcache`用户来运行命令.如果你忽略了这部分,就会使用root用户执行.
 	exec /sbin/setuser memcache /usr/bin/memcached >>/var/log/memcached.log 2>&1
-	
+
 	### 在Dockerfile中:
     RUN mkdir /etc/service/memcached
     COPY memcached.sh /etc/service/memcached/run
@@ -188,7 +188,7 @@ baseimage-docker的初始化脚本 `/sbin/my_init`,在启动的时候进程运�
  * 在Unix系统中,环境变量都会被子进程给继承.这就意味着,子进程不可能修改环境变量或者修改其他进程的环境变量.
  * 由于上面提到的一点,这里没有一个可以为所有应用和服务集中定义环境的地方.Debian提供了一个`/etc/environment` 文件,解决一些问题.
  * 某些服务更改环境变量是为了给子进程使用.Nginx有这样的一个例子:它移除了所有的环境变量,除非你通过`env`进行了配置,明确了某些是保留的.如果你部署了任何应用在Nginx镜像(例如:使用[passenger-docker](https://github.com/phusion/passenger-docker)镜像或者使用Phusion Passenger作为你的镜像.),那么你通过Docker,你不会看到任何环境变量.
- 
+
 
 `my_init`提供了一个办法来解决这些问题.
 
@@ -338,7 +338,7 @@ Baseimage-docker提供了一个灵活的方式运行只要一闪而过的命令,
     *** Shutting down runit daemon (PID 80)...
     *** Killing all processes...
 
-你会发现默认的启动的流程太负责.或者你不希望执行启动文件.你可以自定义所有通过给`my_init`增加参数.调用`docker run YOUR_IMAGE /sbin/my_init --help`可以看到帮助信息.
+你会发现默认的启动流程太复杂或者你不希望执行启动文件.你可以自定义所有通过给`my_init`增加参数.调用`docker run YOUR_IMAGE /sbin/my_init --help`可以看到帮助信息.
 
 例如上面运行`ls`命令,同时要求不运行启动脚本,减少信息打印,运行runit所有命令.
 
