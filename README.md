@@ -205,7 +205,7 @@ In `Dockerfile`:
 #### Shutting down your process
 
 `/sbin/my_init` handles termination of children processes at shutdown. When it receives a SIGTERM
-it will pass the signal onto the child process for correct shutdown. If your process is started with
+it will pass the signal onto the child processes for correct shutdown. If your process is started with
 a shell script, make sure you `exec` the actual process, otherwise the shell will receive the signal
 and not your process.
 
@@ -214,8 +214,8 @@ environment variables:
 
     # Give children processes 5 minutes to timeout
     ENV KILL_PROCESS_TIMEOUT=300
-	# Give all other processes (such as those which have been forked) 5 minutes to timeout
-	ENV KILL_ALL_PROCESSES_TIMEOUT=300
+    # Give all other processes (such as those which have been forked) 5 minutes to timeout
+    ENV KILL_ALL_PROCESSES_TIMEOUT=300
 
 ### Environment variables
 
