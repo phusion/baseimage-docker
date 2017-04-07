@@ -201,6 +201,22 @@ In `Dockerfile`:
 	  RUN chmod +x /etc/my_init.d/logtime.sh
 
 <a name="environment_variables"></a>
+
+#### Shutting down your process
+
+`/sbin/my_init` handles termination of children processes at shutdown. When it receives a SIGTERM
+it will pass the signal onto the child processes for correct shutdown. If your process is started with
+a shell script, make sure you `exec` the actual process, otherwise the shell will receive the signal
+and not your process.
+
+`/sbin/my_init` will terminate processes after a 5 second timeout. This can be adjusted by setting
+environment variables:
+
+    # Give children processes 5 minutes to timeout
+    ENV KILL_PROCESS_TIMEOUT=300
+    # Give all other processes (such as those which have been forked) 5 minutes to timeout
+    ENV KILL_ALL_PROCESSES_TIMEOUT=300
+
 ### Environment variables
 
 If you use `/sbin/my_init` as the main container command, then any environment variables set with `docker run --env` or with the `ENV` command in the Dockerfile, will be picked up by `my_init`. These variables will also be passed to all child processes, including `/etc/my_init.d` startup scripts, Runit and Runit-managed services. There are however a few caveats you should be aware of:
