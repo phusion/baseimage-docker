@@ -4,7 +4,7 @@ source /bd_build/buildconfig
 set -x
 
 apt-get clean
-ls -d -1 /bd_build/**/* | grep -v "cleanup.sh" | grep -v "buildconfig" | grep -v "services/" | xargs rm -f
+find /bd_build/ -not \( -name 'bd_build' -or -name 'buildconfig' -or -name 'cleanup.sh' \) -delete
 rm -rf /tmp/* /var/tmp/*
 rm -rf /var/lib/apt/lists/*
 

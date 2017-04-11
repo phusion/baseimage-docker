@@ -1,8 +1,8 @@
 #!/usr/bin/python3 -u
 import os, os.path, sys, stat, signal, errno, argparse, time, json, re
 
-KILL_PROCESS_TIMEOUT = os.environ.get('KILL_PROCESS_TIMEOUT', 5)
-KILL_ALL_PROCESSES_TIMEOUT = os.environ.get('KILL_ALL_PROCESSES_TIMEOUT', 5)
+KILL_PROCESS_TIMEOUT = int(os.environ.get('KILL_PROCESS_TIMEOUT', 5))
+KILL_ALL_PROCESSES_TIMEOUT = int(os.environ.get('KILL_ALL_PROCESSES_TIMEOUT', 5))
 
 LOG_LEVEL_ERROR = 1
 LOG_LEVEL_WARN  = 1
@@ -247,7 +247,7 @@ def wait_for_runit_or_interrupt(pid):
 def shutdown_runit_services(quiet = False):
 	if not quiet:
 		debug("Begin shutting down runit services...")
-	os.system("/usr/bin/sv down /etc/service/*")
+	os.system("/usr/bin/sv -w %d down /etc/service/*", KILL_PROCESS_TIMEOUT)
 
 def wait_for_runit_services():
 	debug("Waiting for runit services to exit...")
