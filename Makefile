@@ -1,5 +1,5 @@
 NAME = phusion/baseimage
-VERSION = 0.9.20
+VERSION = 0.9.21
 
 .PHONY: all build test tag_latest release ssh
 
