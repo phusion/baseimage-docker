@@ -1,4 +1,6 @@
 #!/usr/bin/python3 -u
+# -*- coding: utf-8 -*-
+
 import argparse
 import errno
 import json
