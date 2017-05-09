@@ -96,7 +96,7 @@ def import_envvars(clear_existing_environment=True, override_existing_environmen
     if clear_existing_environment:
         os.environ.clear()
     for name, value in new_env.items():
-        if override_existing_environment or not name in os.environ:
+        if override_existing_environment or name not in os.environ:
             os.environ[name] = value
 
 
@@ -202,7 +202,7 @@ def run_command_killable(*argv):
     pid = os.spawnvp(os.P_NOWAIT, filename, argv)
     try:
         status = waitpid_reap_other_children(pid)
-    except BaseException as s:
+    except BaseException:
         warn("An error occurred. Aborting.")
         stop_child_process(filename, pid)
         raise
@@ -344,7 +344,7 @@ def main(args):
             except KeyboardInterrupt:
                 stop_child_process(args.main_command[0], pid)
                 raise
-            except BaseException as s:
+            except BaseException:
                 warn("An error occurred. Aborting.")
                 stop_child_process(args.main_command[0], pid)
                 raise
