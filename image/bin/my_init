@@ -132,10 +132,10 @@ def shquote(s):
 def sanitize_shenvname(s):
     return re.sub(SHENV_NAME_WHITELIST_REGEX, "_", s)
 
+
 # Waits for the child process with the given PID, while at the same time
 # reaping any other child processes that have exited (e.g. adopted child
 # processes that have terminated).
-
 
 def waitpid_reap_other_children(pid):
     global terminated_child_processes
@@ -262,6 +262,28 @@ def run_startup_files():
         run_command_killable_and_import_envvars("/etc/rc.local")
 
 
+def run_pre_shutdown_scripts():
+    debug("Running pre-shutdown scripts...")
+
+    # Run /etc/my_init.pre_shutdown.d/*
+    for name in listdir("/etc/my_init.pre_shutdown.d"):
+        filename = "/etc/my_init.pre_shutdown.d/" + name
+        if is_exe(filename):
+            info("Running %s..." % filename)
+            run_command_killable(filename)
+
+
+def run_post_shutdown_scripts():
+    debug("Running post-shutdown scripts...")
+
+    # Run /etc/my_init.post_shutdown.d/*
+    for name in listdir("/etc/my_init.post_shutdown.d"):
+        filename = "/etc/my_init.post_shutdown.d/" + name
+        if is_exe(filename):
+            info("Running %s..." % filename)
+            run_command_killable(filename)
+
+
 def start_runit():
     info("Booting runit daemon...")
     pid = os.spawnl(os.P_NOWAIT, "/usr/bin/runsvdir", "/usr/bin/runsvdir",
@@ -351,10 +373,12 @@ def main(args):
         sys.exit(exit_status)
     finally:
         if not args.skip_runit:
+            run_pre_shutdown_scripts()
             shutdown_runit_services()
             if not runit_exited:
                 stop_child_process("runit daemon", runit_pid)
             wait_for_runit_services()
+            run_post_shutdown_scripts()
 
 # Parse options.
 parser = argparse.ArgumentParser(description='Initialize the system.')
