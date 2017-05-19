@@ -12,6 +12,8 @@ import stat
 import sys
 import time
 
+ENV_INIT_DIRECTORY = os.environ.get('ENV_INIT_DIRECTORY', '/etc/my_init.d')
+
 KILL_PROCESS_TIMEOUT = int(os.environ.get('KILL_PROCESS_TIMEOUT', 5))
 KILL_ALL_PROCESSES_TIMEOUT = int(os.environ.get('KILL_ALL_PROCESSES_TIMEOUT', 5))
 
@@ -250,9 +252,9 @@ def kill_all_processes(time_limit):
 
 
 def run_startup_files():
-    # Run /etc/my_init.d/*
-    for name in listdir("/etc/my_init.d"):
-        filename = "/etc/my_init.d/" + name
+    # Run ENV_INIT_DIRECTORY*
+    for name in listdir(ENV_INIT_DIRECTORY):
+        filename = os.path.join(ENV_INIT_DIRECTORY, name)
         if is_exe(filename):
             info("Running %s..." % filename)
             run_command_killable_and_import_envvars(filename)
