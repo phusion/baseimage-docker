@@ -28,6 +28,30 @@ terminated_child_processes = {}
 
 _find_unsafe = re.compile(r'[^\w@%+=:,./-]').search
 
+try:
+    basestring
+except NameError:
+    basestring = (str, bytes)
+
+def to_bool(s):
+    try:
+        int_s = int(s)
+        return bool(int_s)
+    except:
+        pass
+
+    if isinstance(s, basestring):
+        if s.lower() in ['true', 't']:
+            return True
+        if s.lower() == ['false', 'f']:
+            return False
+
+    return bool(s)
+
+ENABLE_INSECURE_KEY = to_bool(os.getenv('ENABLE_INSECURE_KEY', False))
+KILL_ALL_ON_EXIT = to_bool(os.getenv('KILL_ALL_ON_EXIT', True))
+SKIP_RUNIT = to_bool(os.getenv('SKIP_RUNIT', False))
+SKIP_STARTUP_FILES = to_bool(os.getenv('SKIP_STARTUP_FILES', False))
 
 class AlarmException(Exception):
     pass
@@ -385,16 +409,16 @@ parser = argparse.ArgumentParser(description='Initialize the system.')
 parser.add_argument('main_command', metavar='MAIN_COMMAND', type=str, nargs='*',
                     help='The main command to run. (default: runit)')
 parser.add_argument('--enable-insecure-key', dest='enable_insecure_key',
-                    action='store_const', const=True, default=False,
+                    action='store_const', const=True, default=ENABLE_INSECURE_KEY,
                     help='Install the insecure SSH key')
 parser.add_argument('--skip-startup-files', dest='skip_startup_files',
-                    action='store_const', const=True, default=False,
+                    action='store_const', const=True, default=SKIP_STARTUP_FILES,
                     help='Skip running /etc/my_init.d/* and /etc/rc.local')
 parser.add_argument('--skip-runit', dest='skip_runit',
-                    action='store_const', const=True, default=False,
+                    action='store_const', const=True, default=SKIP_RUNIT,
                     help='Do not run runit services')
 parser.add_argument('--no-kill-all-on-exit', dest='kill_all_on_exit',
-                    action='store_const', const=False, default=True,
+                    action='store_const', const=False, default=KILL_ALL_ON_EXIT,
                     help='Don\'t kill all processes on the system upon exiting')
 parser.add_argument('--quiet', dest='log_level',
                     action='store_const', const=LOG_LEVEL_WARN, default=LOG_LEVEL_INFO,
