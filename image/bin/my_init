@@ -252,7 +252,7 @@ def kill_all_processes(time_limit):
 
 
 def run_startup_files():
-    # Run ENV_INIT_DIRECTORY*
+    # Run ENV_INIT_DIRECTORY/*
     for name in listdir(ENV_INIT_DIRECTORY):
         filename = os.path.join(ENV_INIT_DIRECTORY, name)
         if is_exe(filename):
