@@ -9,10 +9,9 @@ RUN /bd_build/prepare.sh && \
 	/bd_build/fix_pam_bug.sh && \
 	/bd_build/cleanup.sh
 
-ENV DEBIAN_FRONTEND teletype
-
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV DEBIAN_FRONTEND="teletype" \
+    LANG="en_US.UTF-8" \
+    LANGUAGE="en_US:en" \
+    LC_ALL="en_US.UTF-8"
 
 CMD ["/sbin/my_init"]
