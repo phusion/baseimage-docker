@@ -9,3 +9,6 @@ ln -s /usr/bin/vim.tiny /usr/bin/vim
 
 ## This tool runs a command as another user and sets $HOME.
 cp /bd_build/bin/setuser /sbin/setuser
+
+## Allows top inside the container.
+export TERM=xterm
