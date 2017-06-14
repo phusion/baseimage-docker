@@ -29,5 +29,4 @@ apt-get remove -y gdebi-core autoconf automake autopoint autotools-dev binutils 
 	libxslt1.1 linux-libc-dev m4 make man-db patch perl perl-modules-5.22 pkg-config \
 	po-debconf quilt sgml-base sgml-data w3m xml-core xsltproc xz-utils
 
-apt-get remove -y gdebi-core
 apt-get autoremove -y
