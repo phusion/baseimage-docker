@@ -20,8 +20,6 @@ LOG_LEVEL_WARN = 1
 LOG_LEVEL_INFO = 2
 LOG_LEVEL_DEBUG = 3
 
-SHENV_NAME_WHITELIST_REGEX = re.compile('[^\w\-_\.]')
-
 log_level = None
 
 terminated_child_processes = {}
@@ -130,7 +128,8 @@ def shquote(s):
 
 
 def sanitize_shenvname(s):
-    return re.sub(SHENV_NAME_WHITELIST_REGEX, "_", s)
+    """Return string with [0-9a-zA-Z_] characters"""
+    return re.sub(re.compile("\W"), "_", s)
 
 
 # Waits for the child process with the given PID, while at the same time
