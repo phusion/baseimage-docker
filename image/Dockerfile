@@ -6,7 +6,6 @@ COPY . /bd_build
 RUN /bd_build/prepare.sh && \
 	/bd_build/system_services.sh && \
 	/bd_build/utilities.sh && \
-	/bd_build/fix_pam_bug.sh && \
 	/bd_build/cleanup.sh
 
 ENV DEBIAN_FRONTEND="teletype" \
