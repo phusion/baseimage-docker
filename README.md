@@ -1,6 +1,6 @@
 # A minimal Ubuntu base image modified for Docker-friendliness
 
-[![](https://badge.imagelayers.io/phusion/baseimage:0.9.17.svg)](https://imagelayers.io/?images=phusion/baseimage:latest 'Get your own badge on imagelayers.io')
+[![](https://badge.imagelayers.io/phusion/baseimage:latest.svg)](https://imagelayers.io/?images=phusion/baseimage:latest 'Get your own badge on imagelayers.io')
 [![Travis](https://img.shields.io/travis/phusion/baseimage-docker.svg)](https://travis-ci.org/phusion/baseimage-docker)
 
 _Baseimage-docker only consumes 6 MB RAM and is much powerful than Busybox or Alpine. See why below._
