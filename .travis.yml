@@ -2,6 +2,18 @@ sudo: required
 
 services:
   - docker
-  
+
 script:
   - make build
+
+deploy:
+  - provider: script
+    script: make test_release
+    on:
+      branch: master
+      tags: true
+      condition: "$TRAVIS_TAG =~ ^[0-9]+(\.[0-9]+)*$"
+  - provider: script
+    script: make test_master
+    on:
+      branch: master
