@@ -3,7 +3,7 @@
 [![](https://badge.imagelayers.io/phusion/baseimage:latest.svg)](https://imagelayers.io/?images=phusion/baseimage:latest 'Get your own badge on imagelayers.io')
 [![Travis](https://img.shields.io/travis/phusion/baseimage-docker.svg)](https://travis-ci.org/phusion/baseimage-docker)
 
-_Baseimage-docker only consumes 6 MB RAM and is much powerful than Busybox or Alpine. See why below._
+_Baseimage-docker only consumes 6 MB RAM and is much more powerful than Busybox or Alpine. See why below._
 
 Baseimage-docker is a special [Docker](https://www.docker.com) image that is configured for correct use within Docker containers. It is Ubuntu, plus:
 
