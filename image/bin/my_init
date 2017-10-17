@@ -328,10 +328,14 @@ def install_insecure_key():
     info("Installing insecure SSH key for user root")
     run_command_killable("/usr/sbin/enable_insecure_key")
 
-
 def main(args):
     import_envvars(False, False)
     export_envvars()
+
+    startup_delay = int(os.environ.get('STARTUP_DELAY', 0))
+    if startup_delay > 0:
+        info("Delaying container startup for %i seconds" % startup_delay)
+        time.sleep(startup_delay)
 
     if args.enable_insecure_key:
         install_insecure_key()
