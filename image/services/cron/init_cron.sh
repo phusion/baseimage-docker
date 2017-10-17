@@ -29,16 +29,12 @@ for CRON in $CRONS; do
 
         # Use cat instead of cp to avoid symlinks, weird permissions, etc
         cat $MY_CRON > $NEW_CRON
-    done
-done
 
-echo "Setting cronjob permissions"
-for CRON in $CRONS; do
-    DIR="${CRON_PREFIX}$CRON"
-    if [ "$CRON" = "d" ]; then
-        chmod 0644 -R $DIR
-    else
-        chmod 0755 -R $DIR
-    fi
-    chown root:root -R $DIR
+        if [ "$CRON" = "d" ]; then
+            chmod 0644 "$NEW_CRON"
+        else
+            chmod 0755 "$NEW_CRON"
+        fi
+        chown root:root "$NEW_CRON"
+    done
 done
