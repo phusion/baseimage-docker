@@ -19,7 +19,7 @@ chmod 640 /etc/container_environment.sh /etc/container_environment.json
 ln -s /etc/container_environment.sh /etc/profile.d/
 
 ## Add STARTUP_DELAY support
-cp /bd_build/bin/startup_delay.sh /etc/my_int.d/00_startup_delay.sh
+cp /bd_build/bin/startup_delay.sh /etc/my_init.d/00_startup_delay.sh
 
 ## Install runit.
 $minimal_apt_get_install runit
