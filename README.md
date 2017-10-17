@@ -92,7 +92,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 | syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. All syslog messages are forwarded to "docker logs".<br><br>Why syslog-ng?<br>I've had bad experience with rsyslog. I regularly run into bugs with rsyslog, and once in a while it takes my log host down by entering a 100% CPU loop in which it can't do anything. Syslog-ng seems to be much more stable. |
 | logrotate | Rotates and compresses logs on a regular basis. |
 | SSH server | Allows you to easily login to your container to [inspect or administer](#login_ssh) things. <br><br>_SSH is **disabled by default** and is only one of the methods provided by baseimage-docker for this purpose. The other method is through [docker exec](#login_docker_exec). SSH is also provided as an alternative because `docker exec` comes with several caveats._<br><br>Password and challenge-response authentication are disabled by default. Only key authentication is allowed. |
-| cron | The cron daemon must be running for cron jobs to work. |
+| cron | The cron daemon must be running for cron jobs to work.  Since cron is very picky about file ownership and permissions/modes, you can place or mount cron jobs in `/etc/my_cron.d/`, `/etc/my_cron.hourly/`, `/etc/my_cron.daily/`, `/etc/my_cron.weekly/` and/or `/etc/my_cron.monthly/` and they will be copied to the normal cron directories with the correct ownership and permissions. |
 | [runit](http://smarden.org/runit/) | Replaces Ubuntu's Upstart. Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. |
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
 
@@ -537,6 +537,18 @@ By default, `docker-ssh` will open a Bash session. You can also tell it to run a
 
     docker-ssh YOUR-CONTAINER-ID echo hello world
 
+<a name="cron"></a>
+### Custom cron jobs
+Traditionally, cron jobs will not be run if they do not match a very specific set of permissions (owned by `root`, `chmod 0644`, etc).  This presents a problem when have a custom cron job that you want to mount into `/etc/cron.d/`.  If you want it to run, you need to `chown root:root && chmod 0644` the file, but if you do that, you change the file on the host, probably making it impossible for you to edit (or switch git branches, etc).
+
+In `phusion/baseimage` you can copy or mount your cron jobs into `/etc/my_cron.d/`, `/etc/my_cron.hourly/`, `/etc/my_cron.daily/`, `/etc/my_cron.weekly/` and/or `/etc/my_cron.monthly/`, and when the container starts, it will copy them to the appropriate directory and fix their permissions automatically.
+
+Example:
+
+	docker run \
+		-v $(pwd)/somecronjob:/etc/my_cron.d/somecronjob:ro \
+		-v $(pwd)/daily_job.sh:/etc/my_cron.daily/daily_job.sh:ro \
+		YOUR_IMAGE
 
 <a name="building"></a>
 ## Building the image yourself

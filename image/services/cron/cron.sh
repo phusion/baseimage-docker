@@ -17,3 +17,12 @@ rm -f /etc/cron.daily/upstart
 rm -f /etc/cron.daily/dpkg
 rm -f /etc/cron.daily/password
 rm -f /etc/cron.weekly/fstrim
+
+# Add my_cron/ dirs
+mkdir /etc/my_cron.d
+mkdir /etc/my_cron.hourly
+mkdir /etc/my_cron.daily
+mkdir /etc/my_cron.weekly
+mkdir /etc/my_cron.monthly
+
+cp /bd_build/services/cron/init_cron.sh /etc/my_init.d/05_init_cron.sh
