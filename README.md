@@ -537,6 +537,10 @@ By default, `docker-ssh` will open a Bash session. You can also tell it to run a
 
     docker-ssh YOUR-CONTAINER-ID echo hello world
 
+<a name="startup_delay"></a>
+### Delaying container startup
+In some cases it is helpful to delay the startup of a container, for example, if you need to give another container time to initialize.  To delay the startup of a `phusion/baseimage` container, you can set the environment variable `STARTUP_DELAY`, for example `STARTUP_DELAY=10` will delay startup by 10 seconds. 
+
 
 <a name="building"></a>
 ## Building the image yourself
