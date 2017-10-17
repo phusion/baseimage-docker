@@ -95,6 +95,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 | cron | The cron daemon must be running for cron jobs to work. |
 | [runit](http://smarden.org/runit/) | Replaces Ubuntu's Upstart. Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. |
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
+| `install_clean.sh` | A tool for installing `apt` packages that automatically cleans up after itself.  All arguments are passed to `apt-get -y install` and after installation the apt caches are cleared. |
 
 Baseimage-docker is very lightweight: it only consumes 6 MB of memory.
 
