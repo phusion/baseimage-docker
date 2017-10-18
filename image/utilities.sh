@@ -11,4 +11,4 @@ ln -s /usr/bin/vim.tiny /usr/bin/vim
 cp /bd_build/bin/setuser /sbin/setuser
 
 ## This tool allows installation of apt packages with automatic cache cleanup.
-cp /bd_build/bin/install_clean.sh /sbin/install_clean.sh
+cp /bd_build/bin/install_clean /sbin/install_clean
