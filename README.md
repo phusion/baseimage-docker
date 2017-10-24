@@ -485,7 +485,7 @@ Edit your Dockerfile to install the insecure key permanently:
 
     RUN /usr/sbin/enable_insecure_key
 
-Instructions for logging in the container is the same as in section [Using the insecure key for one container only](#using_the_insecure_key_for_one_container_only).
+Instructions for logging into the container is the same as in section [Using the insecure key for one container only](#using_the_insecure_key_for_one_container_only).
 
 <a name="using_your_own_key"></a>
 #### Using your own key
