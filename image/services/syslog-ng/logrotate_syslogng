@@ -8,7 +8,6 @@
 	compress
 	postrotate
 		sv reload syslog-ng > /dev/null
-		sv restart syslog-forwarder > /dev/null
 	endscript
 }
 
@@ -34,6 +33,5 @@
 	sharedscripts
 	postrotate
 		sv reload syslog-ng > /dev/null
-		sv restart syslog-forwarder > /dev/null
 	endscript
 }
