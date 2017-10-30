@@ -296,11 +296,8 @@ def start_runit():
 
 
 def wait_for_runit_or_interrupt(pid):
-    try:
-        status = waitpid_reap_other_children(pid)
-        return (True, status)
-    except KeyboardInterrupt:
-        return (False, None)
+	status = waitpid_reap_other_children(pid)
+	return (True, status)
 
 
 def shutdown_runit_services(quiet=False):
