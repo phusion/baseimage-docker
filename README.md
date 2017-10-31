@@ -57,7 +57,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
      * [Environment variable dumps](#envvar_dumps)
      * [Modifying environment variables](#modifying_envvars)
      * [Security](#envvar_security)
-   * [System Logging](#logging)
+   * [System logging](#logging)
    * [Upgrading the operating system inside the container](#upgrading_os)
  * [Container administration](#container_administration)
    * [Running a one-shot command in a new container](#oneshot)
@@ -305,7 +305,7 @@ If you are sure that your environment variables don't contain sensitive data, th
     RUN chmod 644 /etc/container_environment.sh /etc/container_environment.json
 
 <a name="logging"></a>
-### System Logging
+### System logging
 
 Baseimage-docker uses syslog-ng to provide a syslog facility to the container. Syslog-ng is not managed as an runit service (see below). Syslog messages are forwarded to the console via the service at /etc/service/syslog-forwarder.
 
