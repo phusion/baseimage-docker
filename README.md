@@ -1,9 +1,9 @@
 # A minimal Ubuntu base image modified for Docker-friendliness
 
-[![](https://badge.imagelayers.io/phusion/baseimage:0.9.17.svg)](https://imagelayers.io/?images=phusion/baseimage:latest 'Get your own badge on imagelayers.io')
+[![](https://badge.imagelayers.io/phusion/baseimage:latest.svg)](https://imagelayers.io/?images=phusion/baseimage:latest 'Get your own badge on imagelayers.io')
 [![Travis](https://img.shields.io/travis/phusion/baseimage-docker.svg)](https://travis-ci.org/phusion/baseimage-docker)
 
-_Baseimage-docker only consumes 6 MB RAM and is much powerful than Busybox or Alpine. See why below._
+_Baseimage-docker only consumes 6 MB RAM and is much more powerful than Busybox or Alpine. See why below._
 
 Baseimage-docker is a special [Docker](https://www.docker.com) image that is configured for correct use within Docker containers. It is Ubuntu, plus:
 
@@ -96,6 +96,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 | cron | The cron daemon must be running for cron jobs to work. |
 | [runit](http://smarden.org/runit/) | Replaces Ubuntu's Upstart. Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. |
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
+| `install_clean` | A tool for installing `apt` packages that automatically cleans up after itself.  All arguments are passed to `apt-get -y install --no-install-recommends` and after installation the apt caches are cleared.  To include recommended packages, add `--install-recommends`. |
 
 Baseimage-docker is very lightweight: it only consumes 6 MB of memory.
 
@@ -494,7 +495,7 @@ Edit your Dockerfile to install the insecure key permanently:
 
     RUN /usr/sbin/enable_insecure_key
 
-Instructions for logging in the container is the same as in section [Using the insecure key for one container only](#using_the_insecure_key_for_one_container_only).
+Instructions for logging into the container is the same as in section [Using the insecure key for one container only](#using_the_insecure_key_for_one_container_only).
 
 <a name="using_your_own_key"></a>
 #### Using your own key
