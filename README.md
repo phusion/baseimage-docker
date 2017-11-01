@@ -57,6 +57,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
      * [Environment variable dumps](#envvar_dumps)
      * [Modifying environment variables](#modifying_envvars)
      * [Security](#envvar_security)
+   * [System logging](#logging)
    * [Upgrading the operating system inside the container](#upgrading_os)
  * [Container administration](#container_administration)
    * [Running a one-shot command in a new container](#oneshot)
@@ -302,6 +303,14 @@ If you are sure that your environment variables don't contain sensitive data, th
 
     RUN chmod 755 /etc/container_environment
     RUN chmod 644 /etc/container_environment.sh /etc/container_environment.json
+
+<a name="logging"></a>
+### System logging
+
+Baseimage-docker uses syslog-ng to provide a syslog facility to the container. Syslog-ng is not managed as an runit service (see below). Syslog messages are forwarded to the console via the service at /etc/service/syslog-forwarder.
+
+#### Log startup/shutdown sequence
+In order to ensure that all application log messages are captured by syslog-ng, syslog-ng is started separately before the runit supervisor process, and shutdown after runit exits. This uses the [startup script facility](#running_startup_scripts) provided by this image. This avoids a race condition which would exist if syslog-ng were managed as an runit service, where runit kills syslog-ng in parallel with the container's other services, causing log messages to be dropped during a graceful shutdown if syslog-ng exits while logs are still being produced by other services.
 
 <a name="upgrading_os"></a>
 ### Upgrading the operating system inside the container
