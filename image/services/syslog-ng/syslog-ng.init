@@ -1,0 +1,34 @@
+#!/bin/bash
+set -em
+
+# If /dev/log is either a named pipe or it was placed there accidentally,
+# e.g. because of the issue documented at https://github.com/phusion/baseimage-docker/pull/25,
+# then we remove it.
+if [ ! -S /dev/log ]; then rm -f /dev/log; fi
+if [ ! -S /var/lib/syslog-ng/syslog-ng.ctl ]; then rm -f /var/lib/syslog-ng/syslog-ng.ctl; fi
+
+PIDFILE="/var/run/syslog-ng.pid"
+SYSLOGNG_OPTS=""
+
+[ -r /etc/default/syslog-ng ] && . /etc/default/syslog-ng
+
+syslogng_wait() {
+    if [ "$2" -ne 0 ]; then
+        return 1
+    fi
+
+    RET=1
+    for i in $(seq 1 30); do
+        status=0
+        syslog-ng-ctl stats >/dev/null 2>&1 || status=$?
+        if [ "$status" != "$1" ]; then
+            RET=0
+            break
+        fi
+        sleep 1s
+    done
+    return $RET
+}
+
+/usr/sbin/syslog-ng --pidfile "$PIDFILE" -F $SYSLOGNG_OPTS &
+syslogng_wait 1 $?
