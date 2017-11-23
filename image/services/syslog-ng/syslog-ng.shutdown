@@ -20,5 +20,8 @@ syslogng_wait() {
     return $RET
 }
 
-kill $(cat "$PIDFILE")
+if [ -f "$PIDFILE" ]; then
+    kill $(cat "$PIDFILE")
+fi
+
 syslogng_wait 0 $?
