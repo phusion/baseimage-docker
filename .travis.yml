@@ -9,7 +9,7 @@ env:
     # - VERSION=${TRAVIS_TAG}
     - VERSION=${TRAVIS_BRANCH}
 
-before_install:
+script:
   - docker build -t ${NAME}:${VERSION} --rm image
   - env NAME=${NAME} VERSION=${VERSION} ./test/runner.sh
 
