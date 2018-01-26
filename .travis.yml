@@ -16,10 +16,7 @@ script:
 after_success:
   - docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}";
     docker push ${NAME}:${VERSION};
-
-# after_success:
-#   - if [ "${TRAVIS_BRANCH}" == "master" ]; then
-#     docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}";
-#     docker tag ${NAME}:${VERSION} ${NAME}:latest
-#     docker push ${NAME}:${VERSION};
-#     fi
+  - if [ "${TRAVIS_BRANCH}" == "master" ]; then
+    docker tag ${NAME}:${VERSION} ${NAME}:latest
+    docker push ${NAME}:latest;
+    fi
