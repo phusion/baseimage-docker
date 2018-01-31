@@ -450,7 +450,7 @@ Then, you can start your container with
 
     docker run -d -v `pwd`/myfolder:/etc/my_init.d my/dockerimage
 
-This will initialize sshd on container boot.  You can then access it with the insecure key as below, or using the methods to add a secure key.  Further, you can publish the port to your machine with -p 22:2222 allowing you to ssh to localhost:2222 instead of looking up the ip address.
+This will initialize sshd on container boot.  You can then access it with the insecure key as below, or using the methods to add a secure key.  Further, you can publish the port to your machine with -p 2222:22 allowing you to ssh to 127.0.0.1:2222 instead of looking up the ip address of the container.
 
 <a name="ssh_keys"></a>
 #### About SSH keys
