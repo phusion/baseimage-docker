@@ -3,17 +3,20 @@ sudo: required
 services:
   - docker
 
-script:
-  - make build
+env:
+  global:
+    - NAME=phusion/baseimage
+    # - VERSION=${TRAVIS_TAG}
+    - VERSION=${TRAVIS_BRANCH}
 
-deploy:
-  - provider: script
-    script: make test_release
-    on:
-      branch: master
-      tags: true
-      condition: '$TRAVIS_TAG =~ ^[0-9]+(\.[0-9]+)*$'
-  - provider: script
-    script: make test_master
-    on:
-      branch: master
+script:
+  - docker build -t ${NAME}:${VERSION} --rm image
+  - env NAME=${NAME} VERSION=${VERSION} ./test/runner.sh
+
+after_success:
+  - docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}";
+    docker push ${NAME}:${VERSION};
+  # - if [ "${TRAVIS_BRANCH}" == "master" ]; then
+  #   docker tag ${NAME}:${VERSION} ${NAME}:latest
+  #   docker push ${NAME}:latest;
+  #   fi
