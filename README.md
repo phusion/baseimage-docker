@@ -3,7 +3,7 @@
 [![](https://badge.imagelayers.io/phusion/baseimage:latest.svg)](https://imagelayers.io/?images=phusion/baseimage:latest 'Get your own badge on imagelayers.io')
 [![Travis](https://img.shields.io/travis/phusion/baseimage-docker.svg)](https://travis-ci.org/phusion/baseimage-docker)
 
-_Baseimage-docker only consumes 6 MB RAM and is much more powerful than Busybox or Alpine. See why below._
+_Baseimage-docker only consumes 8.3 MB RAM and is much more powerful than Busybox or Alpine. See why below._
 
 Baseimage-docker is a special [Docker](https://www.docker.com) image that is configured for correct use within Docker containers. It is Ubuntu, plus:
 
@@ -98,7 +98,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
 | `install_clean` | A tool for installing `apt` packages that automatically cleans up after itself.  All arguments are passed to `apt-get -y install --no-install-recommends` and after installation the apt caches are cleared.  To include recommended packages, add `--install-recommends`. |
 
-Baseimage-docker is very lightweight: it only consumes 6 MB of memory.
+Baseimage-docker is very lightweight: it only consumes 8.3 MB of memory.
 
 <a name="docker_single_process"></a>
 ### Wait, I thought Docker is about running a single process in a container?
@@ -144,12 +144,12 @@ The image is called `phusion/baseimage`, and is available on the Docker registry
     # See https://github.com/phusion/baseimage-docker/blob/master/Changelog.md for
     # a list of version numbers.
     FROM phusion/baseimage:<VERSION>
-    
+
     # Use baseimage-docker's init system.
     CMD ["/sbin/my_init"]
-    
+
     # ...put your own build instructions here...
-    
+
     # Clean up APT when done.
     RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -479,10 +479,10 @@ Now that you have the IP address, you can use SSH to login to the container, or 
     # Download the insecure private key
     curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/services/sshd/keys/insecure_key
     chmod 600 insecure_key
-    
+
     # Login to the container
     ssh -i insecure_key root@<IP address>
-    
+
     # Running a command inside the container
     ssh -i insecure_key root@<IP address> echo hello world
 
@@ -522,7 +522,7 @@ Now that you have the IP address, you can use SSH to login to the container, or 
 
     # Login to the container
     ssh -i /path-to/your_key root@<IP address>
-    
+
     # Running a command inside the container
     ssh -i /path-to/your_key root@<IP address> echo hello world
 
