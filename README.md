@@ -144,12 +144,12 @@ The image is called `phusion/baseimage`, and is available on the Docker registry
     # See https://github.com/phusion/baseimage-docker/blob/master/Changelog.md for
     # a list of version numbers.
     FROM phusion/baseimage:<VERSION>
-
+    
     # Use baseimage-docker's init system.
     CMD ["/sbin/my_init"]
-
+    
     # ...put your own build instructions here...
-
+    
     # Clean up APT when done.
     RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -200,7 +200,7 @@ In `Dockerfile`:
 
     RUN mkdir -p /etc/my_init.d
     COPY logtime.sh /etc/my_init.d/logtime.sh
-	  RUN chmod +x /etc/my_init.d/logtime.sh
+      RUN chmod +x /etc/my_init.d/logtime.sh
 
 <a name="environment_variables"></a>
 
@@ -307,7 +307,7 @@ If you are sure that your environment variables don't contain sensitive data, th
 <a name="logging"></a>
 ### System logging
 
-Baseimage-docker uses syslog-ng to provide a syslog facility to the container. Syslog-ng is not managed as an runit service (see below). Syslog messages are forwarded to the console via the service at /etc/service/syslog-forwarder.
+Baseimage-docker uses syslog-ng to provide a syslog facility to the container. Syslog-ng is not managed as an runit service (see below). Syslog messages are forwarded to the console.
 
 #### Log startup/shutdown sequence
 In order to ensure that all application log messages are captured by syslog-ng, syslog-ng is started separately before the runit supervisor process, and shutdown after runit exits. This uses the [startup script facility](#running_startup_scripts) provided by this image. This avoids a race condition which would exist if syslog-ng were managed as an runit service, where runit kills syslog-ng in parallel with the container's other services, causing log messages to be dropped during a graceful shutdown if syslog-ng exits while logs are still being produced by other services.
@@ -479,10 +479,10 @@ Now that you have the IP address, you can use SSH to login to the container, or 
     # Download the insecure private key
     curl -o insecure_key -fSL https://github.com/phusion/baseimage-docker/raw/master/image/services/sshd/keys/insecure_key
     chmod 600 insecure_key
-
+    
     # Login to the container
     ssh -i insecure_key root@<IP address>
-
+    
     # Running a command inside the container
     ssh -i insecure_key root@<IP address> echo hello world
 
@@ -522,7 +522,7 @@ Now that you have the IP address, you can use SSH to login to the container, or 
 
     # Login to the container
     ssh -i /path-to/your_key root@<IP address>
-
+    
     # Running a command inside the container
     ssh -i /path-to/your_key root@<IP address> echo hello world
 
