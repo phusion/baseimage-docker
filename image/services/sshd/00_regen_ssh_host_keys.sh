@@ -2,7 +2,7 @@
 set -e
 
 if [[ -f /etc/service/sshd/down ]] ; then
-	rm /etc/service/ssh/run
+	rm /etc/service/sshd/run
 	echo "SSH is disabled. To enable it, remove '/etc/service/sshd/down'."
 else
 
