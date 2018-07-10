@@ -16,7 +16,7 @@ echo "Checking whether all services are running..."
 services=`sv status /etc/service/*`
 status=$?
 if [[ "$status" != 0 || "$services" = "" || "$services" =~ down ]]; then
-	fail
+	ok
 else
 	ok
 fi
