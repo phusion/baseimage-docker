@@ -7,6 +7,13 @@ set -em
 if [ ! -S /dev/log ]; then rm -f /dev/log; fi
 if [ ! -S /var/lib/syslog-ng/syslog-ng.ctl ]; then rm -f /var/lib/syslog-ng/syslog-ng.ctl; fi
 
+# determine output mode on /dev/stdout because of the issue documented at https://github.com/phusion/baseimage-docker/issues/468
+if [ -p /dev/stdout ]; then
+  sed -i 's/##SYSLOG_OUTPUT_MODE_DEV_STDOUT##/pipe/' /etc/syslog-ng/syslog-ng.conf
+else
+  sed -i 's/##SYSLOG_OUTPUT_MODE_DEV_STDOUT##/file/' /etc/syslog-ng/syslog-ng.conf
+fi
+
 PIDFILE="/var/run/syslog-ng.pid"
 SYSLOGNG_OPTS=""
 

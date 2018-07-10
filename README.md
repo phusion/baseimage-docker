@@ -3,7 +3,7 @@
 [![](https://badge.imagelayers.io/phusion/baseimage:latest.svg)](https://imagelayers.io/?images=phusion/baseimage:latest 'Get your own badge on imagelayers.io')
 [![Travis](https://img.shields.io/travis/phusion/baseimage-docker.svg)](https://travis-ci.org/phusion/baseimage-docker)
 
-_Baseimage-docker only consumes 6 MB RAM and is much more powerful than Busybox or Alpine. See why below._
+_Baseimage-docker only consumes 8.3 MB RAM and is much more powerful than Busybox or Alpine. See why below._
 
 Baseimage-docker is a special [Docker](https://www.docker.com) image that is configured for correct use within Docker containers. It is Ubuntu, plus:
 
@@ -98,7 +98,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
 | `install_clean` | A tool for installing `apt` packages that automatically cleans up after itself.  All arguments are passed to `apt-get -y install --no-install-recommends` and after installation the apt caches are cleared.  To include recommended packages, add `--install-recommends`. |
 
-Baseimage-docker is very lightweight: it only consumes 6 MB of memory.
+Baseimage-docker is very lightweight: it only consumes 8.3 MB of memory.
 
 <a name="docker_single_process"></a>
 ### Wait, I thought Docker is about running a single process in a container?
@@ -200,7 +200,7 @@ In `Dockerfile`:
 
     RUN mkdir -p /etc/my_init.d
     COPY logtime.sh /etc/my_init.d/logtime.sh
-	  RUN chmod +x /etc/my_init.d/logtime.sh
+    RUN chmod +x /etc/my_init.d/logtime.sh
 
 <a name="environment_variables"></a>
 
@@ -307,7 +307,7 @@ If you are sure that your environment variables don't contain sensitive data, th
 <a name="logging"></a>
 ### System logging
 
-Baseimage-docker uses syslog-ng to provide a syslog facility to the container. Syslog-ng is not managed as an runit service (see below). Syslog messages are forwarded to the console via the service at /etc/service/syslog-forwarder.
+Baseimage-docker uses syslog-ng to provide a syslog facility to the container. Syslog-ng is not managed as an runit service (see below). Syslog messages are forwarded to the console.
 
 #### Log startup/shutdown sequence
 In order to ensure that all application log messages are captured by syslog-ng, syslog-ng is started separately before the runit supervisor process, and shutdown after runit exits. This uses the [startup script facility](#running_startup_scripts) provided by this image. This avoids a race condition which would exist if syslog-ng were managed as an runit service, where runit kills syslog-ng in parallel with the container's other services, causing log messages to be dropped during a graceful shutdown if syslog-ng exits while logs are still being produced by other services.
@@ -450,7 +450,7 @@ Then, you can start your container with
 
     docker run -d -v `pwd`/myfolder:/etc/my_init.d my/dockerimage
 
-This will initialize sshd on container boot.  You can then access it with the insecure key as below, or using the methods to add a secure key.  Further, you can publish the port to your machine with -p 22:2222 allowing you to ssh to localhost:2222 instead of looking up the ip address.
+This will initialize sshd on container boot.  You can then access it with the insecure key as below, or using the methods to add a secure key.  Further, you can publish the port to your machine with -p 2222:22 allowing you to ssh to 127.0.0.1:2222 instead of looking up the ip address of the container.
 
 <a name="ssh_keys"></a>
 #### About SSH keys
