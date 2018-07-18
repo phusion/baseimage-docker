@@ -14,6 +14,10 @@ else
   sed -i 's/##SYSLOG_OUTPUT_MODE_DEV_STDOUT##/file/' /etc/syslog-ng/syslog-ng.conf
 fi
 
+# If /var/log is writable by another user logrotate will fail
+/bin/chown root:root /var/log
+/bin/chmod 0755 /var/log
+
 PIDFILE="/var/run/syslog-ng.pid"
 SYSLOGNG_OPTS=""
 
