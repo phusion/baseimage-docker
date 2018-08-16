@@ -1,4 +1,4 @@
-FROM ubuntu:bionic-20180426
+FROM ubuntu:18.04
 MAINTAINER Phusion <info@phusion.nl>
 
 COPY . /bd_build
