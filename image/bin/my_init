@@ -303,7 +303,7 @@ def wait_for_runit_or_interrupt(pid):
 def shutdown_runit_services(quiet=False):
     if not quiet:
         debug("Begin shutting down runit services...")
-    os.system("/usr/bin/sv -w %d down /etc/service/* > /dev/null" % KILL_PROCESS_TIMEOUT)
+    os.system("/usr/bin/sv -w %d force-stop /etc/service/* > /dev/null" % KILL_PROCESS_TIMEOUT)
 
 
 def wait_for_runit_services():
