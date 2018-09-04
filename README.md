@@ -156,26 +156,45 @@ The image is called `phusion/baseimage`, and is available on the Docker registry
 <a name="adding_additional_daemons"></a>
 ### Adding additional daemons
 
-You can add additional daemons (e.g. your own app) to the image by creating runit entries. You only have to write a small shell script which runs your daemon, and runit will keep it up and running for you, restarting it when it crashes, etc.
+A daemon is a program which runs in the background of its system, such
+as a web server.
 
-The shell script must be called `run`, must be executable, and is to be placed in the directory `/etc/service/<NAME>`.
+You can add additional daemons (for example, your own app) to the image
+by creating runit service directories. You only have to write a small
+shell script which runs your daemon;
+[`runsv`](http://smarden.org/runit/runsv.8.html) will start your script,
+and - by default - restart it upon its exit, after waiting one second.
 
-Here's an example showing you how a memcached server runit entry can be made.
+The shell script must be called `run`, must be executable, and is to be
+placed in the directory `/etc/service/<NAME>`. `runsv` will switch to
+the directory and invoke `./run` after your container starts.
 
-In `memcached.sh` (make sure this file is chmod +x):
+**Be certain that you do not start your container using interactive mode
+(`-it`) with another command, as `runit` must be the first process to run. If you do this, your runit service directories won't be started. For instance, `docker run -it <name> bash` will bring you to bash in your container, but you'll lose all your daemons.**
 
-    #!/bin/sh
-    # `/sbin/setuser memcache` runs the given command as the user `memcache`.
-    # If you omit that part, the command will be run as root.
-    exec /sbin/setuser memcache /usr/bin/memcached >>/var/log/memcached.log 2>&1
+Here's an example showing you how a `runit` service directory can be
+made for a `memcached` server.
 
-In `Dockerfile`:
+In `memcached.sh`, or whatever you choose to name your file (make sure
+this file is chmod +x):
+```bash
+#!/bin/sh
+# `/sbin/setuser memcache` runs the given command as the user `memcache`.
+# If you omit that part, the command will be run as root.
+exec /sbin/setuser memcache /usr/bin/memcached >>/var/log/memcached.log 2>&1
+```
+In an accompanying `Dockerfile`:
 
-    RUN mkdir /etc/service/memcached
-    COPY memcached.sh /etc/service/memcached/run
-    RUN chmod +x /etc/service/memcached/run
-
-Note that the shell script must run the daemon **without letting it daemonize/fork it**. Usually, daemons provide a command line flag or a config file option for that.
+```Dockerfile
+RUN mkdir /etc/service/memcached
+COPY memcached.sh /etc/service/memcached/run
+RUN chmod +x /etc/service/memcached/run
+```
+A given shell script must run **without daemonizing or forking itself**;
+this is because `runit` will start and restart your script on its own.
+Usually, daemons provide a command line flag or a config file option for
+preventing such behavior - essentially, you just want your script to run
+in the foreground, not the background.
 
 <a name="running_startup_scripts"></a>
 ### Running scripts during container startup
