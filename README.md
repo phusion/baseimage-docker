@@ -315,7 +315,7 @@ In order to ensure that all application log messages are captured by syslog-ng, 
 <a name="upgrading_os"></a>
 ### Upgrading the operating system inside the container
 
-Baseimage-docker images contain an Ubuntu 16.04 operating system. You may want to update this OS from time to time, for example to pull in the latest security updates. OpenSSL is a notorious example. Vulnerabilities are discovered in OpenSSL on a regular basis, so you should keep OpenSSL up-to-date as much as you can.
+Baseimage-docker images contain an Ubuntu operating system (see OS version at [Overview](#overview)). You may want to update this OS from time to time, for example to pull in the latest security updates. OpenSSL is a notorious example. Vulnerabilities are discovered in OpenSSL on a regular basis, so you should keep OpenSSL up-to-date as much as you can.
 
 While we release Baseimage-docker images with the latest OS updates from time to time, you do not have to rely on us. You can update the OS inside Baseimage-docker images yourself, and it is recommended that you do this instead of waiting for us.
 
