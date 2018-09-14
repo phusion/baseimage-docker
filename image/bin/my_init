@@ -12,6 +12,8 @@ import stat
 import sys
 import time
 
+ENV_INIT_DIRECTORY = os.environ.get('ENV_INIT_DIRECTORY', '/etc/my_init.d')
+
 KILL_PROCESS_TIMEOUT = int(os.environ.get('KILL_PROCESS_TIMEOUT', 5))
 KILL_ALL_PROCESSES_TIMEOUT = int(os.environ.get('KILL_ALL_PROCESSES_TIMEOUT', 5))
 
@@ -20,7 +22,7 @@ LOG_LEVEL_WARN = 1
 LOG_LEVEL_INFO = 2
 LOG_LEVEL_DEBUG = 3
 
-SHENV_NAME_WHITELIST_REGEX = re.compile('[^\w\-_\.]')
+SHENV_NAME_WHITELIST_REGEX = re.compile('\W')
 
 log_level = None
 
@@ -154,6 +156,7 @@ def shquote(s):
 
 
 def sanitize_shenvname(s):
+    """Return string with [0-9a-zA-Z_] characters"""
     return re.sub(SHENV_NAME_WHITELIST_REGEX, "_", s)
 
 
@@ -273,9 +276,9 @@ def kill_all_processes(time_limit):
 
 
 def run_startup_files():
-    # Run /etc/my_init.d/*
-    for name in listdir("/etc/my_init.d"):
-        filename = "/etc/my_init.d/" + name
+    # Run ENV_INIT_DIRECTORY/*
+    for name in listdir(ENV_INIT_DIRECTORY):
+        filename = os.path.join(ENV_INIT_DIRECTORY, name)
         if is_exe(filename):
             info("Running %s..." % filename)
             run_command_killable_and_import_envvars(filename)
@@ -317,17 +320,14 @@ def start_runit():
 
 
 def wait_for_runit_or_interrupt(pid):
-    try:
-        status = waitpid_reap_other_children(pid)
-        return (True, status)
-    except KeyboardInterrupt:
-        return (False, None)
+	status = waitpid_reap_other_children(pid)
+	return (True, status)
 
 
 def shutdown_runit_services(quiet=False):
     if not quiet:
         debug("Begin shutting down runit services...")
-    os.system("/usr/bin/sv -w %d down /etc/service/* > /dev/null" % KILL_PROCESS_TIMEOUT)
+    os.system("/usr/bin/sv -w %d force-stop /etc/service/* > /dev/null" % KILL_PROCESS_TIMEOUT)
 
 
 def wait_for_runit_services():

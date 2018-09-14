@@ -1,5 +1,5 @@
 NAME = phusion/baseimage
-VERSION = 0.9.22
+VERSION = 0.11
 
 .PHONY: all build test tag_latest release ssh
 
@@ -26,3 +26,11 @@ ssh:
 		IP=$$(docker inspect $$ID | grep IPAddr | sed 's/.*: "//; s/".*//') && \
 		echo "SSHing into $$IP" && \
 		ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i image/services/sshd/keys/insecure_key root@$$IP
+
+test_release:
+	echo test_release
+	env
+
+test_master:
+	echo test_master
+	env
