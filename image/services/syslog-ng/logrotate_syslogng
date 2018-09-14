@@ -7,7 +7,9 @@
 	delaycompress
 	compress
 	postrotate
-		sv reload syslog-ng > /dev/null
+		if [ -f /var/run/syslog-ng.pid ]; then
+			kill -HUP `cat /var/run/syslog-ng.pid`
+		fi
 	endscript
 }
 
@@ -32,6 +34,8 @@
 	delaycompress
 	sharedscripts
 	postrotate
-		sv reload syslog-ng > /dev/null
+		if [ -f /var/run/syslog-ng.pid ]; then
+			kill -HUP `cat /var/run/syslog-ng.pid`
+		fi
 	endscript
 }

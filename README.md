@@ -3,7 +3,7 @@
 [![](https://badge.imagelayers.io/phusion/baseimage:latest.svg)](https://imagelayers.io/?images=phusion/baseimage:latest 'Get your own badge on imagelayers.io')
 [![Travis](https://img.shields.io/travis/phusion/baseimage-docker.svg)](https://travis-ci.org/phusion/baseimage-docker)
 
-_Baseimage-docker only consumes 6 MB RAM and is much more powerful than Busybox or Alpine. See why below._
+_Baseimage-docker only consumes 8.3 MB RAM and is much more powerful than Busybox or Alpine. See why below._
 
 Baseimage-docker is a special [Docker](https://www.docker.com) image that is configured for correct use within Docker containers. It is Ubuntu, plus:
 
@@ -57,6 +57,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
      * [Environment variable dumps](#envvar_dumps)
      * [Modifying environment variables](#modifying_envvars)
      * [Security](#envvar_security)
+   * [System logging](#logging)
    * [Upgrading the operating system inside the container](#upgrading_os)
  * [Container administration](#container_administration)
    * [Running a one-shot command in a new container](#oneshot)
@@ -86,7 +87,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 
 | Component        | Why is it included? / Remarks |
 | ---------------- | ------------------- |
-| Ubuntu 16.04 LTS | The base system. |
+| Ubuntu 18.04 LTS | The base system. |
 | A **correct** init process | _Main article: [Docker and the PID 1 zombie reaping problem](http://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/)._ <br><br>According to the Unix process model, [the init process](https://en.wikipedia.org/wiki/Init) -- PID 1 -- inherits all [orphaned child processes](https://en.wikipedia.org/wiki/Orphan_process) and must [reap them](https://en.wikipedia.org/wiki/Wait_(system_call)). Most Docker containers do not have an init process that does this correctly. As a result, their containers become filled with [zombie processes](https://en.wikipedia.org/wiki/Zombie_process) over time. <br><br>Furthermore, `docker stop` sends SIGTERM to the init process, which stops all services. Unfortunately most init systems don't do this correctly within Docker since they're built for hardware shutdowns instead. This causes processes to be hard killed with SIGKILL, which doesn't give them a chance to correctly deinitialize things. This can cause file corruption. <br><br>Baseimage-docker comes with an init process `/sbin/my_init` that performs both of these tasks correctly. |
 | Fixes APT incompatibilities with Docker | See https://github.com/dotcloud/docker/issues/1024. |
 | syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. All syslog messages are forwarded to "docker logs".<br><br>Why syslog-ng?<br>I've had bad experience with rsyslog. I regularly run into bugs with rsyslog, and once in a while it takes my log host down by entering a 100% CPU loop in which it can't do anything. Syslog-ng seems to be much more stable. |
@@ -95,8 +96,9 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 | cron | The cron daemon must be running for cron jobs to work.  Since cron is very picky about file ownership and permissions/modes, you can place or mount cron jobs in `/etc/my_cron.d/`, `/etc/my_cron.hourly/`, `/etc/my_cron.daily/`, `/etc/my_cron.weekly/` and/or `/etc/my_cron.monthly/` and they will be copied to the normal cron directories with the correct ownership and permissions. |
 | [runit](http://smarden.org/runit/) | Replaces Ubuntu's Upstart. Used for service supervision and management. Much easier to use than SysV init and supports restarting daemons when they crash. Much easier to use and more lightweight than Upstart. |
 | `setuser` | A tool for running a command as another user. Easier to use than `su`, has a smaller attack vector than `sudo`, and unlike `chpst` this tool sets `$HOME` correctly. Available as `/sbin/setuser`. |
+| `install_clean` | A tool for installing `apt` packages that automatically cleans up after itself.  All arguments are passed to `apt-get -y install --no-install-recommends` and after installation the apt caches are cleared.  To include recommended packages, add `--install-recommends`. |
 
-Baseimage-docker is very lightweight: it only consumes 6 MB of memory.
+Baseimage-docker is very lightweight: it only consumes 8.3 MB of memory.
 
 <a name="docker_single_process"></a>
 ### Wait, I thought Docker is about running a single process in a container?
@@ -154,26 +156,45 @@ The image is called `phusion/baseimage`, and is available on the Docker registry
 <a name="adding_additional_daemons"></a>
 ### Adding additional daemons
 
-You can add additional daemons (e.g. your own app) to the image by creating runit entries. You only have to write a small shell script which runs your daemon, and runit will keep it up and running for you, restarting it when it crashes, etc.
+A daemon is a program which runs in the background of its system, such
+as a web server.
 
-The shell script must be called `run`, must be executable, and is to be placed in the directory `/etc/service/<NAME>`.
+You can add additional daemons (for example, your own app) to the image
+by creating runit service directories. You only have to write a small
+shell script which runs your daemon;
+[`runsv`](http://smarden.org/runit/runsv.8.html) will start your script,
+and - by default - restart it upon its exit, after waiting one second.
 
-Here's an example showing you how a memcached server runit entry can be made.
+The shell script must be called `run`, must be executable, and is to be
+placed in the directory `/etc/service/<NAME>`. `runsv` will switch to
+the directory and invoke `./run` after your container starts.
 
-In `memcached.sh` (make sure this file is chmod +x):
+**Be certain that you do not start your container using interactive mode
+(`-it`) with another command, as `runit` must be the first process to run. If you do this, your runit service directories won't be started. For instance, `docker run -it <name> bash` will bring you to bash in your container, but you'll lose all your daemons.**
 
-    #!/bin/sh
-    # `/sbin/setuser memcache` runs the given command as the user `memcache`.
-    # If you omit that part, the command will be run as root.
-    exec /sbin/setuser memcache /usr/bin/memcached >>/var/log/memcached.log 2>&1
+Here's an example showing you how a `runit` service directory can be
+made for a `memcached` server.
 
-In `Dockerfile`:
+In `memcached.sh`, or whatever you choose to name your file (make sure
+this file is chmod +x):
+```bash
+#!/bin/sh
+# `/sbin/setuser memcache` runs the given command as the user `memcache`.
+# If you omit that part, the command will be run as root.
+exec /sbin/setuser memcache /usr/bin/memcached >>/var/log/memcached.log 2>&1
+```
+In an accompanying `Dockerfile`:
 
-    RUN mkdir /etc/service/memcached
-    COPY memcached.sh /etc/service/memcached/run
-    RUN chmod +x /etc/service/memcached/run
-
-Note that the shell script must run the daemon **without letting it daemonize/fork it**. Usually, daemons provide a command line flag or a config file option for that.
+```Dockerfile
+RUN mkdir /etc/service/memcached
+COPY memcached.sh /etc/service/memcached/run
+RUN chmod +x /etc/service/memcached/run
+```
+A given shell script must run **without daemonizing or forking itself**;
+this is because `runit` will start and restart your script on its own.
+Usually, daemons provide a command line flag or a config file option for
+preventing such behavior - essentially, you just want your script to run
+in the foreground, not the background.
 
 <a name="running_startup_scripts"></a>
 ### Running scripts during container startup
@@ -198,7 +219,7 @@ In `Dockerfile`:
 
     RUN mkdir -p /etc/my_init.d
     COPY logtime.sh /etc/my_init.d/logtime.sh
-	  RUN chmod +x /etc/my_init.d/logtime.sh
+    RUN chmod +x /etc/my_init.d/logtime.sh
 
 <a name="environment_variables"></a>
 
@@ -302,10 +323,18 @@ If you are sure that your environment variables don't contain sensitive data, th
     RUN chmod 755 /etc/container_environment
     RUN chmod 644 /etc/container_environment.sh /etc/container_environment.json
 
+<a name="logging"></a>
+### System logging
+
+Baseimage-docker uses syslog-ng to provide a syslog facility to the container. Syslog-ng is not managed as an runit service (see below). Syslog messages are forwarded to the console.
+
+#### Log startup/shutdown sequence
+In order to ensure that all application log messages are captured by syslog-ng, syslog-ng is started separately before the runit supervisor process, and shutdown after runit exits. This uses the [startup script facility](#running_startup_scripts) provided by this image. This avoids a race condition which would exist if syslog-ng were managed as an runit service, where runit kills syslog-ng in parallel with the container's other services, causing log messages to be dropped during a graceful shutdown if syslog-ng exits while logs are still being produced by other services.
+
 <a name="upgrading_os"></a>
 ### Upgrading the operating system inside the container
 
-Baseimage-docker images contain an Ubuntu 16.04 operating system. You may want to update this OS from time to time, for example to pull in the latest security updates. OpenSSL is a notorious example. Vulnerabilities are discovered in OpenSSL on a regular basis, so you should keep OpenSSL up-to-date as much as you can.
+Baseimage-docker images contain an Ubuntu operating system (see OS version at [Overview](#overview)). You may want to update this OS from time to time, for example to pull in the latest security updates. OpenSSL is a notorious example. Vulnerabilities are discovered in OpenSSL on a regular basis, so you should keep OpenSSL up-to-date as much as you can.
 
 While we release Baseimage-docker images with the latest OS updates from time to time, you do not have to rely on us. You can update the OS inside Baseimage-docker images yourself, and it is recommended that you do this instead of waiting for us.
 
@@ -440,7 +469,7 @@ Then, you can start your container with
 
     docker run -d -v `pwd`/myfolder:/etc/my_init.d my/dockerimage
 
-This will initialize sshd on container boot.  You can then access it with the insecure key as below, or using the methods to add a secure key.  Further, you can publish the port to your machine with -p 22:2222 allowing you to ssh to localhost:2222 instead of looking up the ip address.
+This will initialize sshd on container boot.  You can then access it with the insecure key as below, or using the methods to add a secure key.  Further, you can publish the port to your machine with -p 2222:22 allowing you to ssh to 127.0.0.1:2222 instead of looking up the ip address of the container.
 
 <a name="ssh_keys"></a>
 #### About SSH keys
@@ -485,7 +514,7 @@ Edit your Dockerfile to install the insecure key permanently:
 
     RUN /usr/sbin/enable_insecure_key
 
-Instructions for logging in the container is the same as in section [Using the insecure key for one container only](#using_the_insecure_key_for_one_container_only).
+Instructions for logging into the container is the same as in section [Using the insecure key for one container only](#using_the_insecure_key_for_one_container_only).
 
 <a name="using_your_own_key"></a>
 #### Using your own key
@@ -599,7 +628,8 @@ Then you can proceed with `make build` command.
  * Using baseimage-docker? [Tweet about us](https://twitter.com/share) or [follow us on Twitter](https://twitter.com/phusion_nl).
  * Having problems? Want to participate in development? Please post a message at [the discussion forum](https://groups.google.com/d/forum/passenger-docker).
  * Looking for a more complete base image, one that is ideal for Ruby, Python, Node.js and Meteor web apps? Take a look at [passenger-docker](https://github.com/phusion/passenger-docker).
+ * Need a helping hand? Phusion also offers [consulting](https://www.phusion.nl/consultancy) on a wide range of topics, including Web Development, UI/UX Research & Design, Technology Migration and Auditing. 
 
-[<img src="http://www.phusion.nl/assets/logo.png">](http://www.phusion.nl/)
+[<img src="https://www.phusion.nl/images/mark_logotype.svg">](https://www.phusion.nl/)
 
 Please enjoy baseimage-docker, a product by [Phusion](http://www.phusion.nl/). :-)
