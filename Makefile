@@ -23,7 +23,6 @@ tag_latest:
 release: test tag_latest
 	@if ! docker images $(NAME) | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME) version $(VERSION) is not yet built. Please run 'make build'"; false; fi
 	docker push $(NAME)
-	docker push $(NAME)-armhf
 	@echo "*** Don't forget to create a tag by creating an official GitHub release."
 
 ssh:
