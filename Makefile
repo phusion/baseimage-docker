@@ -14,13 +14,16 @@ build_armhf:
 
 test:
 	env NAME=$(NAME) VERSION=$(VERSION) ./test/runner.sh
+	env NAME=$(NAME) VERSION=$(VERSION)-armhf ./test/runner.sh
 
 tag_latest:
 	docker tag $(NAME):$(VERSION) $(NAME):latest
+	docker tag $(NAME):$(VERSION)-armhf $(NAME):armhf-latest
 
 release: test tag_latest
 	@if ! docker images $(NAME) | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME) version $(VERSION) is not yet built. Please run 'make build'"; false; fi
 	docker push $(NAME)
+	docker push $(NAME)-armhf
 	@echo "*** Don't forget to create a tag by creating an official GitHub release."
 
 ssh:
