@@ -3,22 +3,16 @@ VERSION = 0.11
 
 .PHONY: all build test tag_latest release ssh
 
-all: build_amd64 build_armhf
+all: build
 
-build_amd64:
-	docker build -t $(NAME):$(VERSION) --rm image -f image-amd64/Dockerfile
-
-build_armhf:
-	docker run --rm --privileged multiarch/qemu-user-static:register --reset
-	docker build -t $(NAME):$(VERSION)-armhf --rm image -f image-armhf/Dockerfile
+build:
+	docker build -t $(NAME):$(VERSION) --rm image -f image/Dockerfile
 
 test:
 	env NAME=$(NAME) VERSION=$(VERSION) ./test/runner.sh
-	env NAME=$(NAME) VERSION=$(VERSION)-armhf ./test/runner.sh
 
 tag_latest:
 	docker tag $(NAME):$(VERSION) $(NAME):latest
-	docker tag $(NAME):$(VERSION)-armhf $(NAME):armhf-latest
 
 release: test tag_latest
 	@if ! docker images $(NAME) | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME) version $(VERSION) is not yet built. Please run 'make build'"; false; fi
