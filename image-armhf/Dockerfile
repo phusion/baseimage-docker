@@ -1,4 +1,4 @@
-FROM multiarch/ubuntu-core:arm64-bionic
+FROM multiarch/ubuntu-core:x86_64-bionic
 MAINTAINER Phusion <info@phusion.nl>
 
 COPY . /bd_build
