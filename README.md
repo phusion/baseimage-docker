@@ -87,7 +87,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 
 | Component        | Why is it included? / Remarks |
 | ---------------- | ------------------- |
-| Ubuntu 16.04 LTS | The base system. |
+| Ubuntu 18.04 LTS | The base system. |
 | A **correct** init process | _Main article: [Docker and the PID 1 zombie reaping problem](http://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/)._ <br><br>According to the Unix process model, [the init process](https://en.wikipedia.org/wiki/Init) -- PID 1 -- inherits all [orphaned child processes](https://en.wikipedia.org/wiki/Orphan_process) and must [reap them](https://en.wikipedia.org/wiki/Wait_(system_call)). Most Docker containers do not have an init process that does this correctly. As a result, their containers become filled with [zombie processes](https://en.wikipedia.org/wiki/Zombie_process) over time. <br><br>Furthermore, `docker stop` sends SIGTERM to the init process, which stops all services. Unfortunately most init systems don't do this correctly within Docker since they're built for hardware shutdowns instead. This causes processes to be hard killed with SIGKILL, which doesn't give them a chance to correctly deinitialize things. This can cause file corruption. <br><br>Baseimage-docker comes with an init process `/sbin/my_init` that performs both of these tasks correctly. |
 | Fixes APT incompatibilities with Docker | See https://github.com/dotcloud/docker/issues/1024. |
 | syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. All syslog messages are forwarded to "docker logs".<br><br>Why syslog-ng?<br>I've had bad experience with rsyslog. I regularly run into bugs with rsyslog, and once in a while it takes my log host down by entering a 100% CPU loop in which it can't do anything. Syslog-ng seems to be much more stable. |
@@ -156,26 +156,45 @@ The image is called `phusion/baseimage`, and is available on the Docker registry
 <a name="adding_additional_daemons"></a>
 ### Adding additional daemons
 
-You can add additional daemons (e.g. your own app) to the image by creating runit entries. You only have to write a small shell script which runs your daemon, and runit will keep it up and running for you, restarting it when it crashes, etc.
+A daemon is a program which runs in the background of its system, such
+as a web server.
 
-The shell script must be called `run`, must be executable, and is to be placed in the directory `/etc/service/<NAME>`.
+You can add additional daemons (for example, your own app) to the image
+by creating runit service directories. You only have to write a small
+shell script which runs your daemon;
+[`runsv`](http://smarden.org/runit/runsv.8.html) will start your script,
+and - by default - restart it upon its exit, after waiting one second.
 
-Here's an example showing you how a memcached server runit entry can be made.
+The shell script must be called `run`, must be executable, and is to be
+placed in the directory `/etc/service/<NAME>`. `runsv` will switch to
+the directory and invoke `./run` after your container starts.
 
-In `memcached.sh` (make sure this file is chmod +x):
+**Be certain that you do not start your container using interactive mode
+(`-it`) with another command, as `runit` must be the first process to run. If you do this, your runit service directories won't be started. For instance, `docker run -it <name> bash` will bring you to bash in your container, but you'll lose all your daemons.**
 
-    #!/bin/sh
-    # `/sbin/setuser memcache` runs the given command as the user `memcache`.
-    # If you omit that part, the command will be run as root.
-    exec /sbin/setuser memcache /usr/bin/memcached >>/var/log/memcached.log 2>&1
+Here's an example showing you how a `runit` service directory can be
+made for a `memcached` server.
 
-In `Dockerfile`:
+In `memcached.sh`, or whatever you choose to name your file (make sure
+this file is chmod +x):
+```bash
+#!/bin/sh
+# `/sbin/setuser memcache` runs the given command as the user `memcache`.
+# If you omit that part, the command will be run as root.
+exec /sbin/setuser memcache /usr/bin/memcached >>/var/log/memcached.log 2>&1
+```
+In an accompanying `Dockerfile`:
 
-    RUN mkdir /etc/service/memcached
-    COPY memcached.sh /etc/service/memcached/run
-    RUN chmod +x /etc/service/memcached/run
-
-Note that the shell script must run the daemon **without letting it daemonize/fork it**. Usually, daemons provide a command line flag or a config file option for that.
+```Dockerfile
+RUN mkdir /etc/service/memcached
+COPY memcached.sh /etc/service/memcached/run
+RUN chmod +x /etc/service/memcached/run
+```
+A given shell script must run **without daemonizing or forking itself**;
+this is because `runit` will start and restart your script on its own.
+Usually, daemons provide a command line flag or a config file option for
+preventing such behavior - essentially, you just want your script to run
+in the foreground, not the background.
 
 <a name="running_startup_scripts"></a>
 ### Running scripts during container startup
@@ -315,7 +334,7 @@ In order to ensure that all application log messages are captured by syslog-ng, 
 <a name="upgrading_os"></a>
 ### Upgrading the operating system inside the container
 
-Baseimage-docker images contain an Ubuntu 16.04 operating system. You may want to update this OS from time to time, for example to pull in the latest security updates. OpenSSL is a notorious example. Vulnerabilities are discovered in OpenSSL on a regular basis, so you should keep OpenSSL up-to-date as much as you can.
+Baseimage-docker images contain an Ubuntu operating system (see OS version at [Overview](#overview)). You may want to update this OS from time to time, for example to pull in the latest security updates. OpenSSL is a notorious example. Vulnerabilities are discovered in OpenSSL on a regular basis, so you should keep OpenSSL up-to-date as much as you can.
 
 While we release Baseimage-docker images with the latest OS updates from time to time, you do not have to rely on us. You can update the OS inside Baseimage-docker images yourself, and it is recommended that you do this instead of waiting for us.
 
@@ -597,7 +616,8 @@ Then you can proceed with `make build` command.
  * Using baseimage-docker? [Tweet about us](https://twitter.com/share) or [follow us on Twitter](https://twitter.com/phusion_nl).
  * Having problems? Want to participate in development? Please post a message at [the discussion forum](https://groups.google.com/d/forum/passenger-docker).
  * Looking for a more complete base image, one that is ideal for Ruby, Python, Node.js and Meteor web apps? Take a look at [passenger-docker](https://github.com/phusion/passenger-docker).
+ * Need a helping hand? Phusion also offers [consulting](https://www.phusion.nl/consultancy) on a wide range of topics, including Web Development, UI/UX Research & Design, Technology Migration and Auditing. 
 
-[<img src="http://www.phusion.nl/assets/logo.png">](http://www.phusion.nl/)
+[<img src="https://www.phusion.nl/images/mark_logotype.svg">](https://www.phusion.nl/)
 
 Please enjoy baseimage-docker, a product by [Phusion](http://www.phusion.nl/). :-)
