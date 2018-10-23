@@ -238,6 +238,12 @@ environment variables:
     # Give all other processes (such as those which have been forked) 5 minutes to timeout
     ENV KILL_ALL_PROCESSES_TIMEOUT=300
 
+Note: Prior to 0.11.1, the default values for `KILL_PROCESS_TIMEOUT` and `KILL_ALL_PROCESSES_TIMEOUT`
+were 5 seconds. In version 0.11.1+ the default process timeout has been adjusted to 30 seconds to
+allow more time for containers to terminate gracefully. The default timeout of your container runtime
+may supersede this setting, for example Docker currently applies a [10s timeout](https://docs.docker.com/engine/reference/commandline/stop/#options)
+by default before sending SIGKILL, upon `docker stop` or receiving SIGTERM.
+
 ### Environment variables
 
 If you use `/sbin/my_init` as the main container command, then any environment variables set with `docker run --env` or with the `ENV` command in the Dockerfile, will be picked up by `my_init`. These variables will also be passed to all child processes, including `/etc/my_init.d` startup scripts, Runit and Runit-managed services. There are however a few caveats you should be aware of:
