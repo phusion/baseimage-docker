@@ -602,9 +602,11 @@ If you want to call the resulting image something else, pass the NAME variable, 
 
 The default baseimage-docker installs `syslog-ng`, `cron` and `sshd` services during the build process.
 
-In case you don't need one or more of these services in your image, you can disable its installation.
+In case you don't need one or more of these services in your image, you can disable its installation through the `image/buildconfig` that is sourced within `image/system_services.sh`.  Do this at build time by passing a variable in with `--build-arg`  as in `docker build --build-arg DISABLE_SYSLOG=1 image/`, or you may set the variable in `image/Dockerfile` with an ENV setting above the RUN directive.
 
-As shown in the following example, to prevent `sshd` from being installed into your image, set `1` to the `DISABLE_SSH` variable in the `./image/buildconfig` file.
+These represent build-time configuration, so setting them in the shell env at build-time [will not have any effect](https://github.com/phusion/baseimage-docker/issues/459#issuecomment-439177442).  Setting them in child images' Dockerfiles will also not have any effect.)
+
+You can also set them directly as shown in the following example, to prevent `sshd` from being installed into your image, set `1` to the `DISABLE_SSH` variable in the `./image/buildconfig` file.
 
     ### In ./image/buildconfig
     # ...
