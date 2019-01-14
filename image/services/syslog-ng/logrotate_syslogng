@@ -1,5 +1,4 @@
-/var/log/syslog
-{
+/var/log/syslog {
 	rotate 7
 	daily
 	missingok
@@ -24,8 +23,7 @@
 /var/log/lpr.log
 /var/log/cron.log
 /var/log/debug
-/var/log/messages
-{
+/var/log/messages {
 	rotate 4
 	weekly
 	missingok
