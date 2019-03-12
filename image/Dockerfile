@@ -1,4 +1,5 @@
-FROM ubuntu:18.04
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
 MAINTAINER Phusion <info@phusion.nl>
 
 COPY . /bd_build

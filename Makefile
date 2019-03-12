@@ -1,12 +1,19 @@
-NAME = phusion/baseimage
-VERSION = 0.11
+NAME ?= phusion/baseimage
+VERSION ?= 0.11
+
+ifeq ($(origin BASE_IMAGE), undefined)
+BASE_IMAGE = ubuntu:18.04
+else
+NAME := $(NAME)-$(subst :,-,${BASE_IMAGE})
+endif
+
 
 .PHONY: all build test tag_latest release ssh
 
 all: build
 
 build:
-	docker build -t $(NAME):$(VERSION) --rm image
+	docker build -t $(NAME):$(VERSION) --build-arg BASE_IMAGE=$(BASE_IMAGE) --rm image
 
 test:
 	env NAME=$(NAME) VERSION=$(VERSION) ./test/runner.sh
@@ -23,7 +30,7 @@ ssh:
 	chmod 600 image/services/sshd/keys/insecure_key
 	@ID=$$(docker ps | grep -F "$(NAME):$(VERSION)" | awk '{ print $$1 }') && \
 		if test "$$ID" = ""; then echo "Container is not running."; exit 1; fi && \
-		IP=$$(docker inspect $$ID | grep IPAddr | sed 's/.*: "//; s/".*//') && \
+		IP=$$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $$ID) && \
 		echo "SSHing into $$IP" && \
 		ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i image/services/sshd/keys/insecure_key root@$$IP
 
