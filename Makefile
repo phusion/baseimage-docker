@@ -26,13 +26,15 @@ release: test tag_latest
 	docker push $(NAME)
 	@echo "*** Don't forget to create a tag by creating an official GitHub release."
 
+ssh: SSH_COMMAND?=
+ssh: SSH_IDENTITY_FILE?=image/services/sshd/keys/insecure_key
 ssh:
-	chmod 600 image/services/sshd/keys/insecure_key
-	@ID=$$(docker ps | grep -F "$(NAME):$(VERSION)" | awk '{ print $$1 }') && \
+	chmod 600 ${SSH_IDENTITY_FILE}
+	ID=$$(docker ps | grep -F "$(NAME):$(VERSION)" | awk '{ print $$1 }') && \
 		if test "$$ID" = ""; then echo "Container is not running."; exit 1; fi && \
 		IP=$$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $$ID) && \
 		echo "SSHing into $$IP" && \
-		ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i image/services/sshd/keys/insecure_key root@$$IP
+		ssh -v -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ${SSH_IDENTITY_FILE} root@$$IP ${SSH_COMMAND}
 
 test_release:
 	echo test_release

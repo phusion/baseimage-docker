@@ -34,9 +34,8 @@ docker exec $ID rm /etc/service/sshd/down
 docker exec $ID sv start /etc/service/sshd
 sleep 1
 
-echo " --> Logging into container and running tests"
+echo " --> Logging into container and running test"
 cp image/services/sshd/keys/insecure_key /tmp/insecure_key
-chmod 600 /tmp/insecure_key
 sleep 1 # Give container some more time to start up.
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /tmp/insecure_key -p $SSHPORT root@127.0.0.1 \
-	/bin/bash /test/test.sh
+NAME=$NAME VERSION=$VERSION SSH_IDENTITY_FILE=/tmp/insecure_key \
+  SSH_COMMAND="/bin/bash /test/test.sh" make ssh
