@@ -14,10 +14,8 @@ function cleanup()
 	docker rm $ID >/dev/null
 }
 
-PWD=`pwd`
-
 echo " --> Starting insecure container"
-ID=`docker run -d -p 22 -v $PWD/test:/test $NAME:$VERSION /sbin/my_init --enable-insecure-key`
+ID=`docker run -d -p 22 $NAME:$VERSION /sbin/my_init --enable-insecure-key`
 sleep 1
 
 echo " --> Obtaining SSH port number"
@@ -34,8 +32,9 @@ docker exec $ID rm /etc/service/sshd/down
 docker exec $ID sv start /etc/service/sshd
 sleep 1
 
-echo " --> Logging into container and running test"
+echo " --> Logging into container and running tests"
 cp image/services/sshd/keys/insecure_key /tmp/insecure_key
 sleep 1 # Give container some more time to start up.
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 NAME=$NAME VERSION=$VERSION SSH_IDENTITY_FILE=/tmp/insecure_key \
-  SSH_COMMAND="/bin/bash /test/test.sh" make ssh
+  SSH_COMMAND="'/bin/bash -s' < $DIR/test.sh" make ssh
