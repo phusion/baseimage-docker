@@ -1,11 +1,11 @@
-NAME ?= phusion/baseimage
-VERSION ?= 0.11
-
-ifeq ($(origin BASE_IMAGE), undefined)
-BASE_IMAGE = ubuntu:18.04
+ifndef BASE_IMAGE
+	BASE_IMAGE = ubuntu:18.04
+	NAME ?= phusion/baseimage
+else ifdef NAME
 else
-NAME := $(NAME)-$(subst :,-,${BASE_IMAGE})
+	NAME = phusion/baseimage-$(subst :,-,${BASE_IMAGE})
 endif
+VERSION ?= 0.11
 
 
 .PHONY: all build test tag_latest release ssh
