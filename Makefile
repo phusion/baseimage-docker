@@ -1,9 +1,10 @@
-ifndef BASE_IMAGE
-	BASE_IMAGE = ubuntu:18.04
-	NAME ?= phusion/baseimage
-else ifdef NAME
-else
+ifdef BASE_IMAGE
+	BUILD_ARG = --build-arg BASE_IMAGE=$(BASE_IMAGE)
+ifndef NAME
 	NAME = phusion/baseimage-$(subst :,-,${BASE_IMAGE})
+endif
+else
+	NAME ?= phusion/baseimage
 endif
 VERSION ?= 0.11
 
@@ -13,7 +14,7 @@ VERSION ?= 0.11
 all: build
 
 build:
-	docker build -t $(NAME):$(VERSION) --build-arg BASE_IMAGE=$(BASE_IMAGE) --rm image
+	docker build -t $(NAME):$(VERSION) $(BUILD_ARG) --rm image
 
 test:
 	env NAME=$(NAME) VERSION=$(VERSION) ./test/runner.sh
