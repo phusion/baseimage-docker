@@ -33,8 +33,6 @@ docker exec $ID sv start /etc/service/sshd
 sleep 1
 
 echo " --> Logging into container and running tests"
-cp image/services/sshd/keys/insecure_key /tmp/insecure_key
 sleep 1 # Give container some more time to start up.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-NAME=$NAME VERSION=$VERSION SSH_IDENTITY_FILE=/tmp/insecure_key \
-  SSH_COMMAND="'/bin/bash -s' < $DIR/test.sh" make ssh
+tools/docker-ssh $ID < test/test.sh
