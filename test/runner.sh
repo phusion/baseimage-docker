@@ -35,4 +35,4 @@ sleep 1
 echo " --> Logging into container and running tests"
 sleep 1 # Give container some more time to start up.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-tools/docker-ssh $ID < test/test.sh
+tools/docker-ssh $ID bash < test/test.sh
