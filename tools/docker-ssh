@@ -58,6 +58,13 @@ fi
 
 KNOWN_HOSTS_FILE=`mktemp /tmp/docker-ssh.XXXXXXXXX`
 IP=`docker inspect -f "{{ .NetworkSettings.IPAddress }}" "$CONTAINER_ID"`
+PORT=`docker inspect -f '{{(index (index .NetworkSettings.Ports "22/tcp") 0).HostPort}}' "$CONTAINER_ID"`
+if test "`uname`" = "Darwin"; then
+    IP="127.0.0.1"
+else
+    PORT=22
+fi
+echo "SSHing into $IP:$PORT"
 
 # Prevent SSH from warning about adding a host to the known_hosts file.
 ssh-keyscan "$IP" >"$KNOWN_HOSTS_FILE" 2>&1
@@ -68,6 +75,7 @@ if ! ssh -i ~/.baseimage_docker_insecure_key \
 	-o PasswordAuthentication=no \
 	-o KbdInteractiveAuthentication=no \
 	-o ChallengeResponseAuthentication=no \
+	-p $PORT \
 	"root@$IP" "$@"
 then
 	STATUS=$?
