@@ -10,8 +10,7 @@ env:
     - VERSION=${TRAVIS_BRANCH}
 
 script:
-  - docker build -t ${NAME}:${VERSION} --rm image
-  - env NAME=${NAME} VERSION=${VERSION} ./test/runner.sh
+  - make build test
 
 after_success:
   - docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}";

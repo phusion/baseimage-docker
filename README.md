@@ -597,6 +597,19 @@ If you want to call the resulting image something else, pass the NAME variable, 
 
     make build NAME=joe/baseimage
 
+You can also change the `ubuntu` base-image to `debian` as these distributions are quite similar.
+
+    make build BASE_IMAGE=debian:stretch
+
+The image will be: `phusion/baseimage-debian-stretch`. Use the `NAME` variable in combination with the `BASE_IMAGE` one to call it `joe/stretch`.
+
+    make build BASE_IMAGE=debian:stretch NAME=joe/stretch
+
+To verify that the various services are started, when the image is run as a container, add `test` to the end of your make invocations, e.g.:
+
+    make build BASE_IMAGE=debian:stretch NAME=joe/stretch test
+
+
 <a name="removing_optional_services"></a>
 ### Removing optional services
 
