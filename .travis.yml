@@ -1,21 +1,51 @@
 sudo: required
 
+language: c
+
 services:
   - docker
 
+addons:
+  apt:
+    packages:
+      - docker-ce
+      - qemu-user-static
+
 env:
   global:
-    - NAME=phusion/baseimage
     # - VERSION=${TRAVIS_TAG}
     - VERSION=${TRAVIS_BRANCH}
+    - DOCKER_CLI_EXPERIMENTAL=enabled
+    - QEMU_VERSION=v4.0.0
+
+  matrix:
+    # PLATFORM = Base image architecture to be used
+    # QEMU_ARCH = qemu binary to be downloaded from https://github.com/multiarch/qemu-user-static/releases
+    # TAG_ARCH = Tag to be applied to the image when upload to DockerHub
+    - PLATFORM=amd64 QEMU_ARCH=amd64   TAG_ARCH=amd64
+    - PLATFORM=arm64 QEMU_ARCH=aarch64 TAG_ARCH=arm64
+    - PLATFORM=arm   QEMU_ARCH=arm     TAG_ARCH=arm
+
+stage: Compile
+
+before_script:
+  - echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
+  - sudo service docker restart
 
 script:
+  - docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}";
   - make build test
 
-after_success:
-  - docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}";
-    docker push ${NAME}:${VERSION};
-  # - if [ "${TRAVIS_BRANCH}" == "master" ]; then
-  #   docker tag ${NAME}:${VERSION} ${NAME}:latest
-  #   docker push ${NAME}:latest;
-  #   fi
+  - if [[ $TRAVIS_PULL_REQUEST == 'false' ]]; then
+    make release;
+    fi
+
+jobs:
+  include:
+    - stage: deploy
+      env:
+        - ARCHS="amd64 arm64 arm"
+      script:
+        - echo $NAME:$VERSION_TAG
+        - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+        - ./build-multiarch.sh

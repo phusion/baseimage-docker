@@ -1,0 +1,21 @@
+version: 2
+jobs:
+  build:
+    machine: true
+    steps:
+      - checkout
+      #- run:
+      #    name : Getting docker
+      #    command: curl https://get.docker.com | sh
+      - run:
+          name: Enabling qemu
+          command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+      - run:
+          name: Building arm based image.
+          command: docker build -t arm-test .
+      - run:
+          name: Listing built images
+          command: docker images
+      # - run:
+      #     name: Running arm based image.
+      #     command: docker run --rm arm-test 
