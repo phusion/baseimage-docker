@@ -48,4 +48,4 @@ jobs:
       script:
         - echo $NAME:$VERSION_TAG
         - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-        - ./build-multiarch.sh
+        - make build_multiarch
