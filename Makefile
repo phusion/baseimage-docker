@@ -26,6 +26,9 @@ build:
 	./build.sh
 	docker build --no-cache -t $(NAME):$(VERSION_ARG) $(BUILD_ARG) --build-arg QEMU_ARCH=$(QEMU_ARCH) --platform $(PLATFORM) --rm image
 
+build_multiarch:
+	env NAME=$(NAME) VERSION=$(VERSION_ARG) ./build-multiarch.sh
+
 test:
 	env NAME=$(NAME) VERSION=$(VERSION_ARG) ./test/runner.sh
 
@@ -33,9 +36,9 @@ tag_latest:
 	docker tag $(NAME):$(VERSION_ARG) $(NAME):$(LATEST_VERSION)
 
 tag_multiarch_latest:
-	env TAG_LATEST=true ./build-multiarch.sh
+	env NAME=$(NAME) VERSION=$(VERSION) TAG_LATEST=true ./build-multiarch.sh
 
-release: test tag_latest
+release: test
 	@if ! docker images $(NAME) | awk '{ print $$2 }' | grep -q -F $(VERSION_ARG); then echo "$(NAME) version $(VERSION_ARG) is not yet built. Please run 'make build'"; false; fi
 	docker push $(NAME)
 	@echo "*** Don't forget to create a tag by creating an official GitHub release."

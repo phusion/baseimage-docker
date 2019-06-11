@@ -2,10 +2,7 @@
 set -e
 set -x
 
-if [[ $TRAVIS_PULL_REQUEST == 'false' ]]; then 
-
 for arch in $ARCHS; do
-    echo ${arch}
     docker pull $NAME:$VERSION-${arch}
 
     if [[ $TAG_LATEST != 'true' ]]; then 
@@ -22,6 +19,4 @@ if [[ $TAG_LATEST != 'true' ]]; then
     docker manifest push $NAME:$VERSION
 else
     docker manifest push $NAME:latest
-fi
-
 fi
