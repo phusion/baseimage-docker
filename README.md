@@ -13,7 +13,7 @@ Baseimage-docker is a special [Docker](https://www.docker.com) image that is con
 
 You can use it as a base for your own Docker images.
 
-Baseimage-docker is available for pulling from [the Docker registry](https://registry.hub.docker.com/u/phusion/baseimage/)!
+Baseimage-docker is available for pulling from [the Docker registry](https://registry.hub.docker.com/r/phusion/baseimage/)!
 
 ### What are the problems with the stock Ubuntu base image?
 
