@@ -1,4 +1,4 @@
-VERSION ?= 0.11
+VERSION ?= bionic-1.0.0
 ifdef BASE_IMAGE
 	BUILD_ARG = --build-arg BASE_IMAGE=$(BASE_IMAGE)
 	ifndef NAME
