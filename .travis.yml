@@ -33,10 +33,9 @@ before_script:
   - sudo service docker restart
 
 script:
-  - docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}";
   - make build test
-
   - if [[ $TRAVIS_PULL_REQUEST == 'false' ]]; then
+    docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}";
     make release;
     fi
 

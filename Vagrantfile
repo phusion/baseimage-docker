@@ -1,54 +1,75 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-ROOT = File.dirname(File.absolute_path(__FILE__))
 
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = '2'
-
-# Default env properties which can be overridden
-# Example overrides:
-#   echo "ENV['PASSENGER_DOCKER_PATH'] ||= '../../phusion/passenger-docker'   " >> ~/.vagrant.d/Vagrantfile
-#   echo "ENV['BASE_BOX_URL']          ||= 'd\:/dev/vm/vagrant/boxes/phusion/'" >> ~/.vagrant.d/Vagrantfile
-BASE_BOX_URL          = ENV['BASE_BOX_URL']    || 'https://oss-binaries.phusionpassenger.com/vagrant/boxes/latest/'
-VAGRANT_BOX_URL       = ENV['VAGRANT_BOX_URL'] || BASE_BOX_URL + 'ubuntu-14.04-amd64-vbox.box'
-VMWARE_BOX_URL        = ENV['VMWARE_BOX_URL']  || BASE_BOX_URL + 'ubuntu-14.04-amd64-vmwarefusion.box'
-BASEIMAGE_PATH        = ENV['BASEIMAGE_PATH' ] || '.'
-PASSENGER_DOCKER_PATH = ENV['PASSENGER_PATH' ] || '../passenger-docker'
-DOCKERIZER_PATH       = ENV['DOCKERIZER_PATH'] || '../dockerizer'
-
-$script = <<SCRIPT
-wget -q -O - https://get.docker.io/gpg | apt-key add -
-echo deb http://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list
-apt-get update -qq
-apt-get install -q -y --force-yes lxc-docker
-usermod -a -G docker vagrant
-docker version
-su - vagrant -c 'echo alias d=docker >> ~/.bash_aliases'
-SCRIPT
-
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = 'phusion-open-ubuntu-14.04-amd64'
-  config.vm.box_url = VAGRANT_BOX_URL
-  config.ssh.forward_agent = true
-  passenger_docker_path = File.absolute_path(PASSENGER_DOCKER_PATH, ROOT)
-  if File.directory?(passenger_docker_path)
-    config.vm.synced_folder passenger_docker_path, '/vagrant/passenger-docker'
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+	# The most common configuration options are documented and commented below.
+	# For a complete reference, please see the online documentation at
+	# https://docs.vagrantup.com.
+  
+	# Every Vagrant development environment requires a box. You can search for
+	# boxes at https://atlas.hashicorp.com/search.
+	config.vm.box = "ubuntu/bionic64"
+	config.disksize.size = '50GB'
+  
+	# Disable automatic box update checking. If you disable this, then
+	# boxes will only be checked for updates when the user runs
+	# `vagrant box outdated`. This is not recommended.
+	# config.vm.box_check_update = false
+  
+	# Create a forwarded port mapping which allows access to a specific port
+	# within the machine from a port on the host machine. In the example below,
+	# accessing "localhost:8080" will access port 80 on the guest machine.
+	# config.vm.network "forwarded_port", guest: 80, host: 8080
+  
+	# Create a private network, which allows host-only access to the machine
+	# using a specific IP.
+	# config.vm.network "private_network", ip: "192.168.33.10"
+  
+	# Create a public network, which generally matched to bridged network.
+	# Bridged networks make the machine appear as another physical device on
+	# your network.
+	# config.vm.network "public_network"
+  
+	# Share an additional folder to the guest VM. The first argument is
+	# the path on the host to the actual folder. The second argument is
+	# the path on the guest to mount the folder. And the optional third
+	# argument is a set of non-required options.
+	# config.vm.synced_folder "../data", "/vagrant_data"
+  
+	# Provider-specific configuration so you can fine-tune various
+	# backing providers for Vagrant. These expose provider-specific options.
+	# Example for VirtualBox:
+	#
+	# config.vm.provider "virtualbox" do |vb|
+	#   # Display the VirtualBox GUI when booting the machine
+	#   vb.gui = true
+	#
+	#   # Customize the amount of memory on the VM:
+	#   vb.memory = "1024"
+	# end
+	#
+	# View the documentation for the provider you are using for more
+	# information on available options.
+  
+	# Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
+	# such as FTP and Heroku are also available. See the documentation at
+	# https://docs.vagrantup.com/v2/push/atlas.html for more information.
+	# config.push.define "atlas" do |push|
+	#   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
+	# end
+  
+	# Enable provisioning with a shell script. Additional provisioners such as
+	# Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
+	# documentation for more information about their specific syntax and use.
+	# config.vm.provision "shell", inline: <<-SHELL
+	#   apt-get update
+	#   apt-get install -y apache2
+	# SHELL
+	config.vm.provision :shell,
+	  path: "vagrant-libs/bootstrap.sh"
   end
-  baseimage_path = File.absolute_path(BASEIMAGE_PATH, ROOT)
-  if File.directory?(baseimage_path)
-    config.vm.synced_folder baseimage_path, "/vagrant/baseimage-docker"
-  end
-  dockerizer_path = File.absolute_path(DOCKERIZER_PATH, ROOT)
-  if File.directory?(dockerizer_path)
-    config.vm.synced_folder dockerizer_path, '/vagrant/dockerizer'
-  end
-
-  config.vm.provider :vmware_fusion do |f, override|
-    override.vm.box_url = VMWARE_BOX_URL
-    f.vmx['displayName'] = 'baseimage-docker'
-  end
-
-  if Dir.glob("#{File.dirname(__FILE__)}/.vagrant/machines/default/*/id").empty?
-    config.vm.provision :shell, :inline => $script
-  end
-end
+  
