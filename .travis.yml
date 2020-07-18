@@ -1,4 +1,6 @@
-sudo: required
+os: linux
+
+dist: bionic
 
 language: c
 
@@ -25,8 +27,6 @@ env:
     - PLATFORM=amd64 QEMU_ARCH=amd64   TAG_ARCH=amd64
     - PLATFORM=arm64 QEMU_ARCH=aarch64 TAG_ARCH=arm64
     - PLATFORM=arm   QEMU_ARCH=arm     TAG_ARCH=arm
-
-stage: Compile
 
 before_script:
   - echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
