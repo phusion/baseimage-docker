@@ -24,9 +24,12 @@ env:
     # PLATFORM = Base image architecture to be used
     # QEMU_ARCH = qemu binary to be downloaded from https://github.com/multiarch/qemu-user-static/releases
     # TAG_ARCH = Tag to be applied to the image when upload to DockerHub
+    - PLATFORM=amd64 QEMU_ARCH=i386   TAG_ARCH=386
     - PLATFORM=amd64 QEMU_ARCH=amd64   TAG_ARCH=amd64
     - PLATFORM=arm64 QEMU_ARCH=aarch64 TAG_ARCH=arm64
     - PLATFORM=arm   QEMU_ARCH=arm     TAG_ARCH=arm
+    - PLATFORM=ppc64le   QEMU_ARCH=ppc64le     TAG_ARCH=ppc64le
+    - PLATFORM=s390x   QEMU_ARCH=s390x     TAG_ARCH=s390x
 
 before_script:
   - echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
@@ -43,7 +46,7 @@ jobs:
   include:
     - stage: deploy
       env:
-        - ARCHS="amd64 arm64 arm"
+        - ARCHS="amd64 arm64 arm 386 ppc64le s390x"
       script:
         - echo $NAME:$VERSION_TAG
         - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
