@@ -27,9 +27,9 @@ env:
     - PLATFORM=amd64 QEMU_ARCH=i386   TAG_ARCH=386
     - PLATFORM=amd64 QEMU_ARCH=amd64   TAG_ARCH=amd64
     - PLATFORM=arm64 QEMU_ARCH=aarch64 TAG_ARCH=arm64
-    - PLATFORM=arm   QEMU_ARCH=arm     TAG_ARCH=arm
+#     - PLATFORM=arm   QEMU_ARCH=arm     TAG_ARCH=arm
     - PLATFORM=ppc64le   QEMU_ARCH=ppc64le     TAG_ARCH=ppc64le
-    - PLATFORM=s390x   QEMU_ARCH=s390x     TAG_ARCH=s390x
+#     - PLATFORM=s390x   QEMU_ARCH=s390x     TAG_ARCH=s390x
 
 before_script:
   - echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
