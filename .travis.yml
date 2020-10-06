@@ -46,7 +46,7 @@ jobs:
   include:
     - stage: deploy
       env:
-        - ARCHS="amd64 arm64 arm 386 ppc64le s390x"
+        - ARCHS="amd64 arm64 386 ppc64le"
       script:
         - echo $NAME:$VERSION_TAG
         - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
