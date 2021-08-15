@@ -36,7 +36,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 **Related resources**:
   [Website](http://phusion.github.io/baseimage-docker/) |
   [Github](https://github.com/phusion/baseimage-docker) |
-  [Docker registry](https://index.docker.io/u/phusion/baseimage/) |
+  [Docker registry](https://registry.hub.docker.com/r/phusion/baseimage/) |
   [Discussion forum](https://groups.google.com/d/forum/passenger-docker) |
   [Twitter](https://twitter.com/phusion_nl) |
   [Blog](http://blog.phusion.nl/)
