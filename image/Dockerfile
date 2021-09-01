@@ -2,7 +2,7 @@ ARG BASE_IMAGE=ubuntu:20.04
 FROM $BASE_IMAGE
 
 ARG QEMU_ARCH
-ADD x86_64_qemu-${QEMU_ARCH}-static.tar.gz /usr/bin
+#ADD x86_64_qemu-${QEMU_ARCH}-static.tar.gz /usr/bin
 
 COPY . /bd_build
 
