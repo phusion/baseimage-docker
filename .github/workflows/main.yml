@@ -20,12 +20,13 @@ jobs:
             run: |
               DOCKER_IMAGE=phusion/baseimage
               VERSION=focal-test
-
-              TAGS="${DOCKER_IMAGE}:${VERSION},${DOCKER_IMAGE}:${SHORTREF}"
+              GIT_BRANCH=${GITHUB_REF##*/}
+              TAGS="${DOCKER_IMAGE}:${GIT_BRANCH}"
               
               # Set output parameters.
               
               echo ::set-output name=tags::${TAGS}
+              echo ::set-output name=branch::${GIT_BRANCH}
               echo ::set-output name=docker_image::${DOCKER_IMAGE}
 
           - name: Set up QEMU
