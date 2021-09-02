@@ -20,6 +20,8 @@ jobs:
             run: |
               DOCKER_IMAGE=phusion/baseimage
               GIT_BRANCH=${GITHUB_REF##*/}
+              # Set the platforms to build for here and thus reduce duplicating it.
+              PLATFORMS=amd64,arm,arm64
               TAGS="${DOCKER_IMAGE}:${GIT_BRANCH}, ghcr.io/${{ github.repository_owner }}/baseimage:${GIT_BRANCH}"
               
               # Set output parameters.
@@ -32,11 +34,13 @@ jobs:
                 echo ::set-output name=branch::${GIT_BRANCH}
                 echo ::set-output name=docker_image::${DOCKER_IMAGE}
               fi
-               
+              echo ::set-output name=platforms::${PLATFORMS}
+
+
           - name: Set up QEMU
             uses: docker/setup-qemu-action@v1
             with:
-              platforms: amd64,arm64
+              platforms: ${{ steps.prep.outputs.platforms }}
               
           - name: Login to GHCR (Github Container Registry)
             uses: docker/login-action@v1
@@ -67,6 +71,6 @@ jobs:
             with:
               builder: ${{ steps.buildx.outputs.name }}
               context: image
-              platforms: amd64,arm64
+              platforms: ${{ steps.prep.outputs.platforms }}
               push: ${{ steps.prep.outputs.push }}
               tags: ${{ steps.prep.outputs.tags }}
