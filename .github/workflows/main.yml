@@ -19,8 +19,9 @@ jobs:
             id: prep
             run: |
               DOCKER_IMAGE=phusion/baseimage
+              VERSION=focal-test
 
-              TAGS="${DOCKER_IMAGE}:${GITHUB_REF}"
+              TAGS="${DOCKER_IMAGE}:${VERSION},${DOCKER_IMAGE}:${SHORTREF}"
               
               # Set output parameters.
               
