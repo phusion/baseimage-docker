@@ -4,8 +4,8 @@ on:
     workflow_dispatch:
     push:
         branches:
-            - move-to-github-actions
-
+            - focal-1.1.0
+            - master
 
 jobs:
     build:
