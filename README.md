@@ -1,7 +1,6 @@
 # A minimal Ubuntu base image modified for Docker-friendliness
 
-[![](https://badge.imagelayers.io/phusion/baseimage:latest.svg)](https://imagelayers.io/?images=phusion/baseimage:latest 'Get your own badge on imagelayers.io')
-[![Travis](https://img.shields.io/travis/phusion/baseimage-docker.svg)](https://travis-ci.org/phusion/baseimage-docker)
+[![Release](https://github.com/phusion/baseimage-docker/actions/workflows/main.yml/badge.svg?branch=focal-1.1.0)](https://github.com/phusion/baseimage-docker/actions/workflows/main.yml)
 
 _Baseimage-docker only consumes 8.3 MB RAM and is much more powerful than Busybox or Alpine. See why below._
 
@@ -36,7 +35,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 **Related resources**:
   [Website](http://phusion.github.io/baseimage-docker/) |
   [Github](https://github.com/phusion/baseimage-docker) |
-  [Docker registry](https://index.docker.io/u/phusion/baseimage/) |
+  [Docker registry](https://registry.hub.docker.com/r/phusion/baseimage/) |
   [Discussion forum](https://groups.google.com/d/forum/passenger-docker) |
   [Twitter](https://twitter.com/phusion_nl) |
   [Blog](http://blog.phusion.nl/)
@@ -585,6 +584,12 @@ Clone this repository:
 
 Start a virtual machine with Docker in it. You can use the Vagrantfile that we've already provided.
 
+First, install `vagrant-disksize` plug-in:
+
+    vagrant plugin install vagrant-disksize:
+
+Then, start the virtual machine
+
     vagrant up
     vagrant ssh
     cd /vagrant
@@ -639,6 +644,6 @@ Then you can proceed with `make build` command.
  * Looking for a more complete base image, one that is ideal for Ruby, Python, Node.js and Meteor web apps? Take a look at [passenger-docker](https://github.com/phusion/passenger-docker).
  * Need a helping hand? Phusion also offers [consulting](https://www.phusion.nl/consultancy) on a wide range of topics, including Web Development, UI/UX Research & Design, Technology Migration and Auditing. 
 
-[<img src="https://www.phusion.nl/images/mark_logotype.svg">](https://www.phusion.nl/)
+[<img src="https://avatars.githubusercontent.com/u/830588?s=200&v=4">](https://www.phusion.nl/)
 
 Please enjoy baseimage-docker, a product by [Phusion](http://www.phusion.nl/). :-)

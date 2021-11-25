@@ -23,7 +23,6 @@ VERSION_ARG ?= $(VERSION)
 all: build
 
 build:
-	./build.sh
 	docker build --no-cache -t $(NAME):$(VERSION_ARG) $(BUILD_ARG) --build-arg QEMU_ARCH=$(QEMU_ARCH) --platform $(PLATFORM) --rm image
 
 build_multiarch:
