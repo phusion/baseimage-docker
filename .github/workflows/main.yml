@@ -2,11 +2,8 @@ name: Release
 
 on:
     workflow_dispatch:
-    push:
-        branches:
-            - focal-1.1.0
-            - master
-
+    release:
+     types: [published]
 jobs:
     build:
         runs-on: ubuntu-latest
