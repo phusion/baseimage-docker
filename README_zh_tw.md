@@ -1,5 +1,5 @@
 <a name="a-minimal-ubuntu-base-image-modified-for-docker-friendliness"></a>
-# Docker友好的，最小的Ubuntu基礎鏡像
+# Docker友好的，最小的Ubuntu基礎映像檔
 
 Baseimage-docker是一個特殊的[Docker](http://www.docker.io)鏡像，在Docker容器內做了配置，並且可以正確使用。它確實是一個Ubuntu系統, 除此之外進行了如下修訂：
 
@@ -7,12 +7,12 @@ Baseimage-docker是一個特殊的[Docker](http://www.docker.io)鏡像，在Dock
  * 在Docker環境下，作爲管理工具特別有用。
  * 在[不違反Docker哲學](#docker_single_process)的前提下，能夠很容易的運行多行程的機制。
 
-可以把它作爲自己的基礎Docker鏡像。
+可以把它作爲自己的基礎Docker映像檔。
 
 Baseimage-docker項目可以直接從Docker的[registry](https://index.docker.io/u/phusion/baseimage/)獲取！
         
 <a name="what-are-the-problems-with-the-stock-ubuntu-base-image"></a>
-### 原生的Ubuntu基礎鏡像有什麼問題呢？          
+### 原生的Ubuntu基礎映像檔有什麼問題呢？          
             
 原生Ubuntu不是爲了在Docker內運行而設計的。它的初始化系統Upstart，假定運行的環境要麼是真實的硬體，要麼是虛擬的硬體，而不是在Docker容器內。但是在一個Docker的容器內，並不需要一個完整的系統，你需要的只是一個很小的系統。但是如果你不是非常熟悉Unix的系統模型，想要在Docker容器內裁減出最小的系統，會碰到很多難以正確解決的陌生的技術坑。這些坑會引起很多莫名其妙的問題。
 
@@ -21,12 +21,12 @@ Baseimage-docker讓這一切完美。在"內容"部分描述了所有這些修�
 <a name="why-use-baseimage-docker"></a>
 ### 爲什麼使用baseimage-docker？
 
-你自己可以從Dockerfile配置一個原生`ubuntu`鏡像，爲什麼還要多此一舉的使用baseimage-docker呢?
+你自己可以從Dockerfile配置一個原生`ubuntu`映像檔，爲什麼還要多此一舉的使用baseimage-docker呢?
         
  * 配置一個Docker友好的基礎系統並不是一個簡單的任務。如前所述，過程中會碰到很多坑。當你搞定這些坑之後，只不過是又重新發明了一個baseimage-docker而已。使用baseimage-docker可以免去你這方面需要做的努力。          
  * 減少需要正確編寫Dockerfile文件的時間。你不用再擔心基礎系統，可以專注於你自己的技術棧和你的項目。            
  * 減少需要運行`docker build`的時間，讓你更快的迭代Dockerfile。         
- * 減少了重新部署的時的下載時間。Docker只需要在第一次部署的時候下載一次基礎鏡像。在隨後的部署中,只需要改變你下載之後對基礎鏡像進行修改的部分。
+ * 減少了重新部署的時的下載時間。Docker只需要在第一次部署的時候下載一次基礎映像檔。在隨後的部署中,只需要改變你下載之後對基礎鏡像進行修改的部分。
 
 -----------------------------------------
 
@@ -78,7 +78,7 @@ Baseimage-docker讓這一切完美。在"內容"部分描述了所有這些修�
 <a name="whats_inside_overview"></a>
 ### 概述
 
-*想看一個裏面包含Ruby，Python，Node.js以及Meteor的完整基礎鏡像？可以看一下[passenger-docker](https://github.com/phusion/passenger-docker)。*            
+*想看一個裏面包含Ruby，Python，Node.js以及Meteor的完整基礎映像檔？可以看一下[passenger-docker](https://github.com/phusion/passenger-docker)。*            
 
 | 模塊        | 爲什麼包含這些？以及備註 |
 | ---------------- | ------------------- |
@@ -108,10 +108,10 @@ Baseimage-docker *鼓勵* 通過runit來運行多行程.
 
 `<VERSION>` 是[baseimage-docker的版本號](https://github.com/phusion/baseimage-docker/blob/master/Changelog.md).
 
-你不用手動去下載任何文件.上面的命令會自動從docker倉庫下載baseimage-docker鏡像.
+你不用手動去下載任何文件.上面的命令會自動從docker倉庫下載baseimage-docker映像檔.
 
 <a name="using"></a>
-## 使用baseimage-docker作爲基礎鏡像
+## 使用baseimage-docker作爲基礎映像檔
 
 <a name="getting_started"></a>
 ### 入門指南
@@ -121,7 +121,7 @@ The image is called `phusion/baseimage`, and is available on the Docker registry
 
 下面的這個是一個Dockerfile的模板.
 
-	# 使用phusion/baseimage作爲基礎鏡像,去構建你自己的鏡像,需要下載一個明確的版本,千萬不要使用`latest`.
+	# 使用phusion/baseimage作爲基礎映像檔,去構建你自己的映像檔,需要下載一個明確的版本,千萬不要使用`latest`.
 	# 查看https://github.com/phusion/baseimage-docker/blob/master/Changelog.md,可用看到版本的列表.
 	FROM phusion/baseimage:<VERSION>
 	
@@ -260,7 +260,7 @@ baseimage-docker的初始化腳本 `/sbin/my_init`,在啓動的時候行程運�
 <a name="envvar_security"></a>
 #### 安全
 
-因爲環境變數可能包含敏感信息, `/etc/container_environment`和它的bash文件和JSON文件,默認都是root,都是可以被`docker_env`羣組可以訪問的(所以任何用戶只要添加到羣組中,都可以自動的獲取這些信息).
+因爲環境變數可能包含敏感信息, `/etc/container_environment`和它的bash文件和JSON文件,默認使用者都是root,都是可以被`docker_env`群組可以訪問的(所以任何用戶只要添加到群組中,都可以自動的獲取這些信息).
 
 如果你確定你的環境變數中沒有什麼敏感信息,那麼你可以放鬆管理權限,將文件夾和文件分配下面的權限:
 
@@ -388,7 +388,7 @@ Baseimage-docker提供了一個靈活的方式運行只要一閃而過的命令,
 
     docker ps
 
-一旦擁有容器的id,找到運行容器的主要行程額`PID`.
+一旦擁有容器的id,找到運行容器的主要行程的`PID`.
 
     docker inspect -f "{{ .State.Pid }}" <ID>
 
@@ -532,9 +532,9 @@ Baseimage-docker提供了一個靈活的方式運行只要一閃而過的命令,
     docker-ssh YOUR-CONTAINER-ID echo hello world
 
 <a name="building"></a>
-## 創建你自己的鏡像
+## 創建你自己的映像檔
 
-如果某些原因,你需要創建你自己的鏡像,來替代從docker倉庫下載鏡像,可以按照的說明.
+如果某些原因,你需要創建你自己的映像檔,來替代從docker倉庫下載映像檔,可以按照的說明.
 
 克隆倉庫:
 
@@ -547,11 +547,11 @@ Baseimage-docker提供了一個靈活的方式運行只要一閃而過的命令,
     vagrant ssh
     cd /vagrant
 
-編譯鏡像:
+編譯映像檔:
 
     make build
 
-如果你想把創建的鏡像名字,叫其他名字,通過`NAME`變數可以設置:
+如果你想把創建的映像檔名字,叫其他名字,通過`NAME`變數可以設置:
 
     make build NAME=joe/baseimage
 
