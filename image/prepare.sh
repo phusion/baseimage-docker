@@ -14,6 +14,7 @@ echo -n no > /etc/container_environment/INITRD
 sed -i 's/^#\s*\(deb.*main restricted\)$/\1/g' /etc/apt/sources.list
 sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
 sed -i 's/^#\s*\(deb.*multiverse\)$/\1/g' /etc/apt/sources.list
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C
 apt-get update
 
 ## Fix some issues with APT packages.
