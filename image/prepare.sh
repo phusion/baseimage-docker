@@ -45,7 +45,7 @@ case $(lsb_release -is) in
   Ubuntu)
     $minimal_apt_get_install language-pack-en
     ;;
-  Debian)
+  Debian|Kali)
     $minimal_apt_get_install locales locales-all
     ;;
   *)
