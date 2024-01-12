@@ -24,14 +24,14 @@ jobs:
               # Set output parameters.
               
               if [ "${{github.event_name}}" == "pull_request" ]; then
-                echo ::set-output name=push::false
+                echo "push=false" >> $GITHUB_OUTPUT
               else
-                echo ::set-output name=push::true
-                echo ::set-output name=tags::${TAGS}
-                echo ::set-output name=branch::${GIT_BRANCH}
-                echo ::set-output name=docker_image::${DOCKER_IMAGE}
+                echo "push=true" >> $GITHUB_OUTPUT
+                echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+                echo "branch=${GIT_BRANCH}" >> $GITHUB_OUTPUT
+                echo "docker_image=${DOCKER_IMAGE}" >> $GITHUB_OUTPUT
               fi
-              echo ::set-output name=platforms::${PLATFORMS}
+              echo "platforms=${PLATFORMS}" >> $GITHUB_OUTPUT
 
 
           - name: Set up QEMU
