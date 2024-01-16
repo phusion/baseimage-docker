@@ -17,3 +17,4 @@ rm -f /etc/cron.daily/upstart
 rm -f /etc/cron.daily/dpkg
 rm -f /etc/cron.daily/password
 rm -f /etc/cron.weekly/fstrim
+rm -f /etc/cron.d/e2scrub_all
