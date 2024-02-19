@@ -18,7 +18,8 @@ jobs:
               DOCKER_IMAGE=phusion/baseimage
               GIT_BRANCH=${GITHUB_REF##*/}
               # Set the platforms to build for here and thus reduce duplicating it.
-              PLATFORMS=amd64,arm,arm64
+              OFFICIAL_PLATFORMS=amd64,arm,arm64
+              PLATFORMS="${OFFICIAL_PLATFORMS},riscv64"
               TAGS="${DOCKER_IMAGE}:${GIT_BRANCH}, ghcr.io/${{ github.repository_owner }}/baseimage:${GIT_BRANCH}"
               
               # Set output parameters.
@@ -31,6 +32,7 @@ jobs:
                 echo "branch=${GIT_BRANCH}" >> $GITHUB_OUTPUT
                 echo "docker_image=${DOCKER_IMAGE}" >> $GITHUB_OUTPUT
               fi
+              echo "official_platforms=${OFFICIAL_PLATFORMS}" >> $GITHUB_OUTPUT
               echo "platforms=${PLATFORMS}" >> $GITHUB_OUTPUT
 
 
@@ -62,12 +64,22 @@ jobs:
             with:
                 username: ${{ secrets.DOCKER_USERNAME }}
                 password: ${{ secrets.DOCKER_PASSWORD }}
-              
+
+          - name: Build and Push riscv64
+            uses: docker/build-push-action@v2
+            with:
+              builder: ${{ steps.buildx.outputs.name }}
+              context: image
+              platforms: riscv64
+              build-args: BASE_IMAGE=riscv64/ubuntu:22.04
+              push: ${{ steps.prep.outputs.push }}
+              tags: ${{ steps.prep.outputs.tags }}
+
           - name: Build and Push
             uses: docker/build-push-action@v2
             with:
               builder: ${{ steps.buildx.outputs.name }}
               context: image
-              platforms: ${{ steps.prep.outputs.platforms }}
+              platforms: ${{ steps.prep.outputs.official_platforms }}
               push: ${{ steps.prep.outputs.push }}
               tags: ${{ steps.prep.outputs.tags }}
