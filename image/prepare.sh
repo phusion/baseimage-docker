@@ -11,9 +11,12 @@ mkdir -p /etc/container_environment
 echo -n no > /etc/container_environment/INITRD
 
 ## Enable Ubuntu Universe, Multiverse, and deb-src for main.
-sed -i 's/^#\s*\(deb.*main restricted\)$/\1/g' /etc/apt/sources.list
-sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
-sed -i 's/^#\s*\(deb.*multiverse\)$/\1/g' /etc/apt/sources.list
+if grep -E '^ID=' /etc/os-release | grep -q ubuntu; then
+  sed -i 's/^#\s*\(deb.*main restricted\)$/\1/g' /etc/apt/sources.list
+  sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
+  sed -i 's/^#\s*\(deb.*multiverse\)$/\1/g' /etc/apt/sources.list
+fi
+
 apt-get update
 
 ## Fix some issues with APT packages.
