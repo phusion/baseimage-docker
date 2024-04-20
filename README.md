@@ -1,6 +1,6 @@
 # A minimal Ubuntu base image modified for Docker-friendliness
 
-[![Release](https://github.com/phusion/baseimage-docker/actions/workflows/main.yml/badge.svg?branch=focal-1.1.0)](https://github.com/phusion/baseimage-docker/actions/workflows/main.yml)
+[![Release](https://github.com/phusion/baseimage-docker/actions/workflows/main.yml/badge.svg)](https://github.com/phusion/baseimage-docker/actions/workflows/main.yml)
 
 _Baseimage-docker only consumes 8.3 MB RAM and is much more powerful than Busybox or Alpine. See why below._
 
