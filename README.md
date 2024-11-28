@@ -586,7 +586,7 @@ Start a virtual machine with Docker in it. You can use the Vagrantfile that we'v
 
 First, install `vagrant-disksize` plug-in:
 
-    vagrant plugin install vagrant-disksize:
+    vagrant plugin install vagrant-disksize
 
 Then, start the virtual machine
 
