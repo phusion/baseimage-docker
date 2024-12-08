@@ -30,6 +30,11 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
  * It reduces the time needed to run `docker build`, allowing you to iterate your Dockerfile more quickly.
  * It reduces download time during redeploys. Docker only needs to download the base image once: during the first deploy. On every subsequent deploys, only the changes you make on top of the base image are downloaded.
 
+### Current Status
+
+The current version of the image is always available from the **Releases** on the home page.
+To use that image, use `docker pull phusion/baseimage:release` where `release` is the name shown on the home page.
+
 -----------------------------------------
 
 **Related resources**:
