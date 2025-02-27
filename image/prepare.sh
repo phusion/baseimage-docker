@@ -50,6 +50,7 @@ case $(lsb_release -is) in
     ;;
   Debian)
     $minimal_apt_get_install locales locales-all
+    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
     ;;
   *)
     ;;
