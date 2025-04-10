@@ -1,4 +1,4 @@
-VERSION ?= noble-1.0.0
+VERSION ?= noble-1.0.2
 ifdef BASE_IMAGE
 	BUILD_ARG = --build-arg BASE_IMAGE=$(BASE_IMAGE)
 	ifndef NAME
