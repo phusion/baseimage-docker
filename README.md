@@ -1,6 +1,6 @@
 # A minimal Ubuntu base image modified for Docker-friendliness
 
-[![Release](https://github.com/phusion/baseimage-docker/actions/workflows/main.yml/badge.svg?branch=focal-1.1.0)](https://github.com/phusion/baseimage-docker/actions/workflows/main.yml)
+[![Release](https://github.com/phusion/baseimage-docker/actions/workflows/main.yml/badge.svg)](https://github.com/phusion/baseimage-docker/actions/workflows/main.yml)
 
 _Baseimage-docker only consumes 8.3 MB RAM and is much more powerful than Busybox or Alpine. See why below._
 
@@ -12,7 +12,7 @@ Baseimage-docker is a special [Docker](https://www.docker.com) image that is con
 
 You can use it as a base for your own Docker images.
 
-Baseimage-docker is available for pulling from [the Docker registry](https://registry.hub.docker.com/r/phusion/baseimage/)!
+Baseimage-docker is available for pulling from [the Docker registry](https://hub.docker.com/r/phusion/baseimage) and [GHCR (GitHub Container Registry)](https://github.com/phusion/baseimage-docker/pkgs/container/baseimage)!
 
 ### What are the problems with the stock Ubuntu base image?
 
@@ -86,7 +86,7 @@ You can configure the stock `ubuntu` image yourself from your Dockerfile, so why
 
 | Component        | Why is it included? / Remarks |
 | ---------------- | ------------------- |
-| Ubuntu 20.04 LTS | The base system. |
+| Ubuntu 24.04 LTS | The base system. |
 | A **correct** init process | _Main article: [Docker and the PID 1 zombie reaping problem](http://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/)._ <br><br>According to the Unix process model, [the init process](https://en.wikipedia.org/wiki/Init) -- PID 1 -- inherits all [orphaned child processes](https://en.wikipedia.org/wiki/Orphan_process) and must [reap them](https://en.wikipedia.org/wiki/Wait_(system_call)). Most Docker containers do not have an init process that does this correctly. As a result, their containers become filled with [zombie processes](https://en.wikipedia.org/wiki/Zombie_process) over time. <br><br>Furthermore, `docker stop` sends SIGTERM to the init process, which stops all services. Unfortunately most init systems don't do this correctly within Docker since they're built for hardware shutdowns instead. This causes processes to be hard killed with SIGKILL, which doesn't give them a chance to correctly deinitialize things. This can cause file corruption. <br><br>Baseimage-docker comes with an init process `/sbin/my_init` that performs both of these tasks correctly. |
 | Fixes APT incompatibilities with Docker | See https://github.com/dotcloud/docker/issues/1024. |
 | syslog-ng | A syslog daemon is necessary so that many services - including the kernel itself - can correctly log to /var/log/syslog. If no syslog daemon is running, a lot of important messages are silently swallowed. <br><br>Only listens locally. All syslog messages are forwarded to "docker logs".<br><br>Why syslog-ng?<br>I've had bad experience with rsyslog. I regularly run into bugs with rsyslog, and once in a while it takes my log host down by entering a 100% CPU loop in which it can't do anything. Syslog-ng seems to be much more stable. |
@@ -586,7 +586,7 @@ Start a virtual machine with Docker in it. You can use the Vagrantfile that we'v
 
 First, install `vagrant-disksize` plug-in:
 
-    vagrant plugin install vagrant-disksize:
+    vagrant plugin install vagrant-disksize
 
 Then, start the virtual machine
 

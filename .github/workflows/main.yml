@@ -10,37 +10,37 @@ jobs:
         if: "!contains(github.event.head_commit.message, '[ci-skip]')"
         steps:
           - name: Checkout
-            uses: actions/checkout@v2
-            
+            uses: actions/checkout@v4
+
           - name: Prepare
             id: prep
             run: |
               DOCKER_IMAGE=phusion/baseimage
               GIT_BRANCH=${GITHUB_REF##*/}
               # Set the platforms to build for here and thus reduce duplicating it.
-              PLATFORMS=amd64,arm,arm64,riscv64
+              PLATFORMS=amd64,arm,arm64
               TAGS="${DOCKER_IMAGE}:${GIT_BRANCH}, ghcr.io/${{ github.repository_owner }}/baseimage:${GIT_BRANCH}"
               
               # Set output parameters.
               
               if [ "${{github.event_name}}" == "pull_request" ]; then
-                echo ::set-output name=push::false
+                echo "push=false" >> $GITHUB_OUTPUT
               else
-                echo ::set-output name=push::true
-                echo ::set-output name=tags::${TAGS}
-                echo ::set-output name=branch::${GIT_BRANCH}
-                echo ::set-output name=docker_image::${DOCKER_IMAGE}
+                echo "push=true" >> $GITHUB_OUTPUT
+                echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+                echo "branch=${GIT_BRANCH}" >> $GITHUB_OUTPUT
+                echo "docker_image=${DOCKER_IMAGE}" >> $GITHUB_OUTPUT
               fi
-              echo ::set-output name=platforms::${PLATFORMS}
+              echo "platforms=${PLATFORMS}" >> $GITHUB_OUTPUT
 
 
           - name: Set up QEMU
-            uses: docker/setup-qemu-action@v1
+            uses: docker/setup-qemu-action@v3
             with:
               platforms: ${{ steps.prep.outputs.platforms }}
-              
+
           - name: Login to GHCR (Github Container Registry)
-            uses: docker/login-action@v1
+            uses: docker/login-action@v3
             if: github.event_name != 'pull_request'
             with:
              registry: ghcr.io
@@ -49,22 +49,22 @@ jobs:
 
           - name: Set up Docker Buildx
             id: buildx
-            uses: docker/setup-buildx-action@v1
+            uses: docker/setup-buildx-action@v3
             with:
               install: true
               version: latest
               driver-opts: image=moby/buildkit:latest
-              
+
 
           - name: Login to Docker Hub
             if: github.event_name != 'pull_request'
-            uses: docker/login-action@v1
+            uses: docker/login-action@v3
             with:
                 username: ${{ secrets.DOCKER_USERNAME }}
                 password: ${{ secrets.DOCKER_PASSWORD }}
-              
+
           - name: Build and Push
-            uses: docker/build-push-action@v2
+            uses: docker/build-push-action@v5
             with:
               builder: ${{ steps.buildx.outputs.name }}
               context: image

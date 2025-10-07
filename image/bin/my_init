@@ -22,7 +22,7 @@ LOG_LEVEL_WARN = 1
 LOG_LEVEL_INFO = 2
 LOG_LEVEL_DEBUG = 3
 
-SHENV_NAME_WHITELIST_REGEX = re.compile('\W')
+SHENV_NAME_WHITELIST_REGEX = re.compile(r'\W')
 
 log_level = None
 
@@ -93,7 +93,7 @@ def import_envvars(clear_existing_environment=True, override_existing_environmen
             # Text files often end with a trailing newline, which we
             # don't want to include in the env variable value. See
             # https://github.com/phusion/baseimage-docker/pull/49
-            value = re.sub('\n\Z', '', f.read())
+            value = re.sub('\n\\Z', '', f.read())
         new_env[name] = value
     if clear_existing_environment:
         os.environ.clear()
