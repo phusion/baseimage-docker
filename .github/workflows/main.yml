@@ -4,6 +4,11 @@ on:
     workflow_dispatch:
     release:
      types: [published]
+
+permissions:
+    contents: read
+    packages: write
+
 jobs:
     build:
         runs-on: ubuntu-latest
