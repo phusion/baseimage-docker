@@ -9,7 +9,7 @@ jobs:
     build:
         runs-on: ubuntu-latest
         permissions:
-            contents: read
+            contents: write
             packages: write
         strategy:
             fail-fast: false
@@ -28,7 +28,7 @@ jobs:
                 --exclude-pre-releases \
                 --exclude-drafts \
                 --json tagName \
-                --jq '[.[] | select(.tagName | startswith("${{ matrix.ubuntu_codename }}-"))] | first | .tagName')
+                --jq '[.[] | select(.tagName | startswith("${{ matrix.ubuntu_codename }}-")) | select(.tagName | contains("-security.") | not)] | first | .tagName')
               if [ -z "${LATEST_TAG}" ]; then
                 echo "No release found for ${{ matrix.ubuntu_codename }} track" >&2
                 exit 1
@@ -47,13 +47,18 @@ jobs:
             run: |
               DOCKER_IMAGE=phusion/baseimage
               RELEASE_TAG=${{ steps.release.outputs.tag }}
+              BUILD_DATE=$(date -u +%Y%m%d)
+              SECURITY_TAG="${RELEASE_TAG}-security.${BUILD_DATE}"
               PLATFORMS=amd64,arm,arm64
               TAGS="${DOCKER_IMAGE}:${RELEASE_TAG}"
+              TAGS="${TAGS}, ${DOCKER_IMAGE}:${SECURITY_TAG}"
               TAGS="${TAGS}, ${DOCKER_IMAGE}:${{ matrix.ubuntu_codename }}"
               TAGS="${TAGS}, ghcr.io/${{ github.repository_owner }}/baseimage:${RELEASE_TAG}"
+              TAGS="${TAGS}, ghcr.io/${{ github.repository_owner }}/baseimage:${SECURITY_TAG}"
               TAGS="${TAGS}, ghcr.io/${{ github.repository_owner }}/baseimage:${{ matrix.ubuntu_codename }}"
               echo "tags=${TAGS}" >> $GITHUB_OUTPUT
               echo "platforms=${PLATFORMS}" >> $GITHUB_OUTPUT
+              echo "security_tag=${SECURITY_TAG}" >> $GITHUB_OUTPUT
 
           - name: Set up QEMU
             uses: docker/setup-qemu-action@v3
@@ -89,3 +94,21 @@ jobs:
               tags: ${{ steps.prep.outputs.tags }}
               build-args: BASE_IMAGE=${{ matrix.base_image }}
               no-cache: true
+
+          - name: Create GitHub Release
+            run: |
+              gh release create "${{ steps.prep.outputs.security_tag }}" \
+                --repo "${{ github.repository }}" \
+                --target "${{ steps.release.outputs.tag }}" \
+                --title "${{ steps.prep.outputs.security_tag }}" \
+                --notes "Automated weekly security rebuild of \`${{ steps.release.outputs.tag }}\` using \`${{ matrix.base_image }}\`.
+
+              Images pushed:
+              - \`phusion/baseimage:${{ steps.release.outputs.tag }}\`
+              - \`phusion/baseimage:${{ steps.prep.outputs.security_tag }}\`
+              - \`phusion/baseimage:${{ matrix.ubuntu_codename }}\`
+              - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ steps.release.outputs.tag }}\`
+              - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ steps.prep.outputs.security_tag }}\`
+              - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ matrix.ubuntu_codename }}\`"
+            env:
+              GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
