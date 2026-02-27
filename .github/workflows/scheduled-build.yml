@@ -20,7 +20,7 @@ jobs:
                     - ubuntu_codename: jammy
                       base_image: ubuntu:22.04
         steps:
-          - name: Get latest release tag for this LTS track
+          - name: Get latest release tag and compute next patch version
             id: release
             run: |
               LATEST_TAG=$(gh release list \
@@ -28,37 +28,42 @@ jobs:
                 --exclude-pre-releases \
                 --exclude-drafts \
                 --json tagName \
-                --jq '[.[] | select(.tagName | startswith("${{ matrix.ubuntu_codename }}-")) | select(.tagName | contains("-security.") | not)] | first | .tagName')
+                --jq '[.[] | select(.tagName | startswith("${{ matrix.ubuntu_codename }}-"))] | first | .tagName')
               if [ -z "${LATEST_TAG}" ]; then
                 echo "No release found for ${{ matrix.ubuntu_codename }} track" >&2
                 exit 1
               fi
-              echo "tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
+              # Extract version and bump patch: noble-1.0.2 -> noble-1.0.3
+              if ! echo "${LATEST_TAG}" | grep -qE '^[a-z]+-[0-9]+\.[0-9]+\.[0-9]+$'; then
+                echo "Tag '${LATEST_TAG}' does not match expected format <codename>-<major>.<minor>.<patch>" >&2
+                exit 1
+              fi
+              PREFIX="${LATEST_TAG%.*}"            # noble-1.0
+              PATCH="${LATEST_TAG##*.}"            # 2
+              NEXT_PATCH=$((PATCH + 1))
+              NEXT_TAG="${PREFIX}.${NEXT_PATCH}"  # noble-1.0.3
+              echo "current_tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
+              echo "next_tag=${NEXT_TAG}" >> $GITHUB_OUTPUT
             env:
               GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
           - name: Checkout release tag
             uses: actions/checkout@v4
             with:
-              ref: ${{ steps.release.outputs.tag }}
+              ref: ${{ steps.release.outputs.current_tag }}
 
           - name: Prepare
             id: prep
             run: |
               DOCKER_IMAGE=phusion/baseimage
-              RELEASE_TAG=${{ steps.release.outputs.tag }}
-              BUILD_DATE=$(date -u +%Y%m%d)
-              SECURITY_TAG="${RELEASE_TAG}-security.${BUILD_DATE}"
+              NEXT_TAG=${{ steps.release.outputs.next_tag }}
               PLATFORMS=amd64,arm,arm64
-              TAGS="${DOCKER_IMAGE}:${RELEASE_TAG}"
-              TAGS="${TAGS}, ${DOCKER_IMAGE}:${SECURITY_TAG}"
+              TAGS="${DOCKER_IMAGE}:${NEXT_TAG}"
               TAGS="${TAGS}, ${DOCKER_IMAGE}:${{ matrix.ubuntu_codename }}"
-              TAGS="${TAGS}, ghcr.io/${{ github.repository_owner }}/baseimage:${RELEASE_TAG}"
-              TAGS="${TAGS}, ghcr.io/${{ github.repository_owner }}/baseimage:${SECURITY_TAG}"
+              TAGS="${TAGS}, ghcr.io/${{ github.repository_owner }}/baseimage:${NEXT_TAG}"
               TAGS="${TAGS}, ghcr.io/${{ github.repository_owner }}/baseimage:${{ matrix.ubuntu_codename }}"
               echo "tags=${TAGS}" >> $GITHUB_OUTPUT
               echo "platforms=${PLATFORMS}" >> $GITHUB_OUTPUT
-              echo "security_tag=${SECURITY_TAG}" >> $GITHUB_OUTPUT
 
           - name: Set up QEMU
             uses: docker/setup-qemu-action@v3
@@ -97,18 +102,16 @@ jobs:
 
           - name: Create GitHub Release
             run: |
-              gh release create "${{ steps.prep.outputs.security_tag }}" \
+              gh release create "${{ steps.release.outputs.next_tag }}" \
                 --repo "${{ github.repository }}" \
-                --target "${{ steps.release.outputs.tag }}" \
-                --title "${{ steps.prep.outputs.security_tag }}" \
-                --notes "Automated weekly security rebuild of \`${{ steps.release.outputs.tag }}\` using \`${{ matrix.base_image }}\`.
+                --target "${{ steps.release.outputs.current_tag }}" \
+                --title "${{ steps.release.outputs.next_tag }}" \
+                --notes "Automated weekly security rebuild of \`${{ steps.release.outputs.current_tag }}\` with latest \`${{ matrix.base_image }}\` packages.
 
               Images pushed:
-              - \`phusion/baseimage:${{ steps.release.outputs.tag }}\`
-              - \`phusion/baseimage:${{ steps.prep.outputs.security_tag }}\`
+              - \`phusion/baseimage:${{ steps.release.outputs.next_tag }}\`
               - \`phusion/baseimage:${{ matrix.ubuntu_codename }}\`
-              - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ steps.release.outputs.tag }}\`
-              - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ steps.prep.outputs.security_tag }}\`
+              - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ steps.release.outputs.next_tag }}\`
               - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ matrix.ubuntu_codename }}\`"
             env:
               GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
