@@ -20,14 +20,13 @@ jobs:
                     - ubuntu_codename: jammy
                       base_image: ubuntu:22.04
         steps:
-          - name: Checkout
-            uses: actions/checkout@v4
-
           - name: Get latest release tag for this LTS track
             id: release
             run: |
               LATEST_TAG=$(gh release list \
                 --repo ${{ github.repository }} \
+                --exclude-pre-releases \
+                --exclude-drafts \
                 --json tagName \
                 --jq '[.[] | select(.tagName | startswith("${{ matrix.ubuntu_codename }}-"))] | first | .tagName')
               if [ -z "${LATEST_TAG}" ]; then
@@ -37,6 +36,11 @@ jobs:
               echo "tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
             env:
               GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          - name: Checkout release tag
+            uses: actions/checkout@v4
+            with:
+              ref: ${{ steps.release.outputs.tag }}
 
           - name: Prepare
             id: prep

@@ -28,6 +28,7 @@ jobs:
                 BASE_IMAGE="ubuntu:22.04"
               else
                 # Default to noble (latest LTS) for unrecognised tag prefixes
+                echo "::warning::Unrecognized release tag prefix '${GIT_BRANCH}'. Expected it to start with 'noble-' or 'jammy-'. Defaulting BASE_IMAGE to ubuntu:24.04 (Noble)."
                 BASE_IMAGE="ubuntu:24.04"
               fi
               
