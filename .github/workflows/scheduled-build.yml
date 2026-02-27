@@ -1,0 +1,87 @@
+name: Scheduled Security Build
+
+on:
+    schedule:
+        - cron: '0 2 * * 0'  # Every Sunday at 02:00 UTC
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - ubuntu_codename: noble
+                      base_image: ubuntu:24.04
+                    - ubuntu_codename: jammy
+                      base_image: ubuntu:22.04
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v4
+
+          - name: Get latest release tag for this LTS track
+            id: release
+            run: |
+              LATEST_TAG=$(gh release list \
+                --repo ${{ github.repository }} \
+                --json tagName \
+                --jq '[.[] | select(.tagName | startswith("${{ matrix.ubuntu_codename }}-"))] | first | .tagName')
+              if [ -z "${LATEST_TAG}" ]; then
+                echo "No release found for ${{ matrix.ubuntu_codename }} track" >&2
+                exit 1
+              fi
+              echo "tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
+            env:
+              GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          - name: Prepare
+            id: prep
+            run: |
+              DOCKER_IMAGE=phusion/baseimage
+              RELEASE_TAG=${{ steps.release.outputs.tag }}
+              PLATFORMS=amd64,arm,arm64
+              TAGS="${DOCKER_IMAGE}:${RELEASE_TAG}"
+              TAGS="${TAGS}, ${DOCKER_IMAGE}:${{ matrix.ubuntu_codename }}"
+              TAGS="${TAGS}, ghcr.io/${{ github.repository_owner }}/baseimage:${RELEASE_TAG}"
+              TAGS="${TAGS}, ghcr.io/${{ github.repository_owner }}/baseimage:${{ matrix.ubuntu_codename }}"
+              echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+              echo "platforms=${PLATFORMS}" >> $GITHUB_OUTPUT
+
+          - name: Set up QEMU
+            uses: docker/setup-qemu-action@v3
+            with:
+              platforms: ${{ steps.prep.outputs.platforms }}
+
+          - name: Set up Docker Buildx
+            uses: docker/setup-buildx-action@v3
+            with:
+              install: true
+              version: latest
+              driver-opts: image=moby/buildkit:latest
+
+          - name: Login to GHCR (Github Container Registry)
+            uses: docker/login-action@v3
+            with:
+              registry: ghcr.io
+              username: ${{ github.actor }}
+              password: ${{ secrets.GITHUB_TOKEN }}
+
+          - name: Login to Docker Hub
+            uses: docker/login-action@v3
+            with:
+              username: ${{ secrets.DOCKER_USERNAME }}
+              password: ${{ secrets.DOCKER_PASSWORD }}
+
+          - name: Build and Push
+            uses: docker/build-push-action@v5
+            with:
+              context: image
+              platforms: ${{ steps.prep.outputs.platforms }}
+              push: true
+              tags: ${{ steps.prep.outputs.tags }}
+              build-args: BASE_IMAGE=${{ matrix.base_image }}
+              no-cache: true

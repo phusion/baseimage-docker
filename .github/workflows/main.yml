@@ -20,6 +20,16 @@ jobs:
               # Set the platforms to build for here and thus reduce duplicating it.
               PLATFORMS=amd64,arm,arm64
               TAGS="${DOCKER_IMAGE}:${GIT_BRANCH}, ghcr.io/${{ github.repository_owner }}/baseimage:${GIT_BRANCH}"
+
+              # Determine BASE_IMAGE from release tag prefix (e.g. noble-1.0.2 -> ubuntu:24.04)
+              if [[ "${GIT_BRANCH}" == noble-* ]]; then
+                BASE_IMAGE="ubuntu:24.04"
+              elif [[ "${GIT_BRANCH}" == jammy-* ]]; then
+                BASE_IMAGE="ubuntu:22.04"
+              else
+                # Default to noble (latest LTS) for unrecognised tag prefixes
+                BASE_IMAGE="ubuntu:24.04"
+              fi
               
               # Set output parameters.
               
@@ -32,6 +42,7 @@ jobs:
                 echo "docker_image=${DOCKER_IMAGE}" >> $GITHUB_OUTPUT
               fi
               echo "platforms=${PLATFORMS}" >> $GITHUB_OUTPUT
+              echo "base_image=${BASE_IMAGE}" >> $GITHUB_OUTPUT
 
 
           - name: Set up QEMU
@@ -71,3 +82,4 @@ jobs:
               platforms: ${{ steps.prep.outputs.platforms }}
               push: ${{ steps.prep.outputs.push }}
               tags: ${{ steps.prep.outputs.tags }}
+              build-args: BASE_IMAGE=${{ steps.prep.outputs.base_image }}
