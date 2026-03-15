@@ -104,10 +104,15 @@ jobs:
               build-args: BASE_IMAGE=${{ matrix.base_image }}
               no-cache: true
 
+          # RELEASE_TOKEN must be a Classic PAT with 'repo' scope stored as a
+          # repository/org secret. It is required when organisation-level
+          # Actions policies restrict GITHUB_TOKEN from creating releases
+          # (HTTP 403 "Resource not accessible by integration"). Falls back to
+          # GITHUB_TOKEN for repos where the default token is sufficient.
           - name: Check gh auth status
             run: gh auth status
             env:
-              GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
 
           - name: Create GitHub Release
             run: |
@@ -123,4 +128,4 @@ jobs:
               - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ steps.release.outputs.next_tag }}\`
               - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ matrix.ubuntu_codename }}\`"
             env:
-              GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
