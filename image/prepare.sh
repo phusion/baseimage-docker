@@ -12,9 +12,21 @@ echo -n no > /etc/container_environment/INITRD
 
 ## Enable Ubuntu Universe, Multiverse, and deb-src for main.
 if grep -E '^ID=' /etc/os-release | grep -q ubuntu; then
-  sed -i 's/^#\s*\(deb.*main restricted\)$/\1/g' /etc/apt/sources.list
-  sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
-  sed -i 's/^#\s*\(deb.*multiverse\)$/\1/g' /etc/apt/sources.list
+  UBUNTU_VERSION=$(grep '^VERSION_ID=' /etc/os-release | cut -d'"' -f2)
+  # Ubuntu 24.04+ uses DEB822 format (.sources files); older releases use sources.list
+  if dpkg --compare-versions "$UBUNTU_VERSION" ge "24.04" 2>/dev/null && \
+      compgen -G '/etc/apt/sources.list.d/*.sources' > /dev/null; then
+    # DEB822 format: enable universe and multiverse components
+    for f in /etc/apt/sources.list.d/*.sources; do
+      sed -i 's/^Components: main$/Components: main restricted universe multiverse/' "$f"
+      sed -i 's/^Components: main restricted$/Components: main restricted universe multiverse/' "$f"
+    done
+  else
+    # Legacy sources.list format (Ubuntu < 24.04)
+    sed -i 's/^#\s*\(deb.*main restricted\)$/\1/g' /etc/apt/sources.list
+    sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
+    sed -i 's/^#\s*\(deb.*multiverse\)$/\1/g' /etc/apt/sources.list
+  fi
 fi
 
 apt-get update

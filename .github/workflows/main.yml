@@ -27,13 +27,15 @@ jobs:
               TAGS="${DOCKER_IMAGE}:${GIT_BRANCH}, ghcr.io/${{ github.repository_owner }}/baseimage:${GIT_BRANCH}"
 
               # Determine BASE_IMAGE from release tag prefix (e.g. noble-1.0.2 -> ubuntu:24.04)
-              if [[ "${GIT_BRANCH}" == noble-* ]]; then
+              if [[ "${GIT_BRANCH}" == resolute-* ]]; then
+                BASE_IMAGE="ubuntu:26.04"
+              elif [[ "${GIT_BRANCH}" == noble-* ]]; then
                 BASE_IMAGE="ubuntu:24.04"
               elif [[ "${GIT_BRANCH}" == jammy-* ]]; then
                 BASE_IMAGE="ubuntu:22.04"
               else
                 # Default to noble (latest LTS) for unrecognised tag prefixes
-                echo "::warning::Unrecognized release tag prefix '${GIT_BRANCH}'. Expected it to start with 'noble-' or 'jammy-'. Defaulting BASE_IMAGE to ubuntu:24.04 (Noble)."
+                echo "::warning::Unrecognized release tag prefix '${GIT_BRANCH}'. Expected it to start with 'resolute-', 'noble-', or 'jammy-'. Defaulting BASE_IMAGE to ubuntu:24.04 (Noble)."
                 BASE_IMAGE="ubuntu:24.04"
               fi
               

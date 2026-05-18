@@ -19,6 +19,8 @@ jobs:
             fail-fast: false
             matrix:
                 include:
+                    - ubuntu_codename: resolute
+                      base_image: ubuntu:26.04
                     - ubuntu_codename: noble
                       base_image: ubuntu:24.04
                     - ubuntu_codename: jammy
