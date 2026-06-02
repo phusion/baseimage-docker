@@ -165,8 +165,9 @@ jobs:
                 fi
 
                 if [ "${IS_PERMISSION_DENIED}" = "true" ]; then
+                  MAX_RELEASE_OUTPUT_SUMMARY_LENGTH=500
                   GH_RELEASE_OUTPUT_SINGLE_LINE="${GH_RELEASE_OUTPUT//$'\n'/ }"
-                  GH_RELEASE_OUTPUT_SUMMARY="${GH_RELEASE_OUTPUT_SINGLE_LINE:0:500}"
+                  GH_RELEASE_OUTPUT_SUMMARY="${GH_RELEASE_OUTPUT_SINGLE_LINE:0:${MAX_RELEASE_OUTPUT_SUMMARY_LENGTH}}"
                   echo "::warning::${RELEASE_PERMISSION_WARNING}. gh output: ${GH_RELEASE_OUTPUT_SUMMARY}"
                 else
                   echo "::error::${GH_RELEASE_OUTPUT}"
