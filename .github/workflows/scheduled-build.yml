@@ -153,10 +153,9 @@ jobs:
               set -e
 
               if [ "${GH_RELEASE_EXIT_CODE}" -ne 0 ]; then
-                if [ "${GH_RELEASE_EXIT_CODE}" -eq 4 ]; then
-                  echo "::warning::Skipping GitHub release creation for ${{ steps.release.outputs.next_tag }} because the workflow token cannot create releases."
-                elif echo "${GH_RELEASE_OUTPUT}" | grep -Eq "HTTP 403|Resource not accessible by integration"; then
-                  echo "::warning::Skipping GitHub release creation for ${{ steps.release.outputs.next_tag }} because the workflow token cannot create releases."
+                RELEASE_PERMISSION_WARNING="Skipping GitHub release creation for ${{ steps.release.outputs.next_tag }} because the workflow token cannot create releases."
+                if [ "${GH_RELEASE_EXIT_CODE}" -eq 4 ] || (echo "${GH_RELEASE_OUTPUT}" | grep -Eq "HTTP 403|Resource not accessible by integration"); then
+                  echo "::warning::${RELEASE_PERMISSION_WARNING}"
                 else
                   echo "::error::${GH_RELEASE_OUTPUT}"
                   exit ${GH_RELEASE_EXIT_CODE}
