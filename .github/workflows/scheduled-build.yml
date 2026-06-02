@@ -153,7 +153,7 @@ jobs:
               set -e
 
               if [ ${GH_RELEASE_EXIT_CODE} -ne 0 ]; then
-                if echo "${GH_RELEASE_OUTPUT}" | grep -q "HTTP 403: Resource not accessible by integration"; then
+                if echo "${GH_RELEASE_OUTPUT}" | grep -Eq "HTTP 403|Resource not accessible by integration"; then
                   echo "::warning::Skipping GitHub release creation for ${{ steps.release.outputs.next_tag }} because the workflow token cannot create releases."
                 else
                   echo "${GH_RELEASE_OUTPUT}" >&2
