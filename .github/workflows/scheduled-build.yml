@@ -143,10 +143,24 @@ jobs:
               - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ matrix.ubuntu_codename }}\`
               EOF
               
-              gh release create "${{ steps.release.outputs.next_tag }}" \
+              set +e
+              GH_RELEASE_OUTPUT=$(gh release create "${{ steps.release.outputs.next_tag }}" \
                 --repo "${{ github.repository }}" \
                 --target "$(git rev-parse HEAD)" \
                 --title "${{ steps.release.outputs.next_tag }}" \
-                --notes-file release_notes.md
+                --notes-file release_notes.md 2>&1)
+              GH_RELEASE_EXIT_CODE=$?
+              set -e
+
+              if [ ${GH_RELEASE_EXIT_CODE} -ne 0 ]; then
+                if echo "${GH_RELEASE_OUTPUT}" | grep -q "HTTP 403: Resource not accessible by integration"; then
+                  echo "::warning::Skipping GitHub release creation for ${{ steps.release.outputs.next_tag }} because the workflow token cannot create releases."
+                else
+                  echo "${GH_RELEASE_OUTPUT}" >&2
+                  exit ${GH_RELEASE_EXIT_CODE}
+                fi
+              else
+                echo "${GH_RELEASE_OUTPUT}"
+              fi
             env:
               GH_TOKEN: ${{ github.token }}
