@@ -154,7 +154,12 @@ jobs:
 
               if [ "${GH_RELEASE_EXIT_CODE}" -ne 0 ]; then
                 RELEASE_PERMISSION_WARNING="Skipping GitHub release creation for ${{ steps.release.outputs.next_tag }} because the workflow token cannot create releases."
+                IS_PERMISSION_DENIED=false
                 if [ "${GH_RELEASE_EXIT_CODE}" -eq 4 ] || (echo "${GH_RELEASE_OUTPUT}" | grep -Eq "HTTP 403|Resource not accessible by integration"); then
+                  IS_PERMISSION_DENIED=true
+                fi
+
+                if [ "${IS_PERMISSION_DENIED}" = "true" ]; then
                   echo "::warning::${RELEASE_PERMISSION_WARNING}"
                 else
                   echo "::error::${GH_RELEASE_OUTPUT}"
