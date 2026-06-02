@@ -41,7 +41,7 @@ jobs:
                 --json tagName \
                 --jq "[.[] | select(.tagName | startswith(\"${{ matrix.ubuntu_codename }}-\"))] | first | .tagName // empty")
               
-if [ -z "${LATEST_TAG}" ]; then
+              if [ -z "${LATEST_TAG}" ]; then
                 echo "No release found for ${{ matrix.ubuntu_codename }} track. Skipping."
                 echo "should_build=false" >> $GITHUB_OUTPUT
                 exit 0
