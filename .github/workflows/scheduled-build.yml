@@ -8,6 +8,8 @@ on:
 permissions:
     contents: write
     packages: write
+    id-token: write
+    pull-requests: read
 
 jobs:
     build:
@@ -15,6 +17,8 @@ jobs:
         permissions:
             contents: write
             packages: write
+            id-token: write
+            pull-requests: read
         strategy:
             fail-fast: false
             matrix:
@@ -31,34 +35,43 @@ jobs:
             run: |
               LATEST_TAG=$(gh release list \
                 --repo ${{ github.repository }} \
+                --limit 100 \
                 --exclude-pre-releases \
                 --exclude-drafts \
                 --json tagName \
-                --jq '[.[] | select(.tagName | startswith("${{ matrix.ubuntu_codename }}-"))] | first | .tagName')
-              if [ -z "${LATEST_TAG}" ]; then
-                echo "No release found for ${{ matrix.ubuntu_codename }} track" >&2
-                exit 1
+                --jq "[.[] | select(.tagName | startswith(\"${{ matrix.ubuntu_codename }}-\"))] | first | .tagName" | jq -r '.')
+              
+              if [ -z "${LATEST_TAG}" ] || [ "${LATEST_TAG}" == "null" ]; then
+                echo "No release found for ${{ matrix.ubuntu_codename }} track. Skipping."
+                echo "should_build=false" >> $GITHUB_OUTPUT
+                exit 0
               fi
+
               # Extract version and bump patch: noble-1.0.2 -> noble-1.0.3
               if ! echo "${LATEST_TAG}" | grep -qE '^[a-z]+-[0-9]+\.[0-9]+\.[0-9]+$'; then
                 echo "Tag '${LATEST_TAG}' does not match expected format <codename>-<major>.<minor>.<patch>" >&2
                 exit 1
               fi
+              
               PREFIX="${LATEST_TAG%.*}"            # noble-1.0
               PATCH="${LATEST_TAG##*.}"            # 2
               NEXT_PATCH=$((PATCH + 1))
               NEXT_TAG="${PREFIX}.${NEXT_PATCH}"  # noble-1.0.3
+              
               echo "current_tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
               echo "next_tag=${NEXT_TAG}" >> $GITHUB_OUTPUT
+              echo "should_build=true" >> $GITHUB_OUTPUT
             env:
-              GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              GH_TOKEN: ${{ github.token }}
 
           - name: Checkout release tag
+            if: steps.release.outputs.should_build == 'true'
             uses: actions/checkout@v4
             with:
               ref: ${{ steps.release.outputs.current_tag }}
 
           - name: Prepare
+            if: steps.release.outputs.should_build == 'true'
             id: prep
             run: |
               DOCKER_IMAGE=phusion/baseimage
@@ -72,11 +85,13 @@ jobs:
               echo "platforms=${PLATFORMS}" >> $GITHUB_OUTPUT
 
           - name: Set up QEMU
+            if: steps.release.outputs.should_build == 'true'
             uses: docker/setup-qemu-action@v3
             with:
               platforms: ${{ steps.prep.outputs.platforms }}
 
           - name: Set up Docker Buildx
+            if: steps.release.outputs.should_build == 'true'
             uses: docker/setup-buildx-action@v3
             with:
               install: true
@@ -84,19 +99,22 @@ jobs:
               driver-opts: image=moby/buildkit:latest
 
           - name: Login to GHCR (Github Container Registry)
+            if: steps.release.outputs.should_build == 'true'
             uses: docker/login-action@v3
             with:
               registry: ghcr.io
               username: ${{ github.actor }}
-              password: ${{ secrets.GITHUB_TOKEN }}
+              password: ${{ github.token }}
 
           - name: Login to Docker Hub
+            if: steps.release.outputs.should_build == 'true'
             uses: docker/login-action@v3
             with:
               username: ${{ secrets.DOCKER_USERNAME }}
               password: ${{ secrets.DOCKER_PASSWORD }}
 
           - name: Build and Push
+            if: steps.release.outputs.should_build == 'true'
             uses: docker/build-push-action@v6
             with:
               context: image
@@ -107,22 +125,28 @@ jobs:
               no-cache: true
 
           - name: Check gh auth status
+            if: steps.release.outputs.should_build == 'true'
             run: gh auth status
             env:
-              GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              GH_TOKEN: ${{ github.token }}
 
           - name: Create GitHub Release
+            if: steps.release.outputs.should_build == 'true'
             run: |
-              gh release create "${{ steps.release.outputs.next_tag }}" \
-                --repo "${{ github.repository }}" \
-                --target "${{ steps.release.outputs.current_tag }}" \
-                --title "${{ steps.release.outputs.next_tag }}" \
-                --notes "Automated weekly security rebuild of \`${{ steps.release.outputs.current_tag }}\` with latest \`${{ matrix.base_image }}\` packages.
+              cat <<EOF > release_notes.md
+              Automated weekly security rebuild of \`${{ steps.release.outputs.current_tag }}\` with latest \`${{ matrix.base_image }}\` packages.
 
               Images pushed:
               - \`phusion/baseimage:${{ steps.release.outputs.next_tag }}\`
               - \`phusion/baseimage:${{ matrix.ubuntu_codename }}\`
               - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ steps.release.outputs.next_tag }}\`
-              - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ matrix.ubuntu_codename }}\`"
+              - \`ghcr.io/${{ github.repository_owner }}/baseimage:${{ matrix.ubuntu_codename }}\`
+              EOF
+              
+              gh release create "${{ steps.release.outputs.next_tag }}" \
+                --repo "${{ github.repository }}" \
+                --target "$(git rev-parse HEAD)" \
+                --title "${{ steps.release.outputs.next_tag }}" \
+                --notes-file release_notes.md
             env:
-              GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              GH_TOKEN: ${{ github.token }}
