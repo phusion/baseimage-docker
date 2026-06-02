@@ -39,7 +39,7 @@ jobs:
                 --exclude-pre-releases \
                 --exclude-drafts \
                 --json tagName \
-                --jq "[.[] | select(.tagName | startswith(\"${{ matrix.ubuntu_codename }}-\"))] | first | .tagName" | jq -r '.')
+                --jq "[.[] | select(.tagName | startswith(\"${{ matrix.ubuntu_codename }}-\"))] | first | .tagName // empty")
               
               if [ -z "${LATEST_TAG}" ] || [ "${LATEST_TAG}" == "null" ]; then
                 echo "No release found for ${{ matrix.ubuntu_codename }} track. Skipping."
