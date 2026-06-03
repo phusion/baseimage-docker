@@ -7,8 +7,8 @@ SSHD_BUILD_PATH=/bd_build/services/sshd
 
 ## Install the SSH server.
 $minimal_apt_get_install openssh-server
-mkdir /var/run/sshd
-mkdir /etc/service/sshd
+mkdir -p /var/run/sshd
+mkdir -p /etc/service/sshd
 touch /etc/service/sshd/down
 cp $SSHD_BUILD_PATH/sshd.runit /etc/service/sshd/run
 cp $SSHD_BUILD_PATH/sshd_config /etc/ssh/sshd_config
