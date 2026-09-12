@@ -50,7 +50,12 @@ $minimal_apt_get_install apt-utils
 $minimal_apt_get_install apt-transport-https ca-certificates
 
 ## Install add-apt-repository
-$minimal_apt_get_install software-properties-common
+if grep -E '^ID=' /etc/os-release | grep -q ubuntu; then
+  $minimal_apt_get_install software-properties-common
+fi
+
+## Install python3 for debian
+  $minimal_apt_get_install python3
 
 ## Upgrade all packages.
 apt-get dist-upgrade -y --no-install-recommends -o Dpkg::Options::="--force-confold"
@@ -95,11 +100,11 @@ if grep -E '^ID=' /etc/os-release | grep -q ubuntu; then
 fi
 
 ## Fix locale.
-case $(lsb_release -is) in
-  Ubuntu)
+case $(grep '^ID=' /etc/os-release | cut -d= -f2) in
+  ubuntu)
     $minimal_apt_get_install language-pack-en
     ;;
-  Debian)
+  debian)
     $minimal_apt_get_install locales locales-all
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
     ;;
